@@ -9,7 +9,7 @@ set nocompatible
       silent ! vim +BundleInstall +qall
     endif
   endif
-" }
+" } this is some test
 
 " disable the highlight search
 nnoremap <CR> :noh<CR><CR>
