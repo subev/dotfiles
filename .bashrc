@@ -6,6 +6,9 @@ cd ~/kendo
 # If not running interactively, don't do anything
 [ -z "$PS1" ] && return
 
+#turn autocomplete to be case insensitive
+bind 'set completion-ignore-case on'
+
 function _git_prompt() {
 local git_status="`git status -unormal 2>&1`"
 if ! [[ "$git_status" =~ Not\ a\ git\ repo ]]; then
