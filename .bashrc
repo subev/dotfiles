@@ -106,6 +106,7 @@ if [ -x /usr/bin/dircolors ]; then
     alias grep='grep --color=auto'
     alias fgrep='fgrep --color=auto'
     alias egrep='egrep --color=auto'
+    alias kgrep="grep -Iir --exclude='*.map' --exclude='*.min.css' --exclude='*.min.js' --exclude='kendo.all.js' --exclude='kendo.winjs.js' --exclude='*.web.*' --exclude='*.mobile.js' --exclude='kendo.editor.js' --exclude='kendo.dataviz.js'"
 fi
 
 # some more ls aliases

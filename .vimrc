@@ -31,6 +31,8 @@ set guifont=Ubuntu\ Mono\ for\ VimPowerline\ 12
     Bundle 'scrooloose/nerdtree'
     Bundle 'vim-scripts/JavaScript-Indent'
     Bundle 'underlog/vim-PairTools'
+    " Ditto like registry tool
+    Bundle 'vim-scripts/YankRing.vim'
 
     Bundle 'mileszs/ack.vim'
 
@@ -100,6 +102,10 @@ set guifont=Ubuntu\ Mono\ for\ VimPowerline\ 12
     " quick-paste last yanked text
     noremap <C-p> "0p
     noremap <C-P> "0P
+
+    "search with YankRing (Ditto like plugin)
+    nnoremap <leader><Space> :YRShow<CR>
+    inoremap <leader><Space> :YRShow<CR>
 
     " center screen
     noremap <Space> zz
