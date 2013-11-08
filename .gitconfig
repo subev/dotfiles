@@ -17,6 +17,10 @@
     c = commit -m
     co = checkout
     a = add
+    ci = commit
+    cc = commit -am
+    ca = commit --amend
+    copy = "!git checkout production && git pull --rebase && git cherry-pick master && git push && git checkout master"
     d = diff
     dic = diff --cached
     p = pull
@@ -27,10 +31,7 @@
     out = log origin..HEAD
     qpl = log --pretty=\"%Cblue%h%Creset %Cgreen[%cr]%Creset %s\" origin/production..origin/master
     l = log --all --graph --pretty=format:'%Cred%h%Creset -%C(yellow)%d%Creset %s %Cgreen(%cr)%Creset %Cblue%an%Creset' --abbrev-commit --date=relative
-    ci = commit
-    ca = commit --amend
     eu = "!f() { git ls-files --unmerged | cut -f2 | sort -u ; }; vim `f`"
     au = "!f() { git ls-files --unmerged | cut -f2 | sort -u ; }; git add `f`"
-    copy = "!git checkout production && git pull --rebase && git cherry-pick master && git push && git checkout master"
     cl = "!git co src/kendo.editor.js && git co wrappers/mvc/demos/Kendo.Mvc.Examples/App_Data/"
 

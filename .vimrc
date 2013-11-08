@@ -31,6 +31,8 @@ set guifont=Ubuntu\ Mono\ for\ VimPowerline\ 12
     Bundle 'scrooloose/nerdtree'
     Bundle 'vim-scripts/JavaScript-Indent'
     Bundle 'underlog/vim-PairTools'
+    " Vim diff plugin
+    Bundle 'airblade/vim-gitgutter'
     " Ditto like registry tool
     Bundle 'vim-scripts/YankRing.vim'
 
