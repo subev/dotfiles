@@ -32,9 +32,11 @@ set guifont=Ubuntu\ Mono\ for\ VimPowerline\ 12
     Bundle 'vim-scripts/JavaScript-Indent'
     Bundle 'underlog/vim-PairTools'
     " Vim diff plugin
-    Bundle 'airblade/vim-gitgutter'
+    "Bundle 'airblade/vim-gitgutter'
     " Ditto like registry tool
-    Bundle 'vim-scripts/YankRing.vim'
+    " Bundle 'vim-scripts/YankRing.vim'
+    " Mark down highlight and other niceties
+    "Bundle 'tpope/vim-markdown'
 
     Bundle 'mileszs/ack.vim'
 
@@ -106,8 +108,8 @@ set guifont=Ubuntu\ Mono\ for\ VimPowerline\ 12
     noremap <C-P> "0P
 
     "search with YankRing (Ditto like plugin)
-    nnoremap <leader><Space> :YRShow<CR>
-    inoremap <leader><Space> :YRShow<CR>
+    "nnoremap <leader><Space> :YRShow<CR>
+    "inoremap <leader><Space> :YRShow<CR>
 
     " center screen
     noremap <Space> zz
