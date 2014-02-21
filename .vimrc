@@ -16,7 +16,7 @@ nnoremap <CR> :noh<CR><CR>
 
 filetype off
 set rtp=~/.vim/bundle/vundle/,~/.vim,$VIMRUNTIME
-let g:snippets_dir='~/.snippets/'
+let g:snippets_dir='~/dotfiles/snippets/'
 call vundle#rc()
 set guifont=Ubuntu\ Mono\ for\ VimPowerline\ 12
 
@@ -24,13 +24,15 @@ set guifont=Ubuntu\ Mono\ for\ VimPowerline\ 12
     Bundle 'gmarik/vundle'
 
     Bundle 'Railscasts-Theme-GUIand256color'
-    Bundle 'cespare/vim-bclose'
     Bundle 'groenewege/vim-less'
     Bundle 'msanders/snipmate.vim'
     Bundle 'scrooloose/nerdcommenter'
     Bundle 'scrooloose/nerdtree'
-    Bundle 'vim-scripts/JavaScript-Indent'
+    " Bundle 'vim-scripts/JavaScript-Indent'
+    Bundle 'vim-scripts/Javascript-Indentation'
+    Bundle 'vim-scripts/jsbeautify'
     Bundle 'underlog/vim-PairTools'
+    " Bundle 'cespare/vim-bclose'
     " Vim diff plugin
     "Bundle 'airblade/vim-gitgutter'
     " Ditto like registry tool

@@ -40,6 +40,7 @@ server {
 
     location ~ ^/kendo/dist {
         index foo; # disable index to let auto-index work
+        error_page 405 = $uri;
     }
 
     # pass the PHP scripts to FastCGI server listening on 127.0.0.1:9000
