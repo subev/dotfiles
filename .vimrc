@@ -31,6 +31,8 @@ set guifont=Ubuntu\ Mono\ for\ VimPowerline\ 12
     " Bundle 'vim-scripts/JavaScript-Indent'
     Bundle 'vim-scripts/Javascript-Indentation'
     Bundle 'vim-scripts/jsbeautify'
+    " improvement instead of ctrlp
+    Bundle 'sjbach/lusty'
     Bundle 'underlog/vim-PairTools'
     " Bundle 'cespare/vim-bclose'
     " Vim diff plugin
@@ -41,6 +43,7 @@ set guifont=Ubuntu\ Mono\ for\ VimPowerline\ 12
     "Bundle 'tpope/vim-markdown'
 
     Bundle 'mileszs/ack.vim'
+    Bundle 'rking/ag.vim'
 
     Bundle 'tpope/vim-fugitive'
     Bundle 'tpope/vim-unimpaired'
@@ -104,6 +107,9 @@ set guifont=Ubuntu\ Mono\ for\ VimPowerline\ 12
 
     " toggle NerdTree
     noremap <leader>] :NERDTreeToggle<CR>
+
+    " search smart with ag
+    noremap <leader>s :Ag -S 
 
     " quick-paste last yanked text
     noremap <C-p> "0p
