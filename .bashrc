@@ -12,6 +12,10 @@ bind 'set completion-ignore-case on'
 #enable ctrl-t to search forward (oposite of ctr-r)
 bind "\C-t":forward-search-history
 
+#free the ctrl-s shortcut
+stty ixany
+stty ixoff -ixon
+
 function _git_prompt() {
 local git_status="`git status -unormal 2>&1`"
 if ! [[ "$git_status" =~ Not\ a\ git\ repo ]]; then
