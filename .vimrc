@@ -96,7 +96,7 @@ set guifont=Ubuntu\ Mono\ for\ VimPowerline\ 12
 
 " Keyboard {
     noremap <C-S> :w<CR>
-    inoremap <C-S> <C-O>:w<CR>
+    inoremap <C-S> <C-O>:w<CR><Esc>
 
     noremap <S-CR> <Esc>
 
