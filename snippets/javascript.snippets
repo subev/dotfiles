@@ -24,11 +24,22 @@ snippet f
 	function(${1}) {${2}};
 # if
 snippet if
-	if (${1:true}) {${2}}
+	if (${1}) {
+		${2}
+	}
+# else
+snippet else
+	else {
+		${1}
+	}
 # if ... else
 snippet ife
-	if (${1:true}) {${2}}
-	else{${3}}
+	if (${1}) {
+		${2}
+	}
+	else{
+		${3}
+	}
 # tertiary conditional
 snippet t
 	${1:/* condition */} ? ${2:a} : ${3:b}
@@ -59,9 +70,9 @@ snippet forr
 		${4:$1[$2]}
 	};
 # while (...) {...}
-snippet wh
-	while (${1:/* condition */}) {
-		${2:/* code */}
+snippet while
+	while (${1}) {
+		${2}
 	}
 # do...while
 snippet do
