@@ -2,6 +2,11 @@ snippet func
 	function(${1}) {
 		${2}
 	}
+# test
+snippet test
+	test("${1}", function() {
+		${2}
+	});
 # debugger
 snippet de
 	debugger;
@@ -63,12 +68,17 @@ snippet case
 snippet for
 	for (var ${2:i} = 0; $2 < ${1:Things}.length; $2${3:++}) {
 		${4:$1[$2]}
-	};
+	}
+# for in 
+snippet forin
+	for (var prop in ${1}) {
+		${3}
+	}
 # for (...) {...} (Improved Native For-Loop)
 snippet forr
 	for (var ${2:i} = ${1:Things}.length - 1; $2 >= 0; $2${3:--}) {
 		${4:$1[$2]}
-	};
+	}
 # while (...) {...}
 snippet while
 	while (${1}) {
