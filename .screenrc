@@ -1,0 +1,25 @@
+vbell off
+# defscrollback 10000
+# # Set the caption on the bottom line
+caption always "%{= kw}%-w%{= wk}%n %t%{-}%+w %-= @%H - %c"
+startup_message off
+msgwait 2
+autodetach on
+#
+termcapinfo xterm 'Co#256:AB=\E[48;5;%dm:AF=\E[38;5;%dm'
+#
+# # caption always "%{rk}%?%-Lw%?%{-b}(%{+b}%n %t%{-b})%{-b}%?(%u)%?%{rk}%?%+Lw%?%="
+#
+# #terminfo and termcap for nice 256 color terminal
+# # allow bold colors - necessary for some reason
+attrcolor b ".I"
+# # erase background with current bg color
+defbce "on"
+# shell /bin/zsh
+#
+screen -t "vim"
+stuff "vim\015"
+#
+screen -t "terminal"
+#
+select 0
