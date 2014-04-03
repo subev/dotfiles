@@ -2,7 +2,6 @@
 # see /usr/share/doc/bash/examples/startup-files (in the package bash-doc)
 # for examples
 alias g='git'
-cd ~/kendo
 # If not running interactively, don't do anything
 [ -z "$PS1" ] && return
 
