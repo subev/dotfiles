@@ -34,6 +34,7 @@ set guifont=Ubuntu\ Mono\ for\ VimPowerline\ 12
     " improvement instead of ctrlp
     Bundle 'sjbach/lusty'
     Bundle 'underlog/vim-PairTools'
+    Bundle 'mattn/emmet-vim'
     " Bundle 'cespare/vim-bclose'
     " Vim diff plugin
     "Bundle 'airblade/vim-gitgutter'
