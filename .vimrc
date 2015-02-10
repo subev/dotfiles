@@ -32,7 +32,7 @@ set guifont=Ubuntu\ Mono\ for\ VimPowerline\ 12
     Bundle 'vim-scripts/Javascript-Indentation'
     Bundle 'vim-scripts/jsbeautify'
     " improvement instead of ctrlp
-    Bundle 'sjbach/lusty'
+    " Bundle 'sjbach/lusty'
     Bundle 'underlog/vim-PairTools'
     Bundle 'mattn/emmet-vim'
     " Bundle 'cespare/vim-bclose'
