@@ -1,24 +1,13 @@
-set nocompatible
-
-" Vundle Install {
-  if !isdirectory(expand('$HOME/.vim/bundle/vundle/.git', 1))
-    silent ! git clone https://github.com/gmarik/vundle.git ~/.vim/bundle/vundle
-    if v:shell_error
-      finish
-    else
-      silent ! vim +BundleInstall +qall
-    endif
-  endif
-" } this is some test
-
 " disable the highlight search
 nnoremap <CR> :noh<CR><CR>
+
+" increase the window size
+set lines=60 columns=220
 
 filetype off
 set rtp=~/.vim/bundle/vundle/,~/.vim,$VIMRUNTIME
 let g:snippets_dir='~/dotfiles/snippets/'
 call vundle#rc()
-set guifont=Ubuntu\ Mono\ for\ VimPowerline\ 12
 
 " Plugins {
     Bundle 'gmarik/vundle'
@@ -31,6 +20,7 @@ set guifont=Ubuntu\ Mono\ for\ VimPowerline\ 12
     " Bundle 'vim-scripts/JavaScript-Indent'
     Bundle 'vim-scripts/Javascript-Indentation'
     Bundle 'vim-scripts/jsbeautify'
+    Bundle 'flazz/vim-colorschemes'
     " improvement instead of ctrlp
     " Bundle 'sjbach/lusty'
     Bundle 'underlog/vim-PairTools'
@@ -139,10 +129,15 @@ set guifont=Ubuntu\ Mono\ for\ VimPowerline\ 12
 " Coding {
     set iskeyword+=_,$,@,%,# 
     set guifont=Consolas:h10
+    " hide the toolbar and the menu of GVIM
+    set guioptions-=m
+    set guioptions-=T
+
+    " show line numbers
     set number
     syntax on
 
-    silent! colorscheme railscasts
+    silent! colorscheme vividchalk
     autocmd BufEnter * :syntax sync fromstart
 
     " show trailing whitespace
@@ -172,4 +167,3 @@ set guifont=Ubuntu\ Mono\ for\ VimPowerline\ 12
     autocmd BufReadPost *cshtml set filetype=html
     autocmd BufReadPost Jakefile set filetype=javascript
 " }
-
