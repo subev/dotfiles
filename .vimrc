@@ -12,7 +12,10 @@ call vundle#rc()
 " Plugins {
     Bundle 'gmarik/vundle'
 
+    " themes
     Bundle 'Railscasts-Theme-GUIand256color'
+    Bundle 'flazz/vim-colorschemes'
+
     Bundle 'groenewege/vim-less'
     Bundle 'msanders/snipmate.vim'
     Bundle 'scrooloose/nerdcommenter'
@@ -46,6 +49,10 @@ call vundle#rc()
     let g:ctrlp_custom_ignore = {
       \ 'dir':  '\v[\/]\dist$',
       \ }
+
+    let g:ctrlp_working_path_mode = 2 " Smart path mode
+    let g:ctrlp_mru_files = 1 " Enable Most Recently Used files feature
+    let g:ctrlp_jump_to_buffer = 2 " Jump to tab AND buffer if already open
 
     set statusline=%F%m%r%h%w[%L][%{&ff}]%y[%p%%][%04l,%04v]
     set laststatus=2
@@ -119,6 +126,9 @@ call vundle#rc()
     vnoremap <Tab> >gv
     vnoremap <S-Tab> <gv
 
+    nnoremap <C-e> 3<C-e>
+    nnoremap <C-y> 3<C-y>
+
     " tag auto-close with c-space
     imap <C-Space> <C-X><C-O>
 
@@ -135,6 +145,7 @@ call vundle#rc()
 
     " show line numbers
     set number
+    " highlight lineNr ctermfg=grey
     syntax on
 
     silent! colorscheme vividchalk
