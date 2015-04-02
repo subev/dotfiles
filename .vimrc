@@ -23,7 +23,6 @@ call vundle#rc()
     " Bundle 'vim-scripts/JavaScript-Indent'
     Bundle 'vim-scripts/Javascript-Indentation'
     Bundle 'vim-scripts/jsbeautify'
-    Bundle 'flazz/vim-colorschemes'
     " improvement instead of ctrlp
     " Bundle 'sjbach/lusty'
     Bundle 'underlog/vim-PairTools'
