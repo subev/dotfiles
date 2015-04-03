@@ -4,6 +4,7 @@
     branch = auto
 [core]
     whitespace = cr-at-eol
+    editor = vim
 [http]
     sllverify = false
     sslverify = false

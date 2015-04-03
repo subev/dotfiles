@@ -1,8 +1,8 @@
 " disable the highlight search
 nnoremap <CR> :noh<CR><CR>
 
-" increase the window size
-set lines=60 columns=220
+" increase the window size, usually used for windows terminals
+" set lines=60 columns=220
 
 filetype off
 set rtp=~/.vim/bundle/vundle/,~/.vim,$VIMRUNTIME
@@ -147,7 +147,7 @@ call vundle#rc()
     " highlight lineNr ctermfg=grey
     syntax on
 
-    silent! colorscheme vividchalk
+    silent! colorscheme railscasts " vividchalk theme is good high contrast too
     autocmd BufEnter * :syntax sync fromstart
 
     " show trailing whitespace
