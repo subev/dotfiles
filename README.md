@@ -10,3 +10,6 @@ ln -s dotfiles/.gitconfig ~/.gitconfig
 
 ln -s dotfiles/.vimrc ~/.vimrc
 
+ln -s dotfiles/.inputrc ~/.inputrc
+
+ln -s dotfiles/.screenrc ~/.screenrc
