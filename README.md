@@ -13,3 +13,6 @@ ln -s dotfiles/.vimrc ~/.vimrc
 ln -s dotfiles/.inputrc ~/.inputrc
 
 ln -s dotfiles/.screenrc ~/.screenrc
+
+mkdir -p ~/.vim/bundle
+git clone https://github.com/gmarik/vundle.git ~/.vim/bundle/vundle
