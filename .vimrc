@@ -166,6 +166,9 @@ call vundle#rc()
     set softtabstop=4
     set expandtab
 
+    "switch paste behavior to avoid added tabs
+    set pastetoggle=<F10>
+
     set autoindent
     set smartindent
     set smarttab
