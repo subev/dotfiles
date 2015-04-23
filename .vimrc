@@ -16,6 +16,8 @@ call vundle#rc()
     Bundle 'Railscasts-Theme-GUIand256color'
     Bundle 'flazz/vim-colorschemes'
 
+    "match tags and navigate through %
+    Bundle 'tmhedberg/matchit'
     Bundle 'groenewege/vim-less'
     Bundle 'msanders/snipmate.vim'
     Bundle 'scrooloose/nerdcommenter'
