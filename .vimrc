@@ -20,6 +20,7 @@ call vundle#rc()
     Bundle 'tmhedberg/matchit'
     Bundle 'groenewege/vim-less'
     Bundle 'msanders/snipmate.vim'
+    Bundle 'kchmck/vim-coffee-script'
     Bundle 'scrooloose/nerdcommenter'
     Bundle 'scrooloose/nerdtree'
     " Bundle 'vim-scripts/JavaScript-Indent'
