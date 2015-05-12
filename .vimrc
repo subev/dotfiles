@@ -37,6 +37,7 @@ call vundle#rc()
     " Bundle 'vim-scripts/YankRing.vim'
     " Mark down highlight and other niceties
     "Bundle 'tpope/vim-markdown'
+    Bundle 'digitaltoad/vim-jade'
 
     Bundle 'mileszs/ack.vim'
     Bundle 'rking/ag.vim'
@@ -164,9 +165,9 @@ call vundle#rc()
 
     set completeopt=menuone
 
-    set tabstop=4
-    set shiftwidth=4
-    set softtabstop=4
+    set tabstop=2
+    set shiftwidth=2
+    set softtabstop=2
     set expandtab
 
     "switch paste behavior to avoid added tabs
