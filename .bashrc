@@ -11,6 +11,9 @@ bind 'set completion-ignore-case on'
 #enable ctrl-t to search forward (oposite of ctr-r)
 bind "\C-t":forward-search-history
 
+#enable clipboard writing
+alias xclip='xclip -selection c'
+
 #free the ctrl-s shortcut
 stty ixany
 stty ixoff -ixon

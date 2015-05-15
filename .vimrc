@@ -38,6 +38,7 @@ call vundle#rc()
     " Mark down highlight and other niceties
     "Bundle 'tpope/vim-markdown'
     Bundle 'digitaltoad/vim-jade'
+    Bundle 'duganchen/vim-soy'
 
     Bundle 'mileszs/ack.vim'
     Bundle 'rking/ag.vim'
@@ -69,6 +70,9 @@ call vundle#rc()
 
     set clipboard+=unnamed
     set encoding=utf-8
+
+    " do not show folded
+    set foldlevel=20
 
     " searching
     set ignorecase
