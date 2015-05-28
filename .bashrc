@@ -18,6 +18,8 @@ alias xclip='xclip -selection c'
 stty ixany
 stty ixoff -ixon
 
+alias __git_ps1="git branch 2>/dev/null | grep '*' | sed 's/* \(.*\)/(\1)/'"
+
 function _git_prompt() {
 local git_status="`git status -unormal 2>&1`"
 if ! [[ "$git_status" =~ Not\ a\ git\ repo ]]; then

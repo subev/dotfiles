@@ -5,8 +5,6 @@ nnoremap <CR> :noh<CR><CR>
 " set lines=60 columns=220
 
 hi LineNr guifg=#AAAAAA guibg=#111111
-if has('gui_running')
-endif
 
 filetype off
 set rtp=~/.vim/bundle/vundle/,~/.vim,$VIMRUNTIME

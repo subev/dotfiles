@@ -37,3 +37,7 @@
     au = "!f() { git ls-files --unmerged | cut -f2 | sort -u ; }; git add `f`"
     cl = "!git co src/kendo.editor.js && git co wrappers/mvc/demos/Kendo.Mvc.Examples/App_Data/"
 
+[filter "lfs"]
+	clean = git lfs clean %f
+	smudge = git lfs smudge %f
+	required = true
