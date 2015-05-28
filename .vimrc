@@ -25,11 +25,18 @@ call vundle#rc()
     Bundle 'kchmck/vim-coffee-script'
     Bundle 'scrooloose/nerdcommenter'
     Bundle 'scrooloose/nerdtree'
+    "use leader-r to navigate to current file in nerdtree
+    map <leader>r :NERDTreeFind<cr>
+
+
     " handlebars and mustache support
     Bundle 'mustache/vim-mustache-handlebars'
     " Bundle 'vim-scripts/JavaScript-Indent'
     Bundle 'vim-scripts/Javascript-Indentation'
     Bundle 'vim-scripts/jsbeautify'
+    "respect gitignore files
+    "Bundle 'vim-scripts/gitignore'
+
     " improvement instead of ctrlp
     " Bundle 'sjbach/lusty'
     Bundle 'underlog/vim-PairTools'
@@ -54,13 +61,12 @@ call vundle#rc()
     let g:ragtag_global_maps = 1
 
     Bundle 'kien/ctrlp.vim'
-    let g:ctrlp_custom_ignore = {
-      \ 'dir':  '\v[\/]\dist$',
-      \ }
 
-    let g:ctrlp_working_path_mode = 2 " Smart path mode
-    let g:ctrlp_mru_files = 1 " Enable Most Recently Used files feature
-    let g:ctrlp_jump_to_buffer = 2 " Jump to tab AND buffer if already open
+    " let g:ctrlp_user_command = ['.git/', 'git --git-dir=%s/.git ls-files -oc --exclude-standard']
+    "let g:ctrlp_regexp = 1
+    "let g:ctrlp_working_path_mode = 1 " Smart path mode
+    "let g:ctrlp_mru_files = 2 " Enable Most Recently Used files feature
+    "let g:ctrlp_jump_to_buffer = 3 " Jump to tab AND buffer if already open
 
     set statusline=%F%m%r%h%w[%L][%{&ff}]%y[%p%%][%04l,%04v]
     set laststatus=2
@@ -68,6 +74,19 @@ call vundle#rc()
     let g:Powerline_symbols = 'fancy'
     Bundle 'Lokaltog/vim-easymotion'
 " }
+
+  " The Silver Searcher
+ if executable('ag')
+     " Use ag over grep
+     set grepprg=ag\ --nogroup\ --nocolor
+
+     " Use ag in CtrlP for listing files. Lightning fast and respects .gitignore
+     let g:ctrlp_user_command = 'ag %s -l --nocolor -g ""'
+
+    " ag is fast enough that CtrlP doesn't need to cache
+    let g:ctrlp_use_caching = 0
+
+  endif
 
 " General {
     set hidden
@@ -84,6 +103,11 @@ call vundle#rc()
     set incsearch
     set showmatch
     set hlsearch
+
+    "disable hit enter to contine spam msg when redrawing
+    "
+
+    set shortmess=aoOtI
 
     " avoid swap, temp and backup files
     set nobackup
@@ -128,6 +152,9 @@ call vundle#rc()
     "nnoremap <leader><Space> :YRShow<CR>
     "inoremap <leader><Space> :YRShow<CR>
 
+    " bind K to grep word under the cursor
+    nnoremap K :grep! "\b<C-R><C-W>\b"<CR>:cw<CR><CR>
+
     " center screen
     noremap <Space> zz
 
@@ -160,6 +187,8 @@ call vundle#rc()
     syntax on
 
     silent! colorscheme railscasts " vividchalk theme is good high contrast too
+
+
     autocmd BufEnter * :syntax sync fromstart
 
     " show trailing whitespace
