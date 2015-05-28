@@ -4,6 +4,10 @@ nnoremap <CR> :noh<CR><CR>
 " increase the window size, usually used for windows terminals
 " set lines=60 columns=220
 
+hi LineNr guifg=#AAAAAA guibg=#111111
+if has('gui_running')
+endif
+
 filetype off
 set rtp=~/.vim/bundle/vundle/,~/.vim,$VIMRUNTIME
 let g:snippets_dir='~/dotfiles/snippets/'
@@ -23,6 +27,8 @@ call vundle#rc()
     Bundle 'kchmck/vim-coffee-script'
     Bundle 'scrooloose/nerdcommenter'
     Bundle 'scrooloose/nerdtree'
+    " handlebars and mustache support
+    Bundle 'mustache/vim-mustache-handlebars'
     " Bundle 'vim-scripts/JavaScript-Indent'
     Bundle 'vim-scripts/Javascript-Indentation'
     Bundle 'vim-scripts/jsbeautify'

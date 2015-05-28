@@ -24,7 +24,7 @@ defbce "on"
 chdir
 
 # TODO: REPLACE THIS with the path to your redis installation.
-chdir /home/subev/work/redis-3.0.1/src  # eg. dev/redis-2.8.13/src
+chdir /users/petur/work/redis-3.0.1/src  # eg. dev/redis-2.8.13/src
 screen -t "redis" 6
 # Using the stuff command is preferable to just running the command, since this
 # enters it into command history. If it fails, you can relaunch by pressing up
@@ -33,7 +33,7 @@ stuff './redis-server'
 
 
 # TODO: REPLACE THIS with the path to your leanplum git repository.
-chdir /home/subev/work/Leanplum  # eg. src/leanplum
+chdir /users/petur/work/Leanplum  # eg. src/leanplum
 screen -t "sh" 1
 
 chdir Tools
