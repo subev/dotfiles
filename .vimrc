@@ -26,7 +26,7 @@ call vundle#rc()
     Bundle 'scrooloose/nerdcommenter'
     Bundle 'scrooloose/nerdtree'
     "use leader-r to navigate to current file in nerdtree
-    map <leader>r :NERDTreeFind<cr>
+    map <leader>r :NERDTreeFind<cr>zz
 
 
     " handlebars and mustache support
