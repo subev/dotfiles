@@ -1,0 +1,85 @@
+# the pattern matching is so badly fucked up that it is easier to write it like this instead of struggling with bugs about minified js files
+AIR SDK/
+Analysis/
+Android/
+CommerceDemo.xcworkspace/
+CommerceDemo/
+Compute/
+Fonts/
+HaxeTest.xcworkspace/
+HaxeTest/
+Images/
+install_applications/
+IOS Experimental/
+iOS SDK/
+JavaCommon/
+JavaServer/
+JobServer/
+MyProject/
+MyProjectTests/
+NodeServer/
+ReportsServer/
+Scrapers/
+SparkAnalytics/
+TaskRabbit Demo/
+Tools/
+Unity SDK/
+veency/
+Wordpress/
+
+third_party/
+Server/static/landing/html/
+
+templates/pages/
+pipeline/ui/
+
+mapreduce/
+
+js/externs/
+
+Server/static/js/tests/qunit/
+
+Server/static/dashboard-new/js/libraries/
+
+#not working again
+Server/static/landing/js/plugin_*\.js
+
+Server/static/iosdocs/html/
+Server/static/landing/js/plugin_scrollr_core.js
+Server/static/landing/js/plugin_accordion.js
+Server/static/landing/js/plugin_carousel.js
+Server/static/landing/js/plugin_custom_tooltip.js
+Server/static/landing/js/plugin_fitsvids.js
+Server/static/landing/js/plugin_hammer.js
+Server/static/landing/js/plugin_mobile_navigation.js
+Server/static/landing/js/plugin_mousewheel.js
+Server/static/landing/js/plugin_open_close.js
+Server/static/landing/js/plugin_placeholder.js
+Server/static/landing/js/plugin_popup.js
+Server/static/landing/js/plugin_same_height.js
+Server/static/landing/js/plugin_scrollr_core.js
+Server/static/landing/js/plugin_slide_show.js
+Server/static/landing/js/plugin_smooth_scroll.js
+Server/static/landing/js/plugin_stretch.js
+Server/static/landing/js/plugin_stripes_creator.js
+
+*.min.js
+Server/*.min.js
+Server/*/*.min.js
+Server/*/*/*.min.js
+Server/*/*/*/*.min.js
+Server/*/*/*/*/*.min.js
+Server/*/*/*/*/*/*.min.js
+Server/*/*/*/*/*/*/*.min.js
+Server/*/*/*/*/*/*/*/*.min.js
+Server/*/*/*/*/*/*/*/*/*.min.js
+Server/*/*/*/*/*/*/*/*/*/*.min.js
+
+*.min.css
+*/*.min.css
+*/*/*.min.css
+*/*/*/*.min.css
+*/*/*/*/*.min.css
+*/*/*/*/*/*.min.css
+*/*/*/*/*/*/*.min.css
+*/*/*/*/*/*/*/*.min.css
