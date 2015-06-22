@@ -31,12 +31,7 @@ screen -t "redis" 6
 # and enter.
 stuff './redis-server'
 
-
-# TODO: REPLACE THIS with the path to your leanplum git repository.
-chdir /users/petur/work/Leanplum  # eg. src/leanplum
-screen -t "sh" 1
-
-chdir Tools
+chdir /users/petur/work/Leanplum//Tools
 screen -t "engine" 2
 stuff './run_devserver'
 
@@ -48,9 +43,15 @@ screen -t "node/devsocket" 4
 stuff 'node main.js'
 
 chdir ../Server
-screen -t "grunt/js-comp" 5
+screen -t "grunt-main" 5
+stuff 'grunt'
+# TODO: REPLACE THIS with the path to your leanplum git repository.
+
+chdir static/landing
+screen -t "grunt-landing" 5
 stuff 'grunt'
 
-chdir ..
-screen -t "vim" 0
-stuff "vim\015"
+#
+chdir /users/petur/work/Leanplum/Server # eg. src/leanplum
+screen -t "sh" 1
+stuff mvim
