@@ -43,6 +43,14 @@ Server/static/dashboard-new/js/libraries/
 
 #not working again
 Server/static/landing/js/plugin_*\.js
+Server/static/lpc.js
+Server/static/lpc.js.map
+
+Server/static/landing/node_modules/
+Server/static/lpall.js
+Server/static/lpall.js.map
+Server/static/hb_landing.js
+
 
 Server/static/iosdocs/html/
 Server/static/landing/js/plugin_scrollr_core.js
@@ -75,6 +83,9 @@ Server/*/*/*/*/*/*/*/*.min.js
 Server/*/*/*/*/*/*/*/*/*.min.js
 Server/*/*/*/*/*/*/*/*/*/*.min.js
 
+# CSS
+Server/static/css/compiled.css
+Server/static/dashboard-new/css/
 *.min.css
 */*.min.css
 */*/*.min.css
