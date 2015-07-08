@@ -1,5 +1,5 @@
 vbell off
-# defscrollback 10000
+defscrollback 10000
 # # Set the caption on the bottom line
 caption always "%{= kw}%-w%{= wk}%n %t%{-}%+w %-= @%H - %c"
 startup_message off
@@ -29,29 +29,29 @@ screen -t "redis" 6
 # Using the stuff command is preferable to just running the command, since this
 # enters it into command history. If it fails, you can relaunch by pressing up
 # and enter.
-stuff './redis-server'
+stuff "./redis-server"
 
-chdir /users/petur/work/Leanplum//Tools
+chdir /users/petur/work/Leanplum/Tools
 screen -t "engine" 2
-stuff './run_devserver'
+stuff "./run_devserver"
 
 screen -t "reports" 3
-stuff './run_reports_server'
+stuff "./run_reports_server"
 
 chdir ../NodeServer
 screen -t "node/devsocket" 4
-stuff 'node main.js'
+stuff "node main.js"
 
 chdir ../Server
 screen -t "grunt-main" 5
-stuff 'grunt'
+stuff "grunt"
 # TODO: REPLACE THIS with the path to your leanplum git repository.
 
 chdir static/landing
 screen -t "grunt-landing" 5
-stuff 'grunt'
+stuff "grunt"
 
-#
-chdir /users/petur/work/Leanplum/Server # eg. src/leanplum
+chdir /users/petur/work/Leanplum
 screen -t "sh" 1
-stuff mvim
+stuff 'mvim'
+chdir ./Server

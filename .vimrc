@@ -33,6 +33,7 @@ call vundle#rc()
     Bundle 'mustache/vim-mustache-handlebars'
     " Bundle 'vim-scripts/JavaScript-Indent'
     Bundle 'vim-scripts/Javascript-Indentation'
+    Bundle 'othree/yajs.vim'
     Bundle 'vim-scripts/jsbeautify'
     "respect gitignore files
     "Bundle 'vim-scripts/gitignore'
@@ -53,6 +54,10 @@ call vundle#rc()
 
     Bundle 'mileszs/ack.vim'
     Bundle 'rking/ag.vim'
+
+    "show CSS color based on colorcodes
+    Bundle 'skammer/vim-css-color'
+
 
     Bundle 'tpope/vim-fugitive'
     Bundle 'tpope/vim-unimpaired'
@@ -152,7 +157,7 @@ call vundle#rc()
     "nnoremap <leader><Space> :YRShow<CR>
     "inoremap <leader><Space> :YRShow<CR>
 
-    " bind K to grep word under the cursor
+    " bind K to search grep word under the cursor
     nnoremap K :grep! "\b<C-R><C-W>\b"<CR>:cw<CR><CR>
 
     " center screen
@@ -220,4 +225,7 @@ call vundle#rc()
     au BufRead,BufNewFile *.html    setlocal filetype=html.javascript
     autocmd BufReadPost *cshtml set filetype=html
     autocmd BufReadPost Jakefile set filetype=javascript
+
+    " associate *.foo with php filetype
+    au BufRead,BufNewFile *.es6 setfiletype javascript
 " }
