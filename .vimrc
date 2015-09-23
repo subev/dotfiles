@@ -25,8 +25,6 @@ call vundle#rc()
     Bundle 'kchmck/vim-coffee-script'
     Bundle 'scrooloose/nerdcommenter'
     Bundle 'scrooloose/nerdtree'
-    "use leader-r to navigate to current file in nerdtree
-    map <leader>r :NERDTreeFind<cr>zz
 
 
     " handlebars and mustache support
@@ -52,10 +50,11 @@ call vundle#rc()
     Bundle 'digitaltoad/vim-jade'
     Bundle 'duganchen/vim-soy'
 
-    Bundle 'mileszs/ack.vim'
+    " searching
+    " Bundle 'mileszs/ack.vim'
     Bundle 'rking/ag.vim'
 
-    "show CSS color based on colorcodes
+    "show CSS color based on colorcodes, add support for sass files
     Bundle 'skammer/vim-css-color'
 
 
@@ -146,8 +145,10 @@ call vundle#rc()
     " toggle NerdTree
     noremap <leader>] :NERDTreeToggle<CR>
 
-    " search smart with ag
-    noremap <leader>s :Ag -S 
+    " search with ag
+    noremap <leader>s :Ag 
+    "use leader-r to navigate to current file in nerdtree
+    map <leader>r :NERDTreeFind<cr>zz
 
     " quick-paste last yanked text
     noremap <C-p> "0p
@@ -181,7 +182,6 @@ call vundle#rc()
 
 " Coding {
     set iskeyword+=_,$,@,%,# 
-    set guifont=Consolas:h10
     " hide the toolbar and the menu of GVIM
     set guioptions-=m
     set guioptions-=T

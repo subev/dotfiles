@@ -52,6 +52,13 @@ Server/static/lpall.js.map
 Server/static/hb_landing.js
 
 
+Server/static/js/angular/app-v2.js
+Server/static/js/angular/app-v2.js.map
+Server/static/js/angular/controllers/*.map
+Server/static/js/angular/controllers/*.js
+Server/static/js/angular/infrastructure/*.js
+Server/static/js/angular/infrastructure/*.map
+
 Server/static/iosdocs/html/
 Server/static/landing/js/plugin_scrollr_core.js
 Server/static/landing/js/plugin_accordion.js
@@ -84,7 +91,9 @@ Server/*/*/*/*/*/*/*/*/*.min.js
 Server/*/*/*/*/*/*/*/*/*/*.min.js
 
 # CSS
+Server/static/css/lp.css
 Server/static/css/compiled.css
+Server/static/css/style-new.css
 Server/static/dashboard-new/css/
 *.min.css
 */*.min.css

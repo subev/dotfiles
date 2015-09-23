@@ -1,6 +1,10 @@
 # ~/.bashrc: executed by bash(1) for non-login shells.
 # see /usr/share/doc/bash/examples/startup-files (in the package bash-doc)
 # for examples
+PATH="/usr/local/opt/coreutils/libexec/gnubin:$PATH"
+MANPATH="/usr/local/opt/coreutils/libexec/gnuman:$MANPATH"
+
+alias git='hub'
 alias g='git'
 # If not running interactively, don't do anything
 [ -z "$PS1" ] && return
@@ -139,5 +143,9 @@ fi
 # sources /etc/bash.bashrc).
 if [ -f /etc/bash_completion ] && ! shopt -oq posix; then
     . /etc/bash_completion
+fi
+
+if [ -f ~/.git-completion.bash ]; then
+    . ~/.git-completion.bash
 fi
 
