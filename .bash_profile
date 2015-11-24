@@ -1,3 +1,4 @@
+export JAVA_HOME=$(/usr/libexec/java_home -v 1.7)
 
 # The next line updates PATH for the Google Cloud SDK.
 source '/Users/petur/google-cloud-sdk/path.bash.inc'

@@ -24,12 +24,12 @@ defbce "on"
 chdir
 
 # TODO: REPLACE THIS with the path to your redis installation.
-chdir /users/petur/work/redis-3.0.1/src  # eg. dev/redis-2.8.13/src
-screen -t "redis" 6
+# chdir /users/petur/work/redis-3.0.1/src  # eg. dev/redis-2.8.13/src
+# screen -t "redis" 6
 # Using the stuff command is preferable to just running the command, since this
 # enters it into command history. If it fails, you can relaunch by pressing up
 # and enter.
-stuff "./redis-server"
+#stuff "./redis-server"
 
 chdir /users/petur/work/Leanplum/Tools
 screen -t "engine" 2
