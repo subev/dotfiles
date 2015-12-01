@@ -229,3 +229,10 @@ call vundle#rc()
     " associate *.foo with php filetype
     au BufRead,BufNewFile *.es6 setfiletype javascript
 " }
+
+" auto reload the vimrc when it is saved
+
+augroup reload_vimrc " {
+    autocmd!
+    autocmd BufWritePost $MYVIMRC source $MYVIMRC
+augroup END " }

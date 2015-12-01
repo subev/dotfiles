@@ -2,6 +2,7 @@
 AIR SDK/
 Analysis/
 Android/
+AppEngine/
 CommerceDemo.xcworkspace/
 CommerceDemo/
 Compute/
@@ -92,6 +93,7 @@ Server/*/*/*/*/*/*/*/*/*/*.min.js
 
 # CSS
 Server/static/css/lp.css
+Server/static/css/dashboard-new.css
 Server/static/css/compiled.css
 Server/static/css/style-new.css
 Server/static/dashboard-new/css/

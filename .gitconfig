@@ -5,6 +5,7 @@
 [core]
   whitespace = cr-at-eol
   editor = vim
+  ;autocrlf = input
 [http]
   sllverify = false
   sslverify = false
@@ -15,21 +16,23 @@
 [push]
   default = tracking
 [alias]
+  spush = push --recurse-submodules=on-demand
+  supdate = submodule update --remote --rebase
   su = submodule update
   c = commit -m
   co = checkout
   a = add
-  ci = commit
-  cc = commit -am
-  ca = commit --amend
-  copy = "!git checkout production && git pull --rebase && git cherry-pick master && git push && git checkout master"
+  cc = commit --all -m
+  ca = commit --all --amend
   d = diff
   dic = diff --cached
   p = pull
-  pl = "!f() { git fetch; git rebase --preserve-merges origin/`git rev-parse --abbrev-ref HEAD` ; }; f"
+  pl = pull --rebase
   ps = push
   s = status
   st = status
+  br = branch
+  b = branch
   out = log origin..HEAD
   qpl = log --pretty=\"%Cblue%h%Creset %Cgreen[%cr]%Creset %s\" origin/production..origin/master
   ls = log --graph --pretty=format:'%Cred%h%Creset -%C(yellow)%d%Creset %s %Cgreen(%cr)%Creset %Cblue%an%Creset' --abbrev-commit --date=relative
@@ -49,3 +52,4 @@
   prompt = false
 [rerere]
   enabled = true
+[status]
