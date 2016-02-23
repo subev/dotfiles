@@ -38,6 +38,7 @@ call vundle#rc()
 
     " improvement instead of ctrlp
     " Bundle 'sjbach/lusty'
+    Bundle 'leafgarland/typescript-vim'
     Bundle 'underlog/vim-PairTools'
     Bundle 'mattn/emmet-vim'
     " Bundle 'cespare/vim-bclose'
@@ -57,7 +58,6 @@ call vundle#rc()
     "show CSS color based on colorcodes, add support for sass files
     Bundle 'skammer/vim-css-color'
 
-
     Bundle 'tpope/vim-fugitive'
     Bundle 'tpope/vim-unimpaired'
     Bundle 'tpope/vim-surround'
@@ -65,12 +65,19 @@ call vundle#rc()
     let g:ragtag_global_maps = 1
 
     Bundle 'kien/ctrlp.vim'
-
-    " let g:ctrlp_user_command = ['.git/', 'git --git-dir=%s/.git ls-files -oc --exclude-standard']
+    let g:ctrlp_max_files=0
+    "let g:ctrlp_user_command = ['.git/', 'git --git-dir=%s/.git ls-files -oc --exclude-standard']
     "let g:ctrlp_regexp = 1
     "let g:ctrlp_working_path_mode = 1 " Smart path mode
     "let g:ctrlp_mru_files = 2 " Enable Most Recently Used files feature
     "let g:ctrlp_jump_to_buffer = 3 " Jump to tab AND buffer if already open
+
+    Bundle 'majutsushi/tagbar'
+    nmap <F3> :TagbarToggle<CR>
+    let g:tagbar_compact = 1
+    let g:tagbar_autofocus = 1
+    let g:tagbar_foldlevel = 1
+
 
     set statusline=%F%m%r%h%w[%L][%{&ff}]%y[%p%%][%04l,%04v]
     set laststatus=2
@@ -173,6 +180,9 @@ call vundle#rc()
     nnoremap <C-e> 3<C-e>
     nnoremap <C-y> 3<C-y>
 
+    "free the mapping <C-i> taken by snipmate
+    "unmap <C-i>
+
     " tag auto-close with c-space
     imap <C-Space> <C-X><C-O>
 
@@ -225,6 +235,7 @@ call vundle#rc()
     au BufRead,BufNewFile *.html    setlocal filetype=html.javascript
     autocmd BufReadPost *cshtml set filetype=html
     autocmd BufReadPost Jakefile set filetype=javascript
+    autocmd BufReadPost *.json set filetype=javascript
 
     " associate *.foo with php filetype
     au BufRead,BufNewFile *.es6 setfiletype javascript

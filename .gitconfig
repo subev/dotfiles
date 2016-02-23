@@ -47,7 +47,7 @@
   smudge = git lfs smudge %f
   required = true
 [merge]
-  tool = vimdiff
+	tool = gvimdiff
   conflictstyle = diff3
   prompt = false
 [rerere]

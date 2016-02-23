@@ -2,6 +2,12 @@ snippet func
 	function(${1}) {
 		${2}
 	}
+# exports mechanism to handle browsers and nodejs cases
+snippet exp
+	(function (exports) {
+		${1}
+		exports.${2:foo} = ${3:foo};
+	}((typeof window === 'undefined') ? module.exports : window));
 snippet ()
 	(${1}) => {
 		${2}
