@@ -41,6 +41,7 @@ js/externs/
 Server/static/js/tests/qunit/
 
 Server/static/dashboard-new/js/libraries/
+Server/admin/static/smoothness/
 
 #not working again
 Server/static/landing/js/plugin_*\.js

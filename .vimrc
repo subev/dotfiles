@@ -12,59 +12,58 @@ let g:snippets_dir='~/dotfiles/snippets/'
 call vundle#rc()
 
 " Plugins {
-    Bundle 'gmarik/vundle'
+    Plugin 'gmarik/vundle'
 
     " themes
-    Bundle 'Railscasts-Theme-GUIand256color'
-    Bundle 'flazz/vim-colorschemes'
+    Plugin 'Railscasts-Theme-GUIand256color'
+    Plugin 'flazz/vim-colorschemes'
 
     "match tags and navigate through %
-    Bundle 'tmhedberg/matchit'
-    Bundle 'groenewege/vim-less'
-    Bundle 'msanders/snipmate.vim'
-    Bundle 'kchmck/vim-coffee-script'
-    Bundle 'scrooloose/nerdcommenter'
-    Bundle 'scrooloose/nerdtree'
+    Plugin 'tmhedberg/matchit'
+    Plugin 'groenewege/vim-less'
+    Plugin 'msanders/snipmate.vim'
+    Plugin 'kchmck/vim-coffee-script'
+    Plugin 'scrooloose/nerdcommenter'
+    Plugin 'scrooloose/nerdtree'
+    "Plugin 'pangloss/vim-javascript'
+    Plugin 'mxw/vim-jsx'
 
 
     " handlebars and mustache support
-    Bundle 'mustache/vim-mustache-handlebars'
-    " Bundle 'vim-scripts/JavaScript-Indent'
-    Bundle 'vim-scripts/Javascript-Indentation'
-    Bundle 'othree/yajs.vim'
-    Bundle 'vim-scripts/jsbeautify'
+    Plugin 'mustache/vim-mustache-handlebars'
+    Plugin 'othree/yajs.vim'
     "respect gitignore files
-    "Bundle 'vim-scripts/gitignore'
+    "Plugin 'vim-scripts/gitignore'
 
     " improvement instead of ctrlp
-    " Bundle 'sjbach/lusty'
-    Bundle 'leafgarland/typescript-vim'
-    Bundle 'underlog/vim-PairTools'
-    Bundle 'mattn/emmet-vim'
-    " Bundle 'cespare/vim-bclose'
+    " Plugin 'sjbach/lusty'
+    Plugin 'leafgarland/typescript-vim'
+    Plugin 'underlog/vim-PairTools'
+    Plugin 'mattn/emmet-vim'
+    " Plugin 'cespare/vim-bclose'
     " Vim diff plugin
-    "Bundle 'airblade/vim-gitgutter'
+    "Plugin 'airblade/vim-gitgutter'
     " Ditto like registry tool
-    " Bundle 'vim-scripts/YankRing.vim'
+    " Plugin 'vim-scripts/YankRing.vim'
     " Mark down highlight and other niceties
-    "Bundle 'tpope/vim-markdown'
-    Bundle 'digitaltoad/vim-jade'
-    Bundle 'duganchen/vim-soy'
+    "Plugin 'tpope/vim-markdown'
+    Plugin 'digitaltoad/vim-jade'
+    Plugin 'duganchen/vim-soy'
 
     " searching
-    " Bundle 'mileszs/ack.vim'
-    Bundle 'rking/ag.vim'
+    " Plugin 'mileszs/ack.vim'
+    Plugin 'rking/ag.vim'
 
     "show CSS color based on colorcodes, add support for sass files
-    Bundle 'skammer/vim-css-color'
+    Plugin 'skammer/vim-css-color'
 
-    Bundle 'tpope/vim-fugitive'
-    Bundle 'tpope/vim-unimpaired'
-    Bundle 'tpope/vim-surround'
-    Bundle 'tpope/vim-ragtag'
+    Plugin 'tpope/vim-fugitive'
+    Plugin 'tpope/vim-unimpaired'
+    Plugin 'tpope/vim-surround'
+    Plugin 'tpope/vim-ragtag'
     let g:ragtag_global_maps = 1
 
-    Bundle 'kien/ctrlp.vim'
+    Plugin 'kien/ctrlp.vim'
     let g:ctrlp_max_files=0
     "let g:ctrlp_user_command = ['.git/', 'git --git-dir=%s/.git ls-files -oc --exclude-standard']
     "let g:ctrlp_regexp = 1
@@ -72,7 +71,7 @@ call vundle#rc()
     "let g:ctrlp_mru_files = 2 " Enable Most Recently Used files feature
     "let g:ctrlp_jump_to_buffer = 3 " Jump to tab AND buffer if already open
 
-    Bundle 'majutsushi/tagbar'
+    Plugin 'majutsushi/tagbar'
     nmap <F3> :TagbarToggle<CR>
     let g:tagbar_compact = 1
     let g:tagbar_autofocus = 1
@@ -81,9 +80,9 @@ call vundle#rc()
 
     set statusline=%F%m%r%h%w[%L][%{&ff}]%y[%p%%][%04l,%04v]
     set laststatus=2
-    Bundle 'Lokaltog/vim-powerline'
+    Plugin 'Lokaltog/vim-powerline'
     let g:Powerline_symbols = 'fancy'
-    Bundle 'Lokaltog/vim-easymotion'
+    Plugin 'Lokaltog/vim-easymotion'
 " }
 
   " The Silver Searcher
