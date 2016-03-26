@@ -26,6 +26,7 @@ call vundle#rc()
     Plugin 'scrooloose/nerdcommenter'
     Plugin 'scrooloose/nerdtree'
     "Plugin 'pangloss/vim-javascript'
+    Plugin 'scrooloose/syntastic'
     Plugin 'mxw/vim-jsx'
 
 
@@ -83,6 +84,9 @@ call vundle#rc()
     Plugin 'Lokaltog/vim-powerline'
     let g:Powerline_symbols = 'fancy'
     Plugin 'Lokaltog/vim-easymotion'
+
+    Plugin 'jlanzarotta/bufexplorer'
+    nnoremap ,b :BufExplorer<CR>
 " }
 
   " The Silver Searcher
@@ -97,6 +101,16 @@ call vundle#rc()
     let g:ctrlp_use_caching = 0
 
   endif
+
+  " Syntastic checkers
+  let g:syntastic_error_symbol = "✗"
+  let g:syntastic_warning_symbol = "⚠"
+  " make sure  you have eslint/jshint installed globally from npm
+  let g:syntastic_javascript_checkers = ["eslint"]
+
+  let g:syntastic_always_populate_loc_list = 1
+  let g:syntastic_auto_loc_list = 1
+
 
 " General {
     set hidden
@@ -143,6 +157,9 @@ call vundle#rc()
 
     noremap <S-CR> <Esc>
 
+    "sudo overwrite protect file
+    cmap w!! w !sudo tee > /dev/null %
+
     set backspace=indent,eol,start " make backspace behave consistently with other apps
 
     " delete trailing whitespace with F5
@@ -154,7 +171,7 @@ call vundle#rc()
     " search with ag
     noremap <leader>s :Ag 
     "use leader-r to navigate to current file in nerdtree
-    map <leader>r :NERDTreeFind<cr>zz
+    noremap <leader>r :NERDTreeFind<CR>zz
 
     " quick-paste last yanked text
     noremap <C-p> "0p
@@ -166,6 +183,9 @@ call vundle#rc()
 
     " bind K to search grep word under the cursor
     nnoremap K :grep! "\b<C-R><C-W>\b"<CR>:cw<CR><CR>
+
+    "replace word under cursor
+    nnoremap ,r :%s/\<<C-r><C-w>\>//g<Left><Left>
 
     " center screen
     noremap <Space> zz
@@ -186,7 +206,10 @@ call vundle#rc()
     imap <C-Space> <C-X><C-O>
 
     " close buffer
-    nmap <C-W>! <Plug>Kwbd
+    nnoremap <C-W>! <Plug>Kwbd
+
+    noremap <leader>ve :vsplit $MYVIMRC<CR>
+    noremap <leader>vu :source %<CR>
 " }
 
 " Coding {
@@ -202,6 +225,8 @@ call vundle#rc()
 
     silent! colorscheme railscasts " vividchalk theme is good high contrast too
 
+    set completeopt=longest,menuone
+    inoremap <expr> <CR> pumvisible() ? "\<C-y>" : "\<C-g>u\<CR>"
 
     autocmd BufEnter * :syntax sync fromstart
 
@@ -232,17 +257,33 @@ call vundle#rc()
 
     au FileType gitcommit           setlocal spell
     au BufRead,BufNewFile *.html    setlocal filetype=html.javascript
-    autocmd BufReadPost *cshtml set filetype=html
-    autocmd BufReadPost Jakefile set filetype=javascript
-    autocmd BufReadPost *.json set filetype=javascript
-
-    " associate *.foo with php filetype
-    au BufRead,BufNewFile *.es6 setfiletype javascript
+    au BufReadPost *cshtml set filetype=html
+    au BufReadPost Jakefile set filetype=javascript
+    au BufReadPost *.json set filetype=javascript
+    au BufRead,BufNewFile *.es6 set filetype=javascript
+    "disable continuous comments vim
+    au FileType * setlocal formatoptions-=c formatoptions-=r formatoptions-=o
 " }
 
 " auto reload the vimrc when it is saved
 
 augroup reload_vimrc " {
-    autocmd!
-    autocmd BufWritePost $MYVIMRC source $MYVIMRC
+    au!
+    au BufWritePost $MYVIMRC source $MYVIMRC
 augroup END " }
+
+
+" workspace specific options
+
+function! WorkSpaceSettings()
+  let l:path = expand('%:p')
+  if l:path =~ '/Leanplum/'
+    let b:syntastic_checkers = ["jshint"]
+    iabbrev @@@ 
+          \<CR>// All rights reserved. Leanplum. 2016.
+          \<CR>Author: Petur Subev (petur@leanplum.com)
+          \<CR>
+  endif
+endfunction
+
+au! BufReadPost,BufNewFile * call WorkSpaceSettings()

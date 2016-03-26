@@ -14,6 +14,8 @@ export PATH=$HOME/google-cloud-sdk/platform/google_appengine:$PATH
 
 source $HOME/work/arcanist/resources/shell/bash-completion
 
+source $HOME/.bashrc
+
 export EDITOR=vim
 
 if [ -f ~/.git-completion.bash ]; then
@@ -21,3 +23,4 @@ if [ -f ~/.git-completion.bash ]; then
 fi
 
 export PYTHONPATH=/usr/local/lib/python2.7/site-packages:$PYTHONPATH
+eval $(thefuck --alias)
