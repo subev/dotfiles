@@ -51,6 +51,9 @@ call vundle#rc()
     Plugin 'digitaltoad/vim-jade'
     Plugin 'duganchen/vim-soy'
 
+    "underline word under cursor
+    Plugin 'itchyny/vim-cursorword'
+
     " searching
     " Plugin 'mileszs/ack.vim'
     Plugin 'rking/ag.vim'
@@ -183,12 +186,13 @@ call vundle#rc()
 
     " bind K to search grep word under the cursor
     nnoremap K :grep! "\b<C-R><C-W>\b"<CR>:cw<CR><CR>
+    vnoremap K <leader>s`<,`><CR>
 
     "replace word under cursor
     nnoremap ,r :%s/\<<C-r><C-w>\>//g<Left><Left>
 
     " center screen
-    noremap <Space> zz
+    noremap <Space> zz:nohl<CR>
 
     " indent!
     nnoremap <Tab> >>
@@ -210,6 +214,9 @@ call vundle#rc()
 
     noremap <leader>ve :vsplit $MYVIMRC<CR>
     noremap <leader>vu :source %<CR>
+
+    vnoremap H ^
+    nnoremap H ^
 " }
 
 " Coding {
@@ -283,6 +290,13 @@ function! WorkSpaceSettings()
           \<CR>// All rights reserved. Leanplum. 2016.
           \<CR>Author: Petur Subev (petur@leanplum.com)
           \<CR>
+
+    if l:path =~ '.*\.py$'
+      setlocal tabstop=2
+      setlocal shiftwidth=2
+      setlocal softtabstop=2
+    endif
+
   endif
 endfunction
 

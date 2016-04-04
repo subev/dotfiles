@@ -32,26 +32,26 @@ chdir
 #stuff "./redis-server"
 
 chdir /users/petur/work/Leanplum/Tools
-screen -t "engine" 2
+screen -t "engine" 0
 stuff "./run_devserver"
 
-screen -t "reports" 3
+screen -t "reports" 1
 stuff "./run_reports_server"
 
 chdir ../NodeServer
-screen -t "node/devsocket" 4
+screen -t "node/devsocket" 2
 stuff "node main.js"
 
 chdir ../Server
-screen -t "grunt-main" 5
-stuff "grunt"
+screen -t "grunt-main" 3
+stuff "grunt prod && grunt default:watch"
 # TODO: REPLACE THIS with the path to your leanplum git repository.
 
 chdir static/landing
-screen -t "grunt-landing" 5
+screen -t "grunt-landing" 4
 stuff "grunt"
 
 chdir /users/petur/work/Leanplum
-screen -t "sh" 1
+screen -t "sh" 5
 stuff 'mvim'
 chdir ./Server
