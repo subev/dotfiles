@@ -113,6 +113,8 @@ call vundle#rc()
 
   let g:syntastic_always_populate_loc_list = 1
   let g:syntastic_auto_loc_list = 1
+  "BufExplorer show relative paths by default
+  let g:bufExplorerShowRelativePath=1  " Show relative paths.
 
 
 " General {
@@ -217,6 +219,14 @@ call vundle#rc()
 
     vnoremap H ^
     nnoremap H ^
+
+    " Settings for VimDiff as MergeTool
+    if &diff
+      noremap <leader>1 :diffget LOCAL<CR>
+      noremap <leader>2 :diffget BASE<CR>
+      noremap <leader>3 :diffget REMOTE<CR>
+      set colorscheme darkBlue
+    endif
 " }
 
 " Coding {
@@ -286,10 +296,9 @@ function! WorkSpaceSettings()
   let l:path = expand('%:p')
   if l:path =~ '/Leanplum/'
     let b:syntastic_checkers = ["jshint"]
-    iabbrev @@@ 
-          \<CR>// All rights reserved. Leanplum. 2016.
-          \<CR>Author: Petur Subev (petur@leanplum.com)
-          \<CR>
+    iabbrev @@@ // All rights reserved. Leanplum. 2016.
+          \<CR>// Author: Petur Subev (petur@leanplum.com)
+          \<CR>// 
 
     if l:path =~ '.*\.py$'
       setlocal tabstop=2
