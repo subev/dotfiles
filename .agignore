@@ -3,6 +3,7 @@ AIR SDK/
 Analysis/
 Android/
 #AppEngine/
+AppleSDK/
 CommerceDemo.xcworkspace/
 CommerceDemo/
 Compute/
@@ -19,7 +20,7 @@ JobServer/
 MyProject/
 MyProjectTests/
 NodeServer/
-ReportsServer/
+#ReportsServer/
 Scrapers/
 SparkAnalytics/
 TaskRabbit Demo/
@@ -28,8 +29,10 @@ Unity SDK/
 veency/
 Wordpress/
 
-third_party/
+*third_party*
+*third-party*
 Server/static/landing/html/
+Server/static/javadoc
 
 templates/pages/
 pipeline/ui/
@@ -38,7 +41,17 @@ mapreduce/
 
 js/externs/
 
+#dashboard2 stuff
+__build__
+node_modules
+yarn.lock
+
+
+Server/gae_mini_profiler/
+AppEngine/appengine-common/src/main/resources/com/google/
+AppEngine/appengine-common/target/
 Server/static/js/tests/qunit/
+Server/sourcemaps/
 
 Server/static/dashboard-new/js/libraries/
 Server/admin/static/smoothness/
@@ -46,12 +59,21 @@ Server/admin/static/smoothness/
 #not working again
 Server/static/landing/js/plugin_*\.js
 Server/static/lpc.js
-Server/static/lpc.js.map
+Server/static/lp-all.js.map
 
 Server/static/landing/node_modules/
 Server/static/lpall.js
 Server/static/lpall.js.map
 Server/static/hb_landing.js
+
+#all in Server again
+Server/boto
+Server/httplib2
+Server/oauth2client
+static/font
+static/generated
+phonenumbers
+airdocs
 
 
 Server/static/js/angular/app-v2.js
@@ -61,7 +83,7 @@ Server/static/js/angular/controllers/*.js
 Server/static/js/angular/infrastructure/*.js
 Server/static/js/angular/infrastructure/*.map
 
-Server/static/iosdocs/html/
+Server/static/iosdocs
 Server/static/landing/js/plugin_scrollr_core.js
 Server/static/landing/js/plugin_accordion.js
 Server/static/landing/js/plugin_carousel.js
@@ -79,6 +101,12 @@ Server/static/landing/js/plugin_slide_show.js
 Server/static/landing/js/plugin_smooth_scroll.js
 Server/static/landing/js/plugin_stretch.js
 Server/static/landing/js/plugin_stripes_creator.js
+
+Server/static/lp-all.js
+Server/static/lp-all.min.js
+Server/static/lp-all.min.js.map
+Server/static/ng-access.min.js.map
+Server/static/ng-all.min.js.map
 
 *.min.js
 Server/*.min.js

@@ -24,3 +24,5 @@ fi
 
 export PYTHONPATH=/usr/local/lib/python2.7/site-packages:$PYTHONPATH
 eval $(thefuck --alias)
+
+test -e "${HOME}/.iterm2_shell_integration.bash" && source "${HOME}/.iterm2_shell_integration.bash"

@@ -35,23 +35,20 @@ chdir /users/petur/work/Leanplum/Tools
 screen -t "engine" 0
 stuff "./run_devserver"
 
-screen -t "reports" 1
-stuff "./run_reports_server"
-
 chdir ../NodeServer
-screen -t "node/devsocket" 2
+screen -t "node/devsocket" 1
 stuff "node main.js"
 
 chdir ../Server
-screen -t "grunt-main" 3
+screen -t "grunt" 2
 stuff "grunt prod && grunt default:watch"
 # TODO: REPLACE THIS with the path to your leanplum git repository.
 
-chdir static/landing
-screen -t "grunt-landing" 4
-stuff "grunt"
+chdir dashboard2
+screen -t "webpack" 3
+stuff "yarn start"
 
 chdir /users/petur/work/Leanplum
-screen -t "sh" 5
+screen -t "sh" 4
 stuff 'mvim'
 chdir ./Server

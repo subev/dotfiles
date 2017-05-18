@@ -5,13 +5,14 @@
 [core]
   whitespace = cr-at-eol
   editor = vim
+	excludesfile = /Users/petur/.gitignore_global
   ;autocrlf = input
 [http]
   sllverify = false
   sslverify = false
 [user]
-  name = Petur Subev
-  email = petur.subev@gmail.com
+	name = Petur Subev
+	email = petur.subev@gmail.com
   signingkey = 7FEF56E6
 [push]
   default = tracking
@@ -24,7 +25,6 @@
   a = add
   cc = commit --all -m
   ca = commit --all --amend
-  d = diff
   dic = diff --cached
   p = pull
   pl = pull --rebase
@@ -41,15 +41,27 @@
   eu = "!f() { git ls-files --unmerged | cut -f2 | sort -u ; }; vim `f`"
   au = "!f() { git ls-files --unmerged | cut -f2 | sort -u ; }; git add `f`"
   cl = "!git co src/kendo.editor.js && git co wrappers/mvc/demos/Kendo.Mvc.Examples/App_Data/"
+  d = "!f() { [ -z "$GIT_PREFIX" ] || cd "$GIT_PREFIX" '\
+    '&& git diff --color "$@" | diff-so-fancy  | less --tabs=4 -RFX; }; f"
 
 [filter "lfs"]
   clean = git lfs clean %f
   smudge = git lfs smudge %f
   required = true
 [merge]
-	tool = gvimdiff
-  conflictstyle = diff3
+	tool = gvim
+  ;conflictstyle = diff3
   prompt = false
 [rerere]
   enabled = true
 [status]
+[difftool "sourcetree"]
+	cmd = opendiff \"$LOCAL\" \"$REMOTE\"
+	path = 
+[mergetool "sourcetree"]
+	cmd = /Users/petur/Applications/SourceTree.app/Contents/Resources/opendiff-w.sh \"$LOCAL\" \"$REMOTE\" -ancestor \"$BASE\" -merge \"$MERGED\"
+	trustExitCode = true
+[commit]
+	template = /Users/petur/.stCommitMsg
+[mergetool "mvimdiff"]
+  cmd = mvim -d \"$LOCAL\" \"$BASE\" \"$REMOTE\"

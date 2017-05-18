@@ -5,7 +5,7 @@ nnoremap <CR> :noh<CR><CR>
 " set lines=60 columns=220
 
 hi LineNr guifg=#AAAAAA guibg=#111111
-
+set guifont=Menlo\ for\ Powerline:h14
 filetype off
 set rtp=~/.vim/bundle/vundle/,~/.vim,$VIMRUNTIME
 let g:snippets_dir='~/dotfiles/snippets/'
@@ -25,18 +25,29 @@ call vundle#rc()
     ""match tags and navigate through %
     Plugin 'tmhedberg/matchit'
     Plugin 'groenewege/vim-less'
+
     Plugin 'msanders/snipmate.vim'
+
     Plugin 'kchmck/vim-coffee-script'
     Plugin 'scrooloose/nerdcommenter'
     Plugin 'scrooloose/nerdtree'
     Plugin 'scrooloose/syntastic'
+    "Plugin 'sekel/vim-vue-syntastic'
     Plugin 'airblade/vim-gitgutter'
+
+    "plugin to create motions with simulteniosely pressed keys(altogether)
+    Plugin 'kana/vim-arpeggio'
 
     "Plugin 'mxw/vim-jsx'
     "let g:jsx_ext_required = 0
 
     " handlebars and mustache support
     Plugin 'mustache/vim-mustache-handlebars'
+
+    "typescript plugins for intellisense
+    Plugin 'shougo/vimproc.vim'
+    Plugin 'quramy/tsuquyomi'
+
     " yet another js syntax
     "Plugin 'othree/yajs.vim'
     " or other js syntax
@@ -71,6 +82,7 @@ call vundle#rc()
 
     "git tools blame, log, view files in other branches
     Plugin 'tpope/vim-fugitive'
+    Plugin 'tpope/vim-rhubarb'
     " change surrounding brancjes
     Plugin 'tpope/vim-surround'
 
@@ -79,13 +91,12 @@ call vundle#rc()
     Plugin 'kien/ctrlp.vim'
     let g:ctrlp_max_files=0
 
-
-
     set statusline=%F%m%r%h%w[%L][%{&ff}]%y[%p%%][%04l,%04v]
     set laststatus=2
 
     Plugin 'vim-airline/vim-airline'
     let g:airline_powerline_fonts = 1
+    let g:airline#parts#ffenc#skip_expected_string='utf-8[unix]'
 
     Plugin 'jlanzarotta/bufexplorer'
     nnoremap ,b :BufExplorer<CR>
@@ -110,6 +121,21 @@ call vundle#rc()
   " make sure  you have eslint/jshint installed globally from npm
   let g:syntastic_javascript_checkers = ["eslint"]
   let g:syntastic_scss_checkers=["scss_lint"]
+  let g:syntastic_vue_checkers=["eslint"]
+
+  let g:tsuquyomi_disable_quickfix = 1
+  let g:syntastic_typescript_checkers = ['tsuquyomi']
+
+  " make use of local eslint !! wohoo
+  let local_eslint = finddir('node_modules', '.;') . '/.bin/eslint'
+  if matchstr(local_eslint, "^\/\\w") == ''
+      let local_eslint = getcwd() . "/" . local_eslint
+  endif
+  if executable(local_eslint)
+      let g:syntastic_javascript_eslint_exec = local_eslint
+      let g:syntastic_vue_eslint_exec = local_eslint
+  endif
+
 
   let g:syntastic_always_populate_loc_list = 1
   let g:syntastic_auto_loc_list = 1
@@ -119,7 +145,9 @@ call vundle#rc()
 " General {
     set hidden
 
-    set clipboard+=unnamed
+    if $TMUX == ''
+      set clipboard+=unnamed
+    endif
     set encoding=utf-8
 
     " do not show folded
@@ -158,7 +186,7 @@ call vundle#rc()
     set ttymouse=xterm2
 " }
 
-" Keyboard {
+" Keybindings {
     noremap <C-S> :w<CR>
     inoremap <C-S> <C-O>:w<CR><Esc>
 
@@ -169,7 +197,7 @@ call vundle#rc()
 
     set backspace=indent,eol,start " make backspace behave consistently with other apps
 
-    " delete trailing whitespace with F5
+    " delete trailing whitespace
     nnoremap <silent> <leader>q :let _s=@/<Bar>:%s/\s\+$//e<Bar>:let @/=_s<Bar>:nohl<CR>
 
     " toggle NerdTree
@@ -187,6 +215,7 @@ call vundle#rc()
     "search with YankRing (Ditto like plugin)
     "nnoremap <leader><Space> :YRShow<CR>
     "inoremap <leader><Space> :YRShow<CR>
+    nnoremap <C-b> :CtrlPMRU<CR>
 
     " bind K to search grep word under the cursor
     nnoremap K :grep! "\b<C-R><C-W>\b"<CR>:cw<CR><CR>
@@ -197,6 +226,12 @@ call vundle#rc()
     "replace word under cursor
     nnoremap ,r :%s/\<<C-r><C-w>\>//g<Left><Left>
 
+    "typescript tools by tsuquyomi
+    nnoremap ,tqf :TsuQuickFix<CR>
+    nnoremap ,ti :TsuImport<CR>
+    nnoremap ,td :TsuDefinition<CR>
+    nnoremap ,tr :TsuRenameSymbol<CR>
+
     "use incsearch plugin
     map /  <Plug>(incsearch-forward)
     map ?  <Plug>(incsearch-backward)
@@ -204,7 +239,11 @@ call vundle#rc()
     nnoremap ,o :only<CR>
 
     " center screen
-    noremap <Space> zz
+    noremap <Space><Space> zz
+    " add space after
+    noremap <Space>a a<Space><ESC>h
+    " add space before
+    noremap <Space>i i<Space><ESC>l
 
     "jump to the closest opening bracket of type {
     nnoremap { [{
@@ -293,7 +332,7 @@ call vundle#rc()
     filetype plugin indent on
 
     au FileType gitcommit           setlocal spell
-    "au BufRead,BufNewFile *.html    setlocal filetype=html.javascript
+    "au BufRead,BufNewFile *.vue    setlocal syntax=javascript
     "au BufReadPost *.json set filetype=javascript
     "au BufReadPost *.es6,*.ts set filetype=javascript
     "disable continuous comments vim
