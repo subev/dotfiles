@@ -162,47 +162,39 @@ snippet get
 # Get Element
 snippet gett
 	getElementBy${1:Id}('${2}')${3}
-
-
-
 # Vue typescript specific
-
 snippet comp
 	@Component({
 		${1}
 	})
-
 snippet imp
 	import { ${1} } from '${2}';
-
 snippet vue
 	class ${1} extends Vue {
 		${2}
 	}
-
 snippet impav
 	import { Component, Data, Lifecycle, p, Prop } from 'av-ts';
-
 snippet prop
 	@Prop
 	${1:foo}: ${2:string} = p<$2>({
 		required: true
 	});
-
 snippet life
 	@Lifecycle
 	${1:created}(): void {
 		${2}
 	}
-
 snippet data
 	@Data
 	data(): Object {
 	  return {
 			${1}
-	  }
+	  };
 	}
-
-
 snippet temp
 	template: require('./${1}.pug')()
+snippet req
+	require('${1}');
+snippet svg
+	const ${1:foo}: string = require('./${2:foo}.svg');

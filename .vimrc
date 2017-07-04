@@ -77,8 +77,13 @@ call vundle#rc()
     "let g:tagbar_autofocus = 1
     "let g:tagbar_foldlevel = 1
 
-    " Plugin 'mileszs/ack.vim'
-    Plugin 'rking/ag.vim'
+    "Plugin 'rking/ag.vim'
+    Plugin 'mileszs/ack.vim'
+    Plugin 'dyng/ctrlsf.vim'
+    let g:ctrlsf_mapping = {
+      \ "next": "n",
+      \ "prev": "N",
+      \ }
 
     "git tools blame, log, view files in other branches
     Plugin 'tpope/vim-fugitive'
@@ -100,15 +105,17 @@ call vundle#rc()
 
     Plugin 'jlanzarotta/bufexplorer'
     nnoremap ,b :BufExplorer<CR>
+    Plugin 'junegunn/vim-easy-align'
 " }
 
   " The Silver Searcher
- if executable('ag')
-     " Use ag over grep
-     set grepprg=ag\ --nogroup\ --nocolor
+  if executable('ag')
+    " Use ag over grep
+    set grepprg=ag\ --nogroup\ --nocolor
+    let g:ackprg = 'ag --vimgrep'
 
      " Use ag in CtrlP for listing files. Lightning fast and respects .gitignore
-     let g:ctrlp_user_command = 'ag %s -l --nocolor -g ""'
+    let g:ctrlp_user_command = 'ag %s -l --nocolor -g ""'
 
     " ag is fast enough that CtrlP doesn't need to cache
     let g:ctrlp_use_caching = 0
@@ -120,7 +127,7 @@ call vundle#rc()
   let g:syntastic_warning_symbol = "⚠"
   " make sure  you have eslint/jshint installed globally from npm
   let g:syntastic_javascript_checkers = ["eslint"]
-  let g:syntastic_scss_checkers=["scss_lint"]
+  let g:syntastic_scss_checkers=["scss_lint", "stylelint"]
   let g:syntastic_vue_checkers=["eslint"]
 
   let g:tsuquyomi_disable_quickfix = 1
@@ -203,8 +210,8 @@ call vundle#rc()
     " toggle NerdTree
     noremap <silent> <leader>] :NERDTreeToggle<CR>
 
-    " search with ag
-    noremap <leader>s :Ag 
+    " search with ag via the Ack frontend plugin
+    noremap <leader>s :Ack! 
     "use leader-r to navigate to current file in nerdtree
     noremap <leader>r :NERDTreeFind<CR>zz
 
@@ -217,9 +224,13 @@ call vundle#rc()
     "inoremap <leader><Space> :YRShow<CR>
     nnoremap <C-b> :CtrlPMRU<CR>
 
+    " bind R to search and replace word under the cursor or visual selection
+    nnoremap R :CtrlSF <C-R><C-W><CR>
+    vnoremap R y:CtrlSF "<C-R>""<CR>
+
     " bind K to search grep word under the cursor
     nnoremap K :grep! "\b<C-R><C-W>\b"<CR>:cw<CR><CR>
-    vnoremap K y:Ag "<C-R>""<CR>
+    vnoremap K y:Ack! "<C-R>""<CR>
     "search for the visually selected text
     vnoremap // y/<C-R>"<CR>
 
