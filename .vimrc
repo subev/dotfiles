@@ -31,8 +31,9 @@ call vundle#rc()
     Plugin 'kchmck/vim-coffee-script'
     Plugin 'scrooloose/nerdcommenter'
     Plugin 'scrooloose/nerdtree'
+    let g:NERDTreeQuitOnOpen = 1
+
     Plugin 'scrooloose/syntastic'
-    "Plugin 'sekel/vim-vue-syntastic'
     Plugin 'airblade/vim-gitgutter'
 
     "plugin to create motions with simulteniosely pressed keys(altogether)
@@ -40,9 +41,6 @@ call vundle#rc()
 
     "Plugin 'mxw/vim-jsx'
     "let g:jsx_ext_required = 0
-
-    " handlebars and mustache support
-    Plugin 'mustache/vim-mustache-handlebars'
 
     "typescript plugins for intellisense
     Plugin 'shougo/vimproc.vim'
@@ -64,6 +62,7 @@ call vundle#rc()
     " improved incrementalsearch
     Plugin 'haya14busa/incsearch.vim'
     " jump faster through the screen
+
     Plugin 'easymotion/vim-easymotion'
     let g:EasyMotion_smartcase = 1
     " move to single character
@@ -80,9 +79,12 @@ call vundle#rc()
     "Plugin 'rking/ag.vim'
     Plugin 'mileszs/ack.vim'
     Plugin 'dyng/ctrlsf.vim'
+    let g:ctrlsf_ackprg = 'rg'
+    "let g:ctrlsf_debug_mode = 1
     let g:ctrlsf_mapping = {
       \ "next": "n",
       \ "prev": "N",
+      \ "vsplit": "s",
       \ }
 
     "git tools blame, log, view files in other branches
@@ -120,6 +122,13 @@ call vundle#rc()
     " ag is fast enough that CtrlP doesn't need to cache
     let g:ctrlp_use_caching = 0
 
+  endif
+
+  if executable ('rg')
+    set grepprg=rg\ --color=never
+    "set grepformat=%f:%l:%c:%m,%f:%l:%m
+    let g:ackprg = 'rg --vimgrep --no-heading'
+    let g:ctrlp_user_command = 'rg %s --files --color=never --glob ""'
   endif
 
   " Syntastic checkers
@@ -212,6 +221,9 @@ call vundle#rc()
 
     " search with ag via the Ack frontend plugin
     noremap <leader>s :Ack! 
+    " search with sublime-alternative
+    noremap <leader>R :CtrlSF 
+    vnoremap <leader>R y:CtrlSF \b<C-R>"\b -R
     "use leader-r to navigate to current file in nerdtree
     noremap <leader>r :NERDTreeFind<CR>zz
 
@@ -225,17 +237,20 @@ call vundle#rc()
     nnoremap <C-b> :CtrlPMRU<CR>
 
     " bind R to search and replace word under the cursor or visual selection
-    nnoremap R :CtrlSF <C-R><C-W><CR>
+    nnoremap R :CtrlSF \b<C-R><C-W>\b -R<CR>
     vnoremap R y:CtrlSF "<C-R>""<CR>
 
     " bind K to search grep word under the cursor
-    nnoremap K :grep! "\b<C-R><C-W>\b"<CR>:cw<CR><CR>
+    nnoremap K :Ack! <cword><CR>
     vnoremap K y:Ack! "<C-R>""<CR>
+    vnoremap <leader>s y:Ack! "<C-R>"" 
     "search for the visually selected text
     vnoremap // y/<C-R>"<CR>
 
     "replace word under cursor
     nnoremap ,r :%s/\<<C-r><C-w>\>//g<Left><Left>
+    "close window
+    noremap ,x <C-w>c
 
     "typescript tools by tsuquyomi
     nnoremap ,tqf :TsuQuickFix<CR>

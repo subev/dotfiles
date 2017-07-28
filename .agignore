@@ -14,7 +14,7 @@ Images/
 install_applications/
 IOS Experimental/
 iOS SDK/
-#JavaCommon/
+JavaCommon/src/main/java/com/leanplum/proto
 JavaServer/
 JobServer/
 MyProject/
@@ -107,7 +107,9 @@ Server/static/lp-all.min.js
 Server/static/lp-all.min.js.map
 Server/static/ng-access.min.js.map
 Server/static/ng-all.min.js.map
+Server/static/js/generated/angular/ng-all.js.map
 
+# this crap is thanks to Ag pattern matching, ripgrep could use just the first line
 *.min.js
 Server/*.min.js
 Server/*/*.min.js
@@ -131,3 +133,6 @@ Server/static/css
 */*/*/*/*/*.min.css
 */*/*/*/*/*/*.min.css
 */*/*/*/*/*/*/*.min.css
+
+*.woff
+**/*.map
