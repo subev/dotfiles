@@ -33,7 +33,7 @@ if ! [[ "$git_status" =~ Not\ a\ git\ repo ]]; then
         local ansi=34
     else
         local ansi=33
-    fi  
+    fi
     echo -n '\[\e[0;33;'"$ansi"'m\]'"$(__git_ps1)"'\[\e[0m\]'
 fi
 }
@@ -118,7 +118,6 @@ if [ -x /usr/bin/dircolors ]; then
     alias grep='grep --color=auto'
     alias fgrep='fgrep --color=auto'
     alias egrep='egrep --color=auto'
-    alias kgrep="grep -Iir --exclude='*.map' --exclude='*.min.css' --exclude='*.min.js' --exclude='kendo.all.js' --exclude='kendo.winjs.js' --exclude='*.web.*' --exclude='*.mobile.js' --exclude='kendo.editor.js' --exclude='kendo.dataviz.js'"
 fi
 
 # some more ls aliases
@@ -159,6 +158,19 @@ if [ -f ~/.git-completion.bash ]; then
 fi
 
 eval $(thefuck --alias)
+command_exists () {
+    type "$1" &> /dev/null ;
+}
+
+export EDITOR=vim
+
+if command_exists nvim ; then
+  export EDITOR="nvim"
+fi
+
+if command_exists mvim ; then
+  export VISUAL="mvim"
+fi
 
 export NVM_DIR="/Users/petur/.nvm"
 [ -s "$NVM_DIR/nvm.sh" ] && . "$NVM_DIR/nvm.sh"  # This loads nvm

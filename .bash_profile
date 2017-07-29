@@ -16,8 +16,6 @@ source $HOME/work/arcanist/resources/shell/bash-completion
 
 source $HOME/.bashrc
 
-export EDITOR=vim
-
 if [ -f ~/.git-completion.bash ]; then
     . ~/.git-completion.bash
 fi

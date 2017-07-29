@@ -6,79 +6,69 @@ nnoremap <CR> :noh<CR><CR>
 
 hi LineNr guifg=#AAAAAA guibg=#111111
 set guifont=Menlo\ for\ Powerline:h14
-filetype off
-set rtp=~/.vim/bundle/vundle/,~/.vim,$VIMRUNTIME
 let g:snippets_dir='~/dotfiles/snippets/'
-call vundle#rc()
+filetype off
 
+" Load vim-plug
+if empty(glob("~/.vim/autoload/plug.vim"))
+  execute '!curl -fLo ~/.vim/autoload/plug.vim https://raw.github.com/junegunn/vim-plug/master/plug.vim'
+endif
+call plug#begin('~/.vim/plugged')
 " Plugins {
-    Plugin 'gmarik/vundle'
 
     " themes
-    "Plugin 'Railscasts-Theme-GUIand256color'
-    Plugin 'flazz/vim-colorschemes'
-    silent! colorscheme darkZ " vividchalk theme is good high contrast too
-    Plugin 'sheerun/vim-polyglot'
-    "Plugin 'bigfish/vim-js-context-coloring'
-    Plugin 'elzr/vim-json'
+    "Plug 'Railscasts-Theme-GUIand256color'
+    Plug 'flazz/vim-colorschemes'
+    Plug 'sheerun/vim-polyglot'
+
+    " post install (yarn install | npm install) then load plugin only for editing supported files
+    Plug 'prettier/vim-prettier', {
+      \ 'do': 'yarn install',
+      \ 'for': ['javascript', 'typescript', 'css', 'less', 'scss', 'json', 'graphql'] }
+    let g:prettier#exec_cmd_async = 1
+
+    "Plug 'bigfish/vim-js-context-coloring'
+    Plug 'elzr/vim-json'
 
     ""match tags and navigate through %
-    Plugin 'tmhedberg/matchit'
-    Plugin 'groenewege/vim-less'
+    Plug 'tmhedberg/matchit'
+    Plug 'groenewege/vim-less'
 
-    Plugin 'msanders/snipmate.vim'
+    Plug 'msanders/snipmate.vim'
 
-    Plugin 'kchmck/vim-coffee-script'
-    Plugin 'scrooloose/nerdcommenter'
-    Plugin 'scrooloose/nerdtree'
+    Plug 'kchmck/vim-coffee-script'
+    Plug 'scrooloose/nerdcommenter'
+    Plug 'scrooloose/nerdtree'
     let g:NERDTreeQuitOnOpen = 1
 
-    Plugin 'scrooloose/syntastic'
-    Plugin 'airblade/vim-gitgutter'
-
-    "plugin to create motions with simulteniosely pressed keys(altogether)
-    Plugin 'kana/vim-arpeggio'
-
-    "Plugin 'mxw/vim-jsx'
-    "let g:jsx_ext_required = 0
+    Plug 'scrooloose/syntastic'
 
     "typescript plugins for intellisense
-    Plugin 'shougo/vimproc.vim'
-    Plugin 'quramy/tsuquyomi'
+    Plug 'shougo/vimproc.vim'
+    Plug 'quramy/tsuquyomi'
 
-    " yet another js syntax
-    "Plugin 'othree/yajs.vim'
-    " or other js syntax
-    "Plugin 'pangloss/vim-javascript'
+    Plug 'underlog/vim-PairTools'
+    Plug 'mattn/emmet-vim'
+    Plug 'duganchen/vim-soy'
+    Plug 'terryma/vim-multiple-cursors'
 
-    Plugin 'underlog/vim-PairTools'
-    Plugin 'mattn/emmet-vim'
-    " Plugin 'cespare/vim-bclose'
-    " Vim diff plugin
-    "Plugin 'digitaltoad/vim-jade'
-    Plugin 'duganchen/vim-soy'
-    Plugin 'terryma/vim-multiple-cursors'
-
-    " improved incrementalsearch
-    Plugin 'haya14busa/incsearch.vim'
-    " jump faster through the screen
-
-    Plugin 'easymotion/vim-easymotion'
+    Plug 'haya14busa/incsearch.vim'
+    Plug 'easymotion/vim-easymotion'
     let g:EasyMotion_smartcase = 1
     " move to single character
     "map  f <Plug>(easymotion-f2)
     nmap <silent> f <Plug>(easymotion-overwin-f2)
 
-    "Plugin 'majutsushi/tagbar'
+    "Plug 'majutsushi/tagbar'
     "This addon does not work well with easymotion when jumping over win
     "nmap <F3> :TagbarToggle<CR>
     "let g:tagbar_compact = 1
     "let g:tagbar_autofocus = 1
     "let g:tagbar_foldlevel = 1
 
-    "Plugin 'rking/ag.vim'
-    Plugin 'mileszs/ack.vim'
-    Plugin 'dyng/ctrlsf.vim'
+    "Plug 'rking/ag.vim'
+    Plug 'mileszs/ack.vim'
+    Plug 'dyng/ctrlsf.vim'
     let g:ctrlsf_ackprg = 'rg'
     "let g:ctrlsf_debug_mode = 1
     let g:ctrlsf_mapping = {
@@ -88,27 +78,30 @@ call vundle#rc()
       \ }
 
     "git tools blame, log, view files in other branches
-    Plugin 'tpope/vim-fugitive'
-    Plugin 'tpope/vim-rhubarb'
+    Plug 'tpope/vim-fugitive'
+    Plug 'tpope/vim-rhubarb'
     " change surrounding brancjes
-    Plugin 'tpope/vim-surround'
+    Plug 'tpope/vim-surround'
 
     let g:ragtag_global_maps = 1
 
-    Plugin 'kien/ctrlp.vim'
+    Plug 'kien/ctrlp.vim'
     let g:ctrlp_max_files=0
 
     set statusline=%F%m%r%h%w[%L][%{&ff}]%y[%p%%][%04l,%04v]
     set laststatus=2
 
-    Plugin 'vim-airline/vim-airline'
+    Plug 'vim-airline/vim-airline'
     let g:airline_powerline_fonts = 1
     let g:airline#parts#ffenc#skip_expected_string='utf-8[unix]'
 
-    Plugin 'jlanzarotta/bufexplorer'
+    Plug 'jlanzarotta/bufexplorer'
     nnoremap ,b :BufExplorer<CR>
-    Plugin 'junegunn/vim-easy-align'
+    Plug 'junegunn/vim-easy-align'
 " }
+call plug#end()
+
+silent! colorscheme darkZ " vividchalk theme is good high contrast too
 
   " The Silver Searcher
   if executable('ag')
@@ -199,7 +192,9 @@ call vundle#rc()
     " terminal settings
     set t_Co=256
     set mouse=a
-    set ttymouse=xterm2
+    if !has('nvim')
+      set ttymouse=xterm2
+    endif
 " }
 
 " Keybindings {
