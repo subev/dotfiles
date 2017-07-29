@@ -5,7 +5,7 @@ nnoremap <CR> :noh<CR><CR>
 " set lines=60 columns=220
 
 hi LineNr guifg=#AAAAAA guibg=#111111
-set guifont=Menlo\ for\ Powerline:h14
+"set guifont=Roboto\ Mono\ for\ Powerline:h14
 let g:snippets_dir='~/dotfiles/snippets/'
 filetype off
 

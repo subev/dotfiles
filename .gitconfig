@@ -4,7 +4,7 @@
   branch = auto
 [core]
   whitespace = cr-at-eol
-  editor = vim
+	editor = nvim
 	excludesfile = /Users/petur/.gitignore_global
   ;autocrlf = input
 [http]

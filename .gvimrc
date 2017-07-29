@@ -6,4 +6,4 @@ set guioptions-=r
 "set macligatures
 "set guifont=Monaco\ for\ Powerline:h14
 "this is cool too and is install on mac by default
-set guifont=Menlo\ for\ Powerline:h14
+set guifont=Roboto\ Mono\ for\ Powerline:h14
