@@ -42,6 +42,7 @@ call plug#begin('~/.vim/plugged')
     let g:NERDTreeQuitOnOpen = 1
 
     Plug 'scrooloose/syntastic'
+    Plug 'airblade/vim-gitgutter'
 
     "typescript plugins for intellisense
     Plug 'shougo/vimproc.vim'
@@ -101,7 +102,7 @@ call plug#begin('~/.vim/plugged')
 " }
 call plug#end()
 
-silent! colorscheme darkZ " vividchalk theme is good high contrast too
+silent! colorscheme SlateDark " vividchalk theme is good high contrast too
 
   " The Silver Searcher
   if executable('ag')
@@ -190,7 +191,7 @@ silent! colorscheme darkZ " vividchalk theme is good high contrast too
     set wildmenu
 
     " terminal settings
-    set t_Co=256
+    "set t_Co=256
     set mouse=a
     if !has('nvim')
       set ttymouse=xterm2
