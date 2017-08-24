@@ -121,7 +121,7 @@ if [ -x /usr/bin/dircolors ]; then
 fi
 
 # some more ls aliases
-alias ll='ls -alF --group-directories-first'
+alias ll='ls -alF --group-directories-first --color=auto'
 alias la='ls -A'
 alias l='ls -CF'
 
