@@ -12,6 +12,8 @@ export PATH=$HOME/work/arcanist/bin:$PATH
 
 export PATH=$HOME/google-cloud-sdk/platform/google_appengine:$PATH
 
+export PATH=$HOME/.stack/programs/x86_64-osx/ghc-8.0.2/bin:$PATH
+
 source $HOME/work/arcanist/resources/shell/bash-completion
 
 source $HOME/.bashrc
@@ -24,3 +26,5 @@ export PYTHONPATH=/usr/local/lib/python2.7/site-packages:$PYTHONPATH
 eval $(thefuck --alias)
 
 test -e "${HOME}/.iterm2_shell_integration.bash" && source "${HOME}/.iterm2_shell_integration.bash"
+
+export PATH="$HOME/.cargo/bin:$PATH"

@@ -47,8 +47,9 @@ call plug#begin('~/.vim/plugged')
     "typescript plugins for intellisense
     Plug 'shougo/vimproc.vim'
     Plug 'quramy/tsuquyomi'
+    let g:tsuquyomi_use_vimproc = 1
 
-    Plug 'underlog/vim-PairTools'
+    Plug 'tpope/vim-unimpaired'
     Plug 'mattn/emmet-vim'
     Plug 'duganchen/vim-soy'
     Plug 'terryma/vim-multiple-cursors'
@@ -88,6 +89,7 @@ call plug#begin('~/.vim/plugged')
 
     Plug 'kien/ctrlp.vim'
     let g:ctrlp_max_files=0
+    let g:ctrlp_show_hidden = 1
 
     set statusline=%F%m%r%h%w[%L][%{&ff}]%y[%p%%][%04l,%04v]
     set laststatus=2
@@ -99,6 +101,17 @@ call plug#begin('~/.vim/plugged')
     Plug 'jlanzarotta/bufexplorer'
     nnoremap ,b :BufExplorer<CR>
     Plug 'junegunn/vim-easy-align'
+
+    Plug 'davidhalter/jedi-vim'
+    let g:jedi#goto_command = ",d"
+    let g:jedi#documentation_command = ",h"
+    let g:jedi#usages_command = ",6"
+    let g:jedi#completions_command = "<C-Space>"
+    let g:jedi#rename_command = ",r"
+
+    Plug 'editorconfig/editorconfig-vim'
+
+
 " }
 call plug#end()
 
@@ -134,6 +147,7 @@ silent! colorscheme SlateDark " vividchalk theme is good high contrast too
   let g:syntastic_vue_checkers=["eslint"]
 
   let g:tsuquyomi_disable_quickfix = 1
+  let g:tsuquyomi_disable_default_mappings = 1
   let g:syntastic_typescript_checkers = ['tsuquyomi']
 
   " make use of local eslint !! wohoo
@@ -172,9 +186,7 @@ silent! colorscheme SlateDark " vividchalk theme is good high contrast too
     set showmatch
     set hlsearch
 
-    "disable hit enter to contine spam msg when redrawing
-    "
-
+    autocmd FileType qf noremap q :q<CR><CR>
 
     set shortmess=aoOtI
 
@@ -246,13 +258,17 @@ silent! colorscheme SlateDark " vividchalk theme is good high contrast too
     "replace word under cursor
     nnoremap ,r :%s/\<<C-r><C-w>\>//g<Left><Left>
     "close window
-    noremap ,x <C-w>c
+    noremap ,w <C-w>c
 
-    "typescript tools by tsuquyomi
-    nnoremap ,tqf :TsuQuickFix<CR>
-    nnoremap ,ti :TsuImport<CR>
-    nnoremap ,td :TsuDefinition<CR>
-    nnoremap ,tr :TsuRenameSymbol<CR>
+    "typescript tools by tsuquyomi, just for typescript
+    autocmd FileType typescript nnoremap ,f :TsuQuickFix<CR>
+    autocmd FileType typescript nnoremap ,i :TsuImport<CR>
+    autocmd FileType typescript nnoremap ,d :TsuDefinition<CR>
+    autocmd FileType typescript nnoremap ,D :TsuImplementation<CR>
+    autocmd FileType typescript nnoremap ,` :TsuGoBack<CR>
+    autocmd FileType typescript nnoremap ,6 :TsuReferences<CR>
+    autocmd FileType typescript nnoremap ,r :TsuRenameSymbol<CR>
+    autocmd FileType typescript nmap <buffer> <Space><Space> : <C-u>echo tsuquyomi#hint()<CR>
 
     "use incsearch plugin
     map /  <Plug>(incsearch-forward)
@@ -276,10 +292,10 @@ silent! colorscheme SlateDark " vividchalk theme is good high contrast too
     vnoremap <Tab> >gv
     vnoremap <S-Tab> <gv
 
-    nnoremap <C-e> 3<C-e>
-    nnoremap <C-y> 3<C-y>
-    nnoremap <D-j> 3<C-e>
-    nnoremap <D-k> 3<C-y>
+    nnoremap <C-e> 5<C-e>
+    nnoremap <C-y> 5<C-y>
+    nnoremap <D-j> 5<C-e>
+    nnoremap <D-k> 5<C-y>
 
     nnoremap <C-h> <C-w>h
     nnoremap <C-j> <C-w>j

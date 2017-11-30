@@ -168,9 +168,15 @@ if command_exists nvim ; then
   export EDITOR="nvim"
 fi
 
+if command_exists rg ; then
+  alias rg="rg --type-add 'pug:*.pug' --type-add 'zsh:.zshrc'"
+fi
+
 if command_exists mvim ; then
   export VISUAL="mvim"
 fi
 
 export NVM_DIR="/Users/petur/.nvm"
 [ -s "$NVM_DIR/nvm.sh" ] && . "$NVM_DIR/nvm.sh"  # This loads nvm
+
+export PATH="$HOME/.cargo/bin:$PATH"

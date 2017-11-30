@@ -23,34 +23,31 @@ defbce "on"
 # Set up the various Leanplum servers
 # ===================================
 
-chdir
-
-# TODO: REPLACE THIS with the path to your redis installation.
-# chdir /users/petur/work/redis-3.0.1/src  # eg. dev/redis-2.8.13/src
-# screen -t "redis" 6
-# Using the stuff command is preferable to just running the command, since this
-# enters it into command history. If it fails, you can relaunch by pressing up
-# and enter.
-#stuff "./redis-server"
 
 chdir /users/petur/work/Leanplum/Tools
+
 screen -t "engine" 0
 stuff "./run_devserver"
 
+screen -t "estimator" 1
+stuff "./run_estimator_server.py"
+
 chdir ../NodeServer
-screen -t "node/devsocket" 1
+
+screen -t "node/devsocket" 2
 stuff "node main.js"
 
 chdir ../Server
-screen -t "grunt" 2
+
+screen -t "grunt" 3
 stuff "grunt prod && grunt default:watch"
-# TODO: REPLACE THIS with the path to your leanplum git repository.
 
 chdir dashboard2
-screen -t "webpack" 3
+
+screen -t "webpack" 4
 stuff "yarn start"
 
-chdir /users/petur/work/Leanplum
-screen -t "sh" 4
+chdir ../../
+
+screen -t "sh" 5
 stuff 'mvim'
-chdir ./Server

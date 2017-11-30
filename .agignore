@@ -136,3 +136,5 @@ Server/static/css
 
 *.woff
 **/*.map
+
+**/*.pyc
