@@ -1,3 +1,15 @@
+if !has('nvim')
+  if has('python3')
+      command! -nargs=1 Py py3 <args>
+      set pythonthreedll=/usr/local/Frameworks/Python.framework/Versions/3.6/Python
+      set pythonthreehome=/usr/local/Frameworks/Python.framework/Versions/3.6
+  else
+      command! -nargs=1 Py py <args>
+      set pythondll=/usr/local/Frameworks/Python.framework/Versions/2.7/Python
+      set pythonhome=/usr/local/Frameworks/Python.framework/Versions/2.7
+  endif
+endif
+
 " disable the highlight search
 nnoremap <CR> :noh<CR><CR>
 
@@ -19,7 +31,10 @@ call plug#begin('~/.vim/plugged')
     " themes
     "Plug 'Railscasts-Theme-GUIand256color'
     Plug 'flazz/vim-colorschemes'
+    "although vim polyglot is loaded after this I love the syntax of jelera more than pangloss coming from polyglot
+    Plug 'jelera/vim-javascript-syntax'
     Plug 'sheerun/vim-polyglot'
+    Plug 'othree/javascript-libraries-syntax.vim'
 
     " post install (yarn install | npm install) then load plugin only for editing supported files
     Plug 'prettier/vim-prettier', {
@@ -39,6 +54,7 @@ call plug#begin('~/.vim/plugged')
     Plug 'kchmck/vim-coffee-script'
     Plug 'scrooloose/nerdcommenter'
     Plug 'scrooloose/nerdtree'
+    Plug 'Xuyuanp/nerdtree-git-plugin'
     let g:NERDTreeQuitOnOpen = 1
 
     Plug 'scrooloose/syntastic'
@@ -109,8 +125,47 @@ call plug#begin('~/.vim/plugged')
     let g:jedi#completions_command = "<C-Space>"
     let g:jedi#rename_command = ",r"
 
+    if has('nvim')
+      Plug 'Shougo/deoplete.nvim'
+    else
+      Plug 'Shougo/deoplete.nvim'
+      Plug 'roxma/nvim-yarp'
+      Plug 'roxma/vim-hug-neovim-rpc'
+    endif
+    let g:deoplete#enable_at_startup = 1
+
+    "the next two fns should disable multi-cursors deoplete while multiple cursors is active
+    function! Multiple_cursors_before()
+      let b:deoplete_disable_auto_complete = 1
+    endfunction
+
+    function! Multiple_cursors_after()
+      let b:deoplete_disable_auto_complete = 0
+    endfunction
+
+    Plug 'rust-lang/rust.vim'
+    Plug 'racer-rust/vim-racer'
+    au FileType rust nmap ,d <Plug>(rust-def)
+    set hidden
+    let g:racer_cmd = "~/.cargo/bin/racer"
+
+    Plug 'frigoeu/psc-ide-vim'
+
     Plug 'editorconfig/editorconfig-vim'
 
+    Plug 'MattesGroeger/vim-bookmarks'
+    let g:bookmark_save_per_working_dir = 1
+
+    nmap <Leader>m <Plug>BookmarkToggle
+    nmap <Leader>mi <Plug>BookmarkAnnotate
+    nmap <Leader>ma <Plug>BookmarkShowAll
+    nmap <Leader>mj <Plug>BookmarkNext
+    nmap <Leader>mk <Plug>BookmarkPrev
+    nmap <Leader>mc <Plug>BookmarkClear
+    nmap <Leader>mx <Plug>BookmarkClearAll
+    nmap <Leader>mkk <Plug>BookmarkMoveUp
+    nmap <Leader>mjj <Plug>BookmarkMoveDown
+    nmap <Leader>mg <Plug>BookmarkMoveToLine
 
 " }
 call plug#end()
@@ -145,10 +200,11 @@ silent! colorscheme SlateDark " vividchalk theme is good high contrast too
   let g:syntastic_javascript_checkers = ["eslint"]
   let g:syntastic_scss_checkers=["scss_lint", "stylelint"]
   let g:syntastic_vue_checkers=["eslint"]
+  let g:syntastic_rust_checkers=["cargo"]
 
   let g:tsuquyomi_disable_quickfix = 1
   let g:tsuquyomi_disable_default_mappings = 1
-  let g:syntastic_typescript_checkers = ['tsuquyomi']
+  let g:syntastic_typescript_checkers = ['tsuquyomi', 'tsc']
 
   " make use of local eslint !! wohoo
   let local_eslint = finddir('node_modules', '.;') . '/.bin/eslint'
@@ -186,7 +242,7 @@ silent! colorscheme SlateDark " vividchalk theme is good high contrast too
     set showmatch
     set hlsearch
 
-    autocmd FileType qf noremap q :q<CR><CR>
+    "autocmd FileType qf noremap q :q<CR><CR>
 
     set shortmess=aoOtI
 
@@ -292,10 +348,10 @@ silent! colorscheme SlateDark " vividchalk theme is good high contrast too
     vnoremap <Tab> >gv
     vnoremap <S-Tab> <gv
 
-    nnoremap <C-e> 5<C-e>
-    nnoremap <C-y> 5<C-y>
-    nnoremap <D-j> 5<C-e>
-    nnoremap <D-k> 5<C-y>
+    noremap <C-e> 5<C-e>
+    noremap <C-y> 5<C-y>
+    noremap <D-j> 5<C-e>
+    noremap <D-k> 5<C-y>
 
     nnoremap <C-h> <C-w>h
     nnoremap <C-j> <C-w>j
