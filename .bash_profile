@@ -1,4 +1,4 @@
-export JAVA_HOME=$(/usr/libexec/java_home -v 1.7)
+#export JAVA_HOME=$(/usr/libexec/java_home -v 1.7)
 
 # The next line updates PATH for the Google Cloud SDK.
 source '/Users/petur/google-cloud-sdk/path.bash.inc'
@@ -14,6 +14,8 @@ export PATH=$HOME/google-cloud-sdk/platform/google_appengine:$PATH
 
 export PATH=$HOME/.stack/programs/x86_64-osx/ghc-8.0.2/bin:$PATH
 
+export RUST_SRC_PATH="/Users/petur/.rustup/toolchains/stable-x86_64-apple-darwin/lib/rustlib/src/rust/src"
+
 source $HOME/work/arcanist/resources/shell/bash-completion
 
 source $HOME/.bashrc
@@ -22,7 +24,6 @@ if [ -f ~/.git-completion.bash ]; then
     . ~/.git-completion.bash
 fi
 
-export PYTHONPATH=/usr/local/lib/python2.7/site-packages:$PYTHONPATH
 eval $(thefuck --alias)
 
 test -e "${HOME}/.iterm2_shell_integration.bash" && source "${HOME}/.iterm2_shell_integration.bash"

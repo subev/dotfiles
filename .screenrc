@@ -29,25 +29,22 @@ chdir /users/petur/work/Leanplum/Tools
 screen -t "engine" 0
 stuff "./run_devserver"
 
-screen -t "estimator" 1
-stuff "./run_estimator_server.py"
+screen -t "docker" 1
+stuff "source py_env/bin/activate"
+chdir ../
+stuff "docker-compose -f CampaignAnalytics/Tools/zk-kafka-hbase-hdfs-ingester-publisher-reports.yml up"
 
-chdir ../NodeServer
+chdir NodeServer
 
-screen -t "node/devsocket" 2
-stuff "node main.js"
+screen -t "node" 2
+stuff "nvm exec 6 node main.js"
 
-chdir ../Server
+chdir ../Server/dashboard2
 
-screen -t "grunt" 3
-stuff "grunt prod && grunt default:watch"
-
-chdir dashboard2
-
-screen -t "webpack" 4
+screen -t "webpack" 3
 stuff "yarn start"
 
 chdir ../../
 
-screen -t "sh" 5
+screen -t "sh" 4
 stuff 'mvim'

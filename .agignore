@@ -14,7 +14,7 @@ Images/
 install_applications/
 IOS Experimental/
 iOS SDK/
-JavaCommon/src/main/java/com/leanplum/proto
+#JavaCommon/src/main/java/com/leanplum/proto
 JavaServer/
 JobServer/
 MyProject/
@@ -24,7 +24,7 @@ NodeServer/
 Scrapers/
 SparkAnalytics/
 TaskRabbit Demo/
-Tools/
+#Tools/
 Unity SDK/
 veency/
 Wordpress/

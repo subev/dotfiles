@@ -1,13 +1,7 @@
 if !has('nvim')
-  if has('python3')
-      command! -nargs=1 Py py3 <args>
-      set pythonthreedll=/usr/local/Frameworks/Python.framework/Versions/3.6/Python
-      set pythonthreehome=/usr/local/Frameworks/Python.framework/Versions/3.6
-  else
-      command! -nargs=1 Py py <args>
-      set pythondll=/usr/local/Frameworks/Python.framework/Versions/2.7/Python
-      set pythonhome=/usr/local/Frameworks/Python.framework/Versions/2.7
-  endif
+    command! -nargs=1 Py py3 <args>
+    set pythonthreedll=/usr/local/Frameworks/Python.framework/Versions/3.6/Python
+    set pythonthreehome=/usr/local/Frameworks/Python.framework/Versions/3.6
 endif
 
 " disable the highlight search
@@ -37,10 +31,12 @@ call plug#begin('~/.vim/plugged')
     Plug 'othree/javascript-libraries-syntax.vim'
 
     " post install (yarn install | npm install) then load plugin only for editing supported files
-    Plug 'prettier/vim-prettier', {
-      \ 'do': 'yarn install',
-      \ 'for': ['javascript', 'typescript', 'css', 'less', 'scss', 'json', 'graphql'] }
-    let g:prettier#exec_cmd_async = 1
+    "Plug 'prettier/vim-prettier', {
+      "\ 'do': 'yarn install',
+      "\ 'for': ['javascript', 'typescript', 'css', 'less', 'scss', 'json', 'graphql'] }
+    "let g:prettier#exec_cmd_async = 1
+
+    Plug 'sbdchd/neoformat'
 
     "Plug 'bigfish/vim-js-context-coloring'
     Plug 'elzr/vim-json'
@@ -49,7 +45,17 @@ call plug#begin('~/.vim/plugged')
     Plug 'tmhedberg/matchit'
     Plug 'groenewege/vim-less'
 
-    Plug 'msanders/snipmate.vim'
+    "This plugin is supposed to use tab instead of ctrl-n
+    Plug 'ervandew/supertab'
+    let g:SuperTabDefaultCompletionType = "<c-n>"
+
+    "Plug 'msanders/snipmate.vim'
+
+    Plug 'SirVer/ultisnips'
+    let g:UltiSnipsEditSplit = "vertical"
+
+    "the repo of snippets for ultisnips
+    Plug 'honza/vim-snippets'
 
     Plug 'kchmck/vim-coffee-script'
     Plug 'scrooloose/nerdcommenter'
@@ -85,6 +91,28 @@ call plug#begin('~/.vim/plugged')
     "let g:tagbar_foldlevel = 1
 
     "Plug 'rking/ag.vim'
+    " This addon does the oposite of 'J' in vim
+    Plug 'AndrewRadev/splitjoin.vim'
+    "gS and gJ are the two shortcuts to Split and Join
+    let g:splitjoin_split_mapping = 'gs'
+    let g:splitjoin_join_mapping = 'gj'
+    Plug 'AndrewRadev/sideways.vim'
+    nnoremap gh :SidewaysLeft<cr>
+    nnoremap gl :SidewaysRight<cr>
+
+    "addon for auto closing brackets
+    Plug 'jiangmiao/auto-pairs'
+    let g:AutoPairsFlyMode = 0
+
+    "this one should be used instead of the keybindings near the end of the file'
+    Plug 'matze/vim-move'
+    let g:move_map_keys = 0
+    vmap H <Plug>MoveBlockUp
+    vmap L <Plug>MoveBlockDown
+    nmap H <Plug>MoveLineUp
+    nmap L <Plug>MoveLineDown
+
+    " this one should be depricated soon
     Plug 'mileszs/ack.vim'
     Plug 'dyng/ctrlsf.vim'
     let g:ctrlsf_ackprg = 'rg'
@@ -94,6 +122,10 @@ call plug#begin('~/.vim/plugged')
       \ "prev": "N",
       \ "vsplit": "s",
       \ }
+    let g:ctrlsf_auto_focus = {
+        \ "at" : "start"
+        \ }
+    let g:ctrlsf_confirm_save = 0
 
     "git tools blame, log, view files in other branches
     Plug 'tpope/vim-fugitive'
@@ -163,8 +195,6 @@ call plug#begin('~/.vim/plugged')
     nmap <Leader>mk <Plug>BookmarkPrev
     nmap <Leader>mc <Plug>BookmarkClear
     nmap <Leader>mx <Plug>BookmarkClearAll
-    nmap <Leader>mkk <Plug>BookmarkMoveUp
-    nmap <Leader>mjj <Plug>BookmarkMoveDown
     nmap <Leader>mg <Plug>BookmarkMoveToLine
 
 " }
@@ -301,7 +331,7 @@ silent! colorscheme SlateDark " vividchalk theme is good high contrast too
     nnoremap <C-b> :CtrlPMRU<CR>
 
     " bind R to search and replace word under the cursor or visual selection
-    nnoremap R :CtrlSF \b<C-R><C-W>\b -R<CR>
+    nnoremap R :CtrlSF <C-R><C-W> -R -W<CR>
     vnoremap R y:CtrlSF "<C-R>""<CR>
 
     " bind K to search grep word under the cursor
@@ -315,6 +345,8 @@ silent! colorscheme SlateDark " vividchalk theme is good high contrast too
     nnoremap ,r :%s/\<<C-r><C-w>\>//g<Left><Left>
     "close window
     noremap ,w <C-w>c
+    "create new vertical split
+    noremap ,n :vnew<CR>
 
     "typescript tools by tsuquyomi, just for typescript
     autocmd FileType typescript nnoremap ,f :TsuQuickFix<CR>
@@ -343,23 +375,27 @@ silent! colorscheme SlateDark " vividchalk theme is good high contrast too
     nnoremap { [{
 
     " indent!
+
     nnoremap <Tab> >>
     nnoremap <S-Tab> <<
-    vnoremap <Tab> >gv
-    vnoremap <S-Tab> <gv
+
+    "this is a workaround to remap after plugins
+    "in this case supertab was imitating default behavior
+    autocmd VimEnter * vnoremap <Tab> >gv
+    autocmd VimEnter * vnoremap <S-Tab> <gv
 
     noremap <C-e> 5<C-e>
     noremap <C-y> 5<C-y>
     noremap <D-j> 5<C-e>
     noremap <D-k> 5<C-y>
+    noremap <M-j> 5<C-e>
+    noremap <M-k> 5<C-y>
 
     nnoremap <C-h> <C-w>h
     nnoremap <C-j> <C-w>j
     nnoremap <C-k> <C-w>k
     nnoremap <C-l> <C-w>l
 
-    "free the mapping <C-i> taken by snipmate
-    "unmap <C-i>
 
     " tag auto-close with c-space
     imap <C-Space> <C-X><C-O>
@@ -370,8 +406,8 @@ silent! colorscheme SlateDark " vividchalk theme is good high contrast too
     noremap <leader>ve :vsplit $MYVIMRC<CR>
     noremap <leader>vu :source %<CR>
 
-    vnoremap H ^
-    nnoremap H ^
+    "free the mapping <C-i> taken by snipmate
+    "unmap <C-i>
 
     " Settings for VimDiff as MergeTool
     if &diff
@@ -460,6 +496,28 @@ function! WorkSpaceSettings()
     endif
 
   endif
+endfunction
+
+" Insert a newline after each specified string (or before if use '!').
+" If no arguments, use previous search.
+command! -bang -nargs=* -range LineBreakAt <line1>,<line2>call LineBreakAt('<bang>', <f-args>)
+function! LineBreakAt(bang, ...) range
+  let save_search = @/
+  if empty(a:bang)
+    let before = ''
+    let after = '\ze.'
+    let repl = '&\r'
+  else
+    let before = '.\zs'
+    let after = ''
+    let repl = '\r&'
+  endif
+  let pat_list = map(deepcopy(a:000), "escape(v:val, '/\\.*$^~[')")
+  let find = empty(pat_list) ? @/ : join(pat_list, '\|')
+  let find = before . '\%(' . find . '\)' . after
+  " Example: 10,20s/\%(arg1\|arg2\|arg3\)\ze./&\r/ge
+  execute a:firstline . ',' . a:lastline . 's/'. find . '/' . repl . '/ge'
+  let @/ = save_search
 endfunction
 
 au! BufReadPost,BufNewFile * call WorkSpaceSettings()

@@ -130,12 +130,7 @@ alias l='ls -CF'
 alias alert='notify-send --urgency=low -i "$([ $? = 0 ] && echo terminal || echo error)" "$(history|tail -n1|sed -e '\''s/^\s*[0-9]\+\s*//;s/[;&|]\s*alert$//'\'')"'
 
 # Leanplum aliases
-alias run_proxy_prod="gcloud compute ssh --ssh-flag=-D9090 --ssh-flag=-N \
-  --zone=us-central1-b prometheus-server --project leanplum"
-alias run_proxy_staging="gcloud compute ssh --ssh-flag=-D9090 --ssh-flag=-N \
-  --zone=us-central1-b jenkins --project leanplum-staging"
-alias chrome_proxy="\"/Applications/Google Chrome.app/Contents/MacOS/Google Chrome\" \
-  --user-data-dir=~/.chrome-profiles/prod --proxy-server=\"socks5://localhost:9090\" &"
+alias spark='gcloud compute ssh --ssh-flag=-D9090 --ssh-flag=-N --zone=us-central1-b job-server-boris --project leanplum & "/Applications/Google Chrome.app/Contents/MacOS/Google Chrome" --user-data-dir=~/.chrome-profiles/prod --proxy-server="socks5://localhost:9090" http://spark-ah-m:4040/jobs/ &'
 
 # Alias definitions.
 # You may want to put all your additions into a separate file like
