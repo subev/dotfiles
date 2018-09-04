@@ -171,7 +171,4 @@ if command_exists mvim ; then
   export VISUAL="mvim"
 fi
 
-export NVM_DIR="/Users/petur/.nvm"
-[ -s "$NVM_DIR/nvm.sh" ] && . "$NVM_DIR/nvm.sh"  # This loads nvm
-
 export PATH="$HOME/.cargo/bin:$PATH"
