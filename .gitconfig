@@ -24,7 +24,7 @@
   co = checkout
   a = add
   cc = commit --all -m
-  ca = commit --all --amend
+  ca = commit --amend
   dic = diff --cached
   p = pull
   pl = pull --rebase
@@ -37,6 +37,7 @@
   qpl = log --pretty=\"%Cblue%h%Creset %Cgreen[%cr]%Creset %s\" origin/production..origin/master
   ls = log --graph --pretty=format:'%Cred%h%Creset -%C(yellow)%d%Creset %s %Cgreen(%cr)%Creset %Cblue%an%Creset' --abbrev-commit --date=relative
   l = log --all --graph --pretty=format:'%Cred%h%Creset -%C(yellow)%d%Creset %s %Cgreen(%cr)%Creset %Cblue%an%Creset' --abbrev-commit --date=relative
+  ll = log --branches --graph --pretty=format:'%Cred%h%Creset -%C(yellow)%d%Creset %s %Cgreen(%cr)%Creset %Cblue%an%Creset' --abbrev-commit --date=relative
   lastchanges =  log --all --graph --pretty=format:'%Cred%h%Creset -%C(yellow)%d%Creset %s %Cgreen(%cr)%Creset %Cblue%an%Creset' --abbrev-commit --date="relative" --stat
   eu = "!f() { git ls-files --unmerged | cut -f2 | sort -u ; }; vim `f`"
   au = "!f() { git ls-files --unmerged | cut -f2 | sort -u ; }; git add `f`"

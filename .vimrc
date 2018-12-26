@@ -6,6 +6,8 @@ endif
 
 " disable the highlight search
 nnoremap <CR> :noh<CR><CR>
+noremap ( <C-o>
+noremap ) <C-i>
 
 " increase the window size, usually used for windows terminals
 " set lines=60 columns=220
@@ -25,10 +27,13 @@ call plug#begin('~/.vim/plugged')
     " themes
     "Plug 'Railscasts-Theme-GUIand256color'
     Plug 'flazz/vim-colorschemes'
+    Plug 'felixhummel/setcolors.vim'
     "although vim polyglot is loaded after this I love the syntax of jelera more than pangloss coming from polyglot
     Plug 'jelera/vim-javascript-syntax'
+    Plug 'herringtondarkholme/yats.vim'
     Plug 'sheerun/vim-polyglot'
     Plug 'othree/javascript-libraries-syntax.vim'
+    Plug 'ianks/vim-tsx'
 
     " post install (yarn install | npm install) then load plugin only for editing supported files
     "Plug 'prettier/vim-prettier', {
@@ -62,6 +67,7 @@ call plug#begin('~/.vim/plugged')
     Plug 'scrooloose/nerdtree'
     Plug 'Xuyuanp/nerdtree-git-plugin'
     let g:NERDTreeQuitOnOpen = 1
+    let g:NERDTreeChDirMode  = 2
 
     Plug 'scrooloose/syntastic'
     Plug 'airblade/vim-gitgutter'
@@ -71,10 +77,11 @@ call plug#begin('~/.vim/plugged')
     Plug 'quramy/tsuquyomi'
     let g:tsuquyomi_use_vimproc = 1
 
+    Plug 'tpope/vim-repeat'
     Plug 'tpope/vim-unimpaired'
     Plug 'mattn/emmet-vim'
     Plug 'duganchen/vim-soy'
-    Plug 'terryma/vim-multiple-cursors'
+    Plug 'mg979/vim-visual-multi'
 
     Plug 'haya14busa/incsearch.vim'
     Plug 'easymotion/vim-easymotion'
@@ -94,8 +101,9 @@ call plug#begin('~/.vim/plugged')
     " This addon does the oposite of 'J' in vim
     Plug 'AndrewRadev/splitjoin.vim'
     "gS and gJ are the two shortcuts to Split and Join
-    let g:splitjoin_split_mapping = 'gs'
+    let g:splitjoin_split_mapping = 'gS'
     let g:splitjoin_join_mapping = 'gj'
+
     Plug 'AndrewRadev/sideways.vim'
     nnoremap gh :SidewaysLeft<cr>
     nnoremap gl :SidewaysRight<cr>
@@ -103,6 +111,9 @@ call plug#begin('~/.vim/plugged')
     "addon for auto closing brackets
     Plug 'jiangmiao/auto-pairs'
     let g:AutoPairsFlyMode = 0
+
+    Plug 'mbbill/undotree'
+    nnoremap <leader>u :UndotreeToggle<cr>
 
     "this one should be used instead of the keybindings near the end of the file'
     Plug 'matze/vim-move'
@@ -138,6 +149,7 @@ call plug#begin('~/.vim/plugged')
     Plug 'kien/ctrlp.vim'
     let g:ctrlp_max_files=0
     let g:ctrlp_show_hidden = 1
+    let g:ctrlp_working_path_mode = 'rw'
 
     set statusline=%F%m%r%h%w[%L][%{&ff}]%y[%p%%][%04l,%04v]
     set laststatus=2
@@ -166,21 +178,25 @@ call plug#begin('~/.vim/plugged')
     endif
     let g:deoplete#enable_at_startup = 1
 
-    "the next two fns should disable multi-cursors deoplete while multiple cursors is active
-    function! Multiple_cursors_before()
-      let b:deoplete_disable_auto_complete = 1
-    endfunction
-
-    function! Multiple_cursors_after()
-      let b:deoplete_disable_auto_complete = 0
-    endfunction
-
     Plug 'rust-lang/rust.vim'
     Plug 'racer-rust/vim-racer'
     au FileType rust nmap ,d <Plug>(rust-def)
     set hidden
     let g:racer_cmd = "~/.cargo/bin/racer"
 
+    " Haskell omni complete
+    Plug 'eagletmt/neco-ghc'
+    Plug 'eagletmt/ghcmod-vim'
+    au FileType haskell nnoremap <buffer> <Space><Space> :GhcModType!<CR>
+    au FileType haskell nnoremap <buffer> <Space>i :GhcModInfo!<CR>
+    au FileType haskell nnoremap <buffer> <Space>t :GhcModType!<CR>
+    au FileType haskell noremap <buffer> <CR> :GhcModTypeClear<CR>:noh<CR><CR>
+    au FileType haskell nnoremap <buffer> ,tt :GhcModTypeInsert!<CR>
+    au FileType haskell nnoremap <buffer> ,s :GhcModSplitFunCase!<CR>
+    au FileType haskell nnoremap <buffer> <Space>c :GhcModCheckAsync!<CR>
+    au FileType haskell nnoremap <buffer> <Space>l :GhcModLintAsync!<CR>
+
+    " Purescript
     Plug 'frigoeu/psc-ide-vim'
 
     Plug 'editorconfig/editorconfig-vim'
@@ -200,7 +216,7 @@ call plug#begin('~/.vim/plugged')
 " }
 call plug#end()
 
-silent! colorscheme SlateDark " vividchalk theme is good high contrast too
+silent! colorscheme desertEx " SlateDark, vividchalk themes is good high contrast too
 
   " The Silver Searcher
   if executable('ag')
@@ -231,6 +247,7 @@ silent! colorscheme SlateDark " vividchalk theme is good high contrast too
   let g:syntastic_scss_checkers=["scss_lint", "stylelint"]
   let g:syntastic_vue_checkers=["eslint"]
   let g:syntastic_rust_checkers=["cargo"]
+  let g:syntastic_haskell_checkers=["hdevtools"]
 
   let g:tsuquyomi_disable_quickfix = 1
   let g:tsuquyomi_disable_default_mappings = 1
@@ -272,7 +289,7 @@ silent! colorscheme SlateDark " vividchalk theme is good high contrast too
     set showmatch
     set hlsearch
 
-    "autocmd FileType qf noremap q :q<CR><CR>
+    "au FileType qf noremap q :q<CR><CR>
 
     set shortmess=aoOtI
 
@@ -349,14 +366,14 @@ silent! colorscheme SlateDark " vividchalk theme is good high contrast too
     noremap ,n :vnew<CR>
 
     "typescript tools by tsuquyomi, just for typescript
-    autocmd FileType typescript nnoremap ,f :TsuQuickFix<CR>
-    autocmd FileType typescript nnoremap ,i :TsuImport<CR>
-    autocmd FileType typescript nnoremap ,d :TsuDefinition<CR>
-    autocmd FileType typescript nnoremap ,D :TsuImplementation<CR>
-    autocmd FileType typescript nnoremap ,` :TsuGoBack<CR>
-    autocmd FileType typescript nnoremap ,6 :TsuReferences<CR>
-    autocmd FileType typescript nnoremap ,r :TsuRenameSymbol<CR>
-    autocmd FileType typescript nmap <buffer> <Space><Space> : <C-u>echo tsuquyomi#hint()<CR>
+    au FileType typescript,typescript.tsx nnoremap ,f :TsuQuickFix<CR>
+    au FileType typescript,typescript.tsx nnoremap ,i :TsuImport<CR>
+    au FileType typescript,typescript.tsx nnoremap ,d :TsuDefinition<CR>
+    au FileType typescript,typescript.tsx nnoremap ,D :TsuImplementation<CR>
+    au FileType typescript,typescript.tsx nnoremap ,` :TsuGoBack<CR>
+    au FileType typescript,typescript.tsx nnoremap ,6 :TsuReferences<CR>
+    au FileType typescript,typescript.tsx nnoremap ,r :TsuRenameSymbol<CR>
+    au FileType typescript,typescript.tsx nmap <buffer> <Space><Space> : <C-u>echo tsuquyomi#hint()<CR>
 
     "use incsearch plugin
     map /  <Plug>(incsearch-forward)
@@ -381,8 +398,8 @@ silent! colorscheme SlateDark " vividchalk theme is good high contrast too
 
     "this is a workaround to remap after plugins
     "in this case supertab was imitating default behavior
-    autocmd VimEnter * vnoremap <Tab> >gv
-    autocmd VimEnter * vnoremap <S-Tab> <gv
+    au VimEnter * vnoremap <Tab> >gv
+    au VimEnter * vnoremap <S-Tab> <gv
 
     noremap <C-e> 5<C-e>
     noremap <C-y> 5<C-y>

@@ -31,13 +31,12 @@ stuff "./run_devserver"
 
 screen -t "docker" 1
 stuff "source py_env/bin/activate"
-chdir ../
-stuff "docker-compose -f CampaignAnalytics/Tools/zk-kafka-hbase-hdfs-ingester-publisher-reports.yml up"
+stuff "cd .. && make -C CampaignAnalytics runMockRS"
 
 chdir NodeServer
 
-screen -t "node" 2
-stuff "nvm exec 6 node main.js"
+#screen -t "node" 2
+#stuff "cd ../NodeServer nvm exec 6 node main.js"
 
 chdir ../Server/dashboard2
 
