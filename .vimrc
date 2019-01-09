@@ -1,7 +1,10 @@
-if !has('nvim')
-    command! -nargs=1 Py py3 <args>
-    set pythonthreedll=/usr/local/Frameworks/Python.framework/Versions/3.6/Python
-    set pythonthreehome=/usr/local/Frameworks/Python.framework/Versions/3.6
+if has('nvim')
+  let g:python2_host_prog = '/usr/local/bin/python'
+  let g:python3_host_prog = '/usr/local/bin/python3'
+else
+  command! -nargs=1 Py py3 <args>
+  set pythonthreedll=/usr/local/Frameworks/Python.framework/Versions/3.7/Python
+  set pythonthreehome=/usr/local/Frameworks/Python.framework/Versions/3.7
 endif
 
 " disable the highlight search
@@ -70,6 +73,7 @@ call plug#begin('~/.vim/plugged')
     let g:NERDTreeChDirMode  = 2
 
     Plug 'scrooloose/syntastic'
+    nnoremap ,c :SyntasticCheck<CR>
     Plug 'airblade/vim-gitgutter'
 
     "typescript plugins for intellisense
@@ -195,6 +199,12 @@ call plug#begin('~/.vim/plugged')
     au FileType haskell nnoremap <buffer> ,s :GhcModSplitFunCase!<CR>
     au FileType haskell nnoremap <buffer> <Space>c :GhcModCheckAsync!<CR>
     au FileType haskell nnoremap <buffer> <Space>l :GhcModLintAsync!<CR>
+
+    Plug 'fsharp/vim-fsharp', {
+      \ 'for': 'fsharp',
+      \ 'do':  'make fsautocomplete',
+      \}
+    let g:fsharp_only_check_errors_on_write = 1
 
     " Purescript
     Plug 'frigoeu/psc-ide-vim'
