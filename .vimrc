@@ -1,3 +1,4 @@
+"to make sure every verson of vim/nvim/mvim works install both python and python3
 if has('nvim')
   let g:python2_host_prog = '/usr/local/bin/python'
   let g:python3_host_prog = '/usr/local/bin/python3'
@@ -9,6 +10,7 @@ endif
 
 " disable the highlight search
 nnoremap <CR> :noh<CR><CR>
+"enable back the go forward and backward in jump history
 noremap ( <C-o>
 noremap ) <C-i>
 
@@ -33,6 +35,7 @@ call plug#begin('~/.vim/plugged')
     Plug 'felixhummel/setcolors.vim'
     "although vim polyglot is loaded after this I love the syntax of jelera more than pangloss coming from polyglot
     Plug 'jelera/vim-javascript-syntax'
+    " typescript highlighting
     Plug 'herringtondarkholme/yats.vim'
     Plug 'sheerun/vim-polyglot'
     Plug 'othree/javascript-libraries-syntax.vim'
@@ -74,6 +77,12 @@ call plug#begin('~/.vim/plugged')
 
     Plug 'scrooloose/syntastic'
     nnoremap ,c :SyntasticCheck<CR>
+    nnoremap ,C :SyntasticToggleMode<CR>
+
+    Plug 'mhinz/vim-startify'
+    let g:startify_change_to_dir = 0
+    let g:startify_change_to_vcs_root = 1
+
     Plug 'airblade/vim-gitgutter'
 
     "typescript plugins for intellisense
@@ -90,9 +99,11 @@ call plug#begin('~/.vim/plugged')
     Plug 'haya14busa/incsearch.vim'
     Plug 'easymotion/vim-easymotion'
     let g:EasyMotion_smartcase = 1
+    let g:EasyMotion_keys = 'asdghklqwertyuiopzxcvbnmfj'
+
     " move to single character
-    "map  f <Plug>(easymotion-f2)
-    nmap <silent> f <Plug>(easymotion-overwin-f2)
+    nmap f <Plug>(easymotion-overwin-f2)
+    nmap F <Plug>(easymotion-overwin-line)
 
     "Plug 'majutsushi/tagbar'
     "This addon does not work well with easymotion when jumping over win
@@ -154,6 +165,7 @@ call plug#begin('~/.vim/plugged')
     let g:ctrlp_max_files=0
     let g:ctrlp_show_hidden = 1
     let g:ctrlp_working_path_mode = 'rw'
+    let g:ctrlp_by_filename = 1
 
     set statusline=%F%m%r%h%w[%L][%{&ff}]%y[%p%%][%04l,%04v]
     set laststatus=2
@@ -206,6 +218,26 @@ call plug#begin('~/.vim/plugged')
       \}
     let g:fsharp_only_check_errors_on_write = 1
 
+    "Plug 'nathanaelkane/vim-indent-guides'
+    Plug 'Yggdroot/indentLine'
+    let g:indent_guides_enable_on_vim_startup = 1
+
+    Plug 'bronson/vim-visual-star-search'
+    Plug 'terryma/vim-expand-region'
+    Plug 'wellle/targets.vim'
+    Plug 'ap/vim-css-color'
+    Plug 'google/vim-searchindex'
+
+    Plug 'pseewald/vim-anyfold'
+    nmap zf :AnyFoldActivate<CR>:set foldlevel=1<CR>:set foldenable<CR>
+    "use - to toggle
+    nmap - za
+    "folding cheat sheet:
+        "zr - expand more levels
+        "zm - collapse more levels
+        "zi - toggle fold mode
+    set foldlevel=1
+
     " Purescript
     Plug 'frigoeu/psc-ide-vim'
 
@@ -239,7 +271,6 @@ silent! colorscheme desertEx " SlateDark, vividchalk themes is good high contras
 
     " ag is fast enough that CtrlP doesn't need to cache
     let g:ctrlp_use_caching = 0
-
   endif
 
   if executable ('rg')
@@ -261,7 +292,8 @@ silent! colorscheme desertEx " SlateDark, vividchalk themes is good high contras
 
   let g:tsuquyomi_disable_quickfix = 1
   let g:tsuquyomi_disable_default_mappings = 1
-  let g:syntastic_typescript_checkers = ['tsuquyomi', 'tsc']
+  let g:syntastic_typescript_checkers = ['tsuquyomi']
+  let g:syntastic_typescript_tsuquyomi_args="--strictNullChecks false"
 
   " make use of local eslint !! wohoo
   let local_eslint = finddir('node_modules', '.;') . '/.bin/eslint'
@@ -286,9 +318,6 @@ silent! colorscheme desertEx " SlateDark, vividchalk themes is good high contras
       set clipboard+=unnamed
     endif
     set encoding=utf-8
-
-    " do not show folded
-    set foldlevel=20
 
     set colorcolumn=100
 
