@@ -8,12 +8,6 @@ else
   set pythonthreehome=/usr/local/Frameworks/Python.framework/Versions/3.7
 endif
 
-" disable the highlight search
-nnoremap <CR> :noh<CR><CR>
-"enable back the go forward and backward in jump history
-noremap ( <C-o>
-noremap ) <C-i>
-
 " increase the window size, usually used for windows terminals
 " set lines=60 columns=220
 
@@ -84,6 +78,9 @@ call plug#begin('~/.vim/plugged')
     let g:startify_change_to_vcs_root = 1
 
     Plug 'airblade/vim-gitgutter'
+    highlight GitGutterAdd  ctermfg=2 ctermbg=180
+    highlight GitGutterChange  ctermfg=3 ctermbg=180
+    highlight GitGutterDelete  ctermfg=1 ctermbg=180
 
     "typescript plugins for intellisense
     Plug 'shougo/vimproc.vim'
@@ -194,6 +191,8 @@ call plug#begin('~/.vim/plugged')
     endif
     let g:deoplete#enable_at_startup = 1
 
+    "Plug 'neoclide/coc.nvim', {'tag': '*', 'do': { -> coc#util#install()}}
+
     Plug 'rust-lang/rust.vim'
     Plug 'racer-rust/vim-racer'
     au FileType rust nmap ,d <Plug>(rust-def)
@@ -231,11 +230,13 @@ call plug#begin('~/.vim/plugged')
     Plug 'pseewald/vim-anyfold'
     nmap zf :AnyFoldActivate<CR>:set foldlevel=1<CR>:set foldenable<CR>
     "use - to toggle
-    nmap - za
+    nnoremap <expr> - (foldclosed(line(".")) == -1) ? 'za':'zA'
+
     "folding cheat sheet:
         "zr - expand more levels
         "zm - collapse more levels
         "zi - toggle fold mode
+        "-  - toggle fold (expand as much as possible and collapse only 1 level back)
     set foldlevel=1
 
     " Purescript
@@ -357,6 +358,32 @@ silent! colorscheme desertEx " SlateDark, vividchalk themes is good high contras
     inoremap <C-S> <C-O>:w<CR><Esc>
 
     noremap <S-CR> <Esc>
+    nnoremap U <C-R>
+    vnoremap U gU
+
+    "provide alternative to use COUNT
+    nnoremap 1 :w<CR>
+    nnoremap <Space>1 1
+    nnoremap 3 #
+    nnoremap <Space>3 3
+    nnoremap 4 $
+    nnoremap <Space>4 4
+    nnoremap 6 ^
+    nnoremap <Space>6 6
+    nnoremap 8 *
+    nnoremap <Space>8 8
+
+    nnoremap 5 %
+    nnoremap <Space>5 5
+
+    "enable back the go forward and backward in jump history
+    nnoremap <Space>9 9
+    nnoremap 9 <C-o>
+    nnoremap <Space>0 0
+    nnoremap 0 <C-i>
+
+    " disable the highlight search
+    nnoremap <CR> :noh<CR><CR>
 
     "sudo overwrite protect file
     cmap w!! w !sudo tee > /dev/null %
@@ -385,6 +412,7 @@ silent! colorscheme desertEx " SlateDark, vividchalk themes is good high contras
     "nnoremap <leader><Space> :YRShow<CR>
     "inoremap <leader><Space> :YRShow<CR>
     nnoremap <C-b> :CtrlPMRU<CR>
+    nnoremap ,v :CtrlPMRU<CR>
 
     " bind R to search and replace word under the cursor or visual selection
     nnoremap R :CtrlSF <C-R><C-W> -R -W<CR>
@@ -396,6 +424,13 @@ silent! colorscheme desertEx " SlateDark, vividchalk themes is good high contras
     vnoremap <leader>s y:Ack! "<C-R>"" 
     "search for the visually selected text
     vnoremap // y/<C-R>"<CR>
+
+    vmap ( S(
+    vmap ) S)
+    vmap [ S(
+    vmap { S)
+    vmap " S"
+    vmap ' S'
 
     "replace word under cursor
     nnoremap ,r :%s/\<<C-r><C-w>\>//g<Left><Left>
@@ -452,6 +487,15 @@ silent! colorscheme desertEx " SlateDark, vividchalk themes is good high contras
     nnoremap <C-k> <C-w>k
     nnoremap <C-l> <C-w>l
 
+    nnoremap vv <C-w>
+
+    command! -nargs=0 -range SortWords call SortWords()
+    " Add a mapping, go to your string, then press vi",s
+    " vi" selects everything inside the quotation
+    " ,s calls the sorting algorithm
+    vmap ,s :SortWords<CR>
+    " Normal mode one: ,s to select inside the {} and sort the words
+    nmap ,s vi{,s
 
     " tag auto-close with c-space
     imap <C-Space> <C-X><C-O>
@@ -485,7 +529,7 @@ silent! colorscheme desertEx " SlateDark, vividchalk themes is good high contras
     " highlight lineNr ctermfg=grey
     syntax on
 
-    "set cursorline
+    set cursorline
     hi CursorLine guibg=NONE
 
 
@@ -520,7 +564,7 @@ silent! colorscheme desertEx " SlateDark, vividchalk themes is good high contras
     au FileType gitcommit           setlocal spell
     "au BufRead,BufNewFile *.vue    setlocal syntax=javascript
     "au BufReadPost *.json set filetype=javascript
-    "au BufReadPost *.es6,*.ts set filetype=javascript
+    "au BufReadPost *.es6 set filetype=typescript.tsx
     "disable continuous comments vim
     au FileType * setlocal formatoptions-=c formatoptions-=r formatoptions-=o
 " }
@@ -574,6 +618,64 @@ function! LineBreakAt(bang, ...) range
   " Example: 10,20s/\%(arg1\|arg2\|arg3\)\ze./&\r/ge
   execute a:firstline . ',' . a:lastline . 's/'. find . '/' . repl . '/ge'
   let @/ = save_search
+endfunction
+
+function! SortWords()
+  " Get the visual mark points
+  let StartPosition = getpos("'<")
+  let EndPosition = getpos("'>")
+
+  if StartPosition[0] != EndPosition[0]
+      echoerr "Range spans multiple buffers"
+  elseif StartPosition[1] != EndPosition[1]
+      " This is a multiple line range, probably easiest to work line wise
+
+      " This could be made a lot more complicated and sort the whole
+      " lot, but that would require thoughts on how many
+      " words/characters on each line, so that can be an exercise for
+      " the reader!
+      for LineNum in range(StartPosition[1], EndPosition[1])
+          call setline(LineNum, join(sort(split(getline('.'), ' ')), " "))
+      endfor
+  else
+      " Single line range, sort words
+      let CurrentLine = getline(StartPosition[1])
+
+      " Split the line into the prefix, the selected bit and the suffix
+
+      " The start bit
+      if StartPosition[2] > 1
+          let StartOfLine = CurrentLine[:StartPosition[2]-2]
+      else
+          let StartOfLine = ""
+      endif
+      " The end bit
+      if EndPosition[2] < len(CurrentLine)
+          let EndOfLine = CurrentLine[EndPosition[2]:]
+      else
+          let EndOfLine = ""
+      endif
+      " The middle bit
+      let BitToSort = CurrentLine[StartPosition[2]-1:EndPosition[2]-1]
+
+      " Move spaces at the start of the section to variable StartOfLine
+      while BitToSort[0] == ' '
+          let BitToSort = BitToSort[1:]
+          let StartOfLine .= ' '
+      endwhile
+      " Move spaces at the end of the section to variable EndOfLine
+      while BitToSort[len(BitToSort)-1] == ' '
+          let BitToSort = BitToSort[:len(BitToSort)-2]
+          let EndOfLine = ' ' . EndOfLine
+      endwhile
+
+      " Sort the middle bit
+      let Sorted = join(sort(split(BitToSort, ' ')), ' ')
+      " Reform the line
+      let NewLine = StartOfLine . Sorted . EndOfLine
+      " Write it out
+      call setline(StartPosition[1], NewLine)
+  endif
 endfunction
 
 au! BufReadPost,BufNewFile * call WorkSpaceSettings()
