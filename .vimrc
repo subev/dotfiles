@@ -56,11 +56,12 @@ call plug#begin('~/.vim/plugged')
 
     "Plug 'msanders/snipmate.vim'
 
-    Plug 'SirVer/ultisnips'
-    let g:UltiSnipsEditSplit = "vertical"
-
     "the repo of snippets for ultisnips
     Plug 'honza/vim-snippets'
+    Plug 'SirVer/ultisnips'
+    "jumping to next placeholder is <c-j><c-k>
+    let g:UltiSnipsEditSplit = 'vertical'
+    let g:UltiSnipsSnippetDirectories=['UltiSnips', $HOME.'/.dotfiles/snippets']
 
     Plug 'kchmck/vim-coffee-script'
     Plug 'scrooloose/nerdcommenter'
@@ -92,6 +93,8 @@ call plug#begin('~/.vim/plugged')
     Plug 'mattn/emmet-vim'
     Plug 'duganchen/vim-soy'
     Plug 'mg979/vim-visual-multi'
+    let g:VM_mouse_mappings = 1
+    map <F2> \\A
 
     Plug 'haya14busa/incsearch.vim'
     Plug 'easymotion/vim-easymotion'
@@ -123,6 +126,7 @@ call plug#begin('~/.vim/plugged')
     "addon for auto closing brackets
     Plug 'jiangmiao/auto-pairs'
     let g:AutoPairsFlyMode = 0
+    let g:AutoPairsShortcutFastWrap = '<C-e>'
 
     Plug 'mbbill/undotree'
     nnoremap <leader>u :UndotreeToggle<cr>
@@ -173,6 +177,9 @@ call plug#begin('~/.vim/plugged')
 
     Plug 'jlanzarotta/bufexplorer'
     nnoremap ,b :BufExplorer<CR>
+
+    Plug 'junegunn/fzf', { 'dir': '~/.fzf', 'do': './install --all' }
+
     Plug 'junegunn/vim-easy-align'
 
     Plug 'davidhalter/jedi-vim'
@@ -362,18 +369,23 @@ silent! colorscheme desertEx " SlateDark, vividchalk themes is good high contras
     vnoremap U gU
 
     "provide alternative to use COUNT
-    nnoremap 1 :w<CR>
+    nnoremap 2 :w<CR>
     nnoremap <Space>1 1
     nnoremap 3 #
+    vnoremap 3 #
     nnoremap <Space>3 3
     nnoremap 4 $
+    vnoremap 4 $
     nnoremap <Space>4 4
     nnoremap 6 ^
+    vnoremap 6 ^
     nnoremap <Space>6 6
     nnoremap 8 *
+    vnoremap 8 *
     nnoremap <Space>8 8
 
     nnoremap 5 %
+    vnoremap 5 %
     nnoremap <Space>5 5
 
     "enable back the go forward and backward in jump history
@@ -381,6 +393,12 @@ silent! colorscheme desertEx " SlateDark, vividchalk themes is good high contras
     nnoremap 9 <C-o>
     nnoremap <Space>0 0
     nnoremap 0 <C-i>
+
+    "experimental
+    imap 9 (
+    imap ( 9
+    imap 0 )
+    imap ) 0
 
     " disable the highlight search
     nnoremap <CR> :noh<CR><CR>
@@ -427,8 +445,10 @@ silent! colorscheme desertEx " SlateDark, vividchalk themes is good high contras
 
     vmap ( S(
     vmap ) S)
-    vmap [ S(
-    vmap { S)
+    vmap [ S[
+    vmap ] S]
+    vmap { S{
+    vmap } S}
     vmap " S"
     vmap ' S'
 
