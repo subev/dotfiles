@@ -179,6 +179,15 @@ call plug#begin('~/.vim/plugged')
     nnoremap ,b :BufExplorer<CR>
 
     Plug 'junegunn/fzf', { 'dir': '~/.fzf', 'do': './install --all' }
+    Plug 'junegunn/fzf.vim'
+    nmap <F1> :Helptags<cr>
+    nmap <leader>f :FZF<cr>
+    command! -bang -nargs=* Rg
+      \ call fzf#vim#grep(
+      \   'rg --column --line-number --no-heading --color=always --smart-case '.shellescape(<q-args>), 1,
+      \   <bang>0 ? fzf#vim#with_preview('up:60%')
+      \           : fzf#vim#with_preview('right:50%:hidden', '?'),
+      \   <bang>0)
 
     Plug 'junegunn/vim-easy-align'
 
