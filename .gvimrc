@@ -11,6 +11,5 @@ set guioptions=
 "set macligatures
 "set guifont=Monaco\ for\ Powerline:h14
 "this is cool too and is install on mac by default
-"set guifont=DejaVu\ Sans\ Mono\ for\ Powerline:h16
 set guifont=Roboto\ Mono\ for\ Powerline:h16
 set linespace=-1

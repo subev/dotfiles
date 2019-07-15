@@ -1,4 +1,3 @@
-"to make sure every verson of vim/nvim/mvim works install both python and python3
 if has('nvim')
   let g:python2_host_prog = '/usr/local/bin/python'
   let g:python3_host_prog = '/usr/local/bin/python3'
@@ -17,8 +16,9 @@ let g:snippets_dir='~/dotfiles/snippets/'
 filetype off
 
 " Load vim-plug
-if empty(glob("~/.vim/autoload/plug.vim"))
-  execute '!curl -fLo ~/.vim/autoload/plug.vim https://raw.github.com/junegunn/vim-plug/master/plug.vim'
+if empty(glob('~/.vim/autoload/plug.vim'))
+  silent !curl -fLo ~/.vim/autoload/plug.vim --create-dirs
+    \ https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim
 endif
 call plug#begin('~/.vim/plugged')
 " Plugins {
@@ -462,6 +462,8 @@ silent! colorscheme desertEx " SlateDark, vividchalk themes is good high contras
     nnoremap ,r :%s/\<<C-r><C-w>\>//g<Left><Left>
     "close window
     noremap ,w <C-w>c
+    noremap Q q
+    noremap q <C-w>c
     "create new vertical split
     noremap ,n :vnew<CR>
 
@@ -529,7 +531,7 @@ silent! colorscheme desertEx " SlateDark, vividchalk themes is good high contras
     " close buffer
     nnoremap <C-W>! <Plug>Kwbd
 
-    noremap <leader>ve :vsplit $MYVIMRC<CR>
+    noremap <leader>ve :e $MYVIMRC<CR>
     noremap <leader>vu :source %<CR>
 
     "free the mapping <C-i> taken by snipmate
