@@ -6,6 +6,7 @@
   whitespace = cr-at-eol
 	editor = nvim
 	excludesfile = /Users/petur/.gitignore_global
+	pager = diff-so-fancy | less --tabs=4 -RFX
   ;autocrlf = input
 [http]
   sllverify = false
@@ -60,7 +61,7 @@
 	cmd = opendiff \"$LOCAL\" \"$REMOTE\"
 	path = 
 [mergetool "sourcetree"]
-	cmd = /Users/petur/Applications/SourceTree.app/Contents/Resources/opendiff-w.sh \"$LOCAL\" \"$REMOTE\" -ancestor \"$BASE\" -merge \"$MERGED\"
+	cmd = /Applications/Sourcetree.app/Contents/Resources/opendiff-w.sh \"$LOCAL\" \"$REMOTE\" -ancestor \"$BASE\" -merge \"$MERGED\"
 	trustExitCode = true
 [commit]
 	template = /Users/petur/.stCommitMsg

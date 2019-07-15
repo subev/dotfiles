@@ -61,7 +61,7 @@ call plug#begin('~/.vim/plugged')
     Plug 'SirVer/ultisnips'
     "jumping to next placeholder is <c-j><c-k>
     let g:UltiSnipsEditSplit = 'vertical'
-    let g:UltiSnipsSnippetDirectories=['UltiSnips', $HOME.'/.dotfiles/snippets']
+    let g:UltiSnipsSnippetDirectories=['UltiSnips', $HOME.'/dotfiles/snippets/ultisnips']
 
     Plug 'kchmck/vim-coffee-script'
     Plug 'scrooloose/nerdcommenter'
@@ -77,6 +77,7 @@ call plug#begin('~/.vim/plugged')
     Plug 'mhinz/vim-startify'
     let g:startify_change_to_dir = 0
     let g:startify_change_to_vcs_root = 1
+    let g:startify_session_persistence = 1
 
     Plug 'airblade/vim-gitgutter'
     highlight GitGutterAdd  ctermfg=2 ctermbg=180
@@ -84,13 +85,14 @@ call plug#begin('~/.vim/plugged')
     highlight GitGutterDelete  ctermfg=1 ctermbg=180
 
     "typescript plugins for intellisense
-    Plug 'shougo/vimproc.vim'
+    Plug 'Shougo/vimproc.vim', {'do' : 'make'}
     Plug 'quramy/tsuquyomi'
     let g:tsuquyomi_use_vimproc = 1
 
     Plug 'tpope/vim-repeat'
     Plug 'tpope/vim-unimpaired'
     Plug 'mattn/emmet-vim'
+    let g:user_emmet_leader_key=',,'
     Plug 'duganchen/vim-soy'
     Plug 'mg979/vim-visual-multi'
     let g:VM_mouse_mappings = 1
@@ -156,6 +158,7 @@ call plug#begin('~/.vim/plugged')
 
     "git tools blame, log, view files in other branches
     Plug 'tpope/vim-fugitive'
+    Plug 'junegunn/gv.vim'
     Plug 'tpope/vim-rhubarb'
     " change surrounding brancjes
     Plug 'tpope/vim-surround'
@@ -402,12 +405,6 @@ silent! colorscheme desertEx " SlateDark, vividchalk themes is good high contras
     nnoremap 9 <C-o>
     nnoremap <Space>0 0
     nnoremap 0 <C-i>
-
-    "experimental
-    imap 9 (
-    imap ( 9
-    imap 0 )
-    imap ) 0
 
     " disable the highlight search
     nnoremap <CR> :noh<CR><CR>

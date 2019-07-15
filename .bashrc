@@ -127,21 +127,9 @@ if [ -x /usr/bin/dircolors ]; then
 fi
 
 # some more ls aliases
-alias ll='ls -alF --group-directories-first --color=auto'
+alias ll='ls -alFH --group-directories-first --color=auto'
 alias la='ls -A'
 alias l='ls -CF'
-
-# Add an "alert" alias for long running commands.  Use like so:
-#   sleep 10; alert
-alias alert='notify-send --urgency=low -i "$([ $? = 0 ] && echo terminal || echo error)" "$(history|tail -n1|sed -e '\''s/^\s*[0-9]\+\s*//;s/[;&|]\s*alert$//'\'')"'
-
-# Leanplum aliases
-alias spark='gcloud compute ssh --ssh-flag=-D9090 --ssh-flag=-N --zone=us-central1-b job-server-boris --project leanplum & "/Applications/Google Chrome.app/Contents/MacOS/Google Chrome" --user-data-dir=~/.chrome-profiles/prod --proxy-server="socks5://localhost:9090" http://spark-ah-m:4040/jobs/ &'
-
-# Alias definitions.
-# You may want to put all your additions into a separate file like
-# ~/.bash_aliases, instead of adding them here directly.
-# See /usr/share/doc/bash-doc/examples in the bash-doc package.
 
 if [ -f ~/.bash_aliases ]; then
     . ~/.bash_aliases
@@ -166,7 +154,7 @@ command_exists () {
 export EDITOR=vim
 
 if command_exists nvim ; then
-  export EDITOR="nvim"
+  export editor="nvim"
 fi
 
 if command_exists rg ; then

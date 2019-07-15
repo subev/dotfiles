@@ -156,12 +156,11 @@ snippet :f
 # setTimeout function
 snippet timeout
 	setTimeout(function() {${3}}${2}, ${1:10};
-# Get Elements
+# class getter
 snippet get
-	getElementsBy${1:TagName}('${2}')${3}
-# Get Element
-snippet gett
-	getElementBy${1:Id}('${2}')${3}
+	get ${1:foo}: ${2:boolean} {
+    return ${3:this}
+	}
 # Vue typescript specific
 snippet comp
 	@Component({
