@@ -153,10 +153,6 @@ command_exists () {
 
 export EDITOR=vim
 
-if command_exists nvim ; then
-  export editor="nvim"
-fi
-
 if command_exists rg ; then
   alias rg="rg --type-add 'pug:*.pug' --type-add 'zsh:.zshrc'"
 fi
