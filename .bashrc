@@ -6,7 +6,7 @@
 PATH="/usr/local/share/dotnet:$PATH"
 
 # haskell compiled output
-PATH="/Users/petur/.local/bin:$PATH"
+PATH="${HOME}/.local/bin:$PATH"
 PATH="/usr/local/opt/coreutils/libexec/gnubin:$PATH"
 MANPATH="/usr/local/opt/coreutils/libexec/gnuman:$MANPATH"
 

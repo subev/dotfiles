@@ -42,6 +42,13 @@ call plug#begin('~/.vim/plugged')
     "let g:prettier#exec_cmd_async = 1
 
     Plug 'sbdchd/neoformat'
+    let g:neoformat_java_google = {
+                \ 'exe': 'java',
+                \ 'args': ['-jar ~/Downloads/google-java-format-1.7-all-deps.jar -'],
+                \ 'stdin': 1, 
+                \ }
+
+    let g:neoformat_enabled_java = ['google']
 
     "Plug 'bigfish/vim-js-context-coloring'
     Plug 'elzr/vim-json'
@@ -211,6 +218,9 @@ call plug#begin('~/.vim/plugged')
     let g:deoplete#enable_at_startup = 1
 
     "Plug 'neoclide/coc.nvim', {'tag': '*', 'do': { -> coc#util#install()}}
+
+    "Plug 'artur-shaik/vim-javacomplete2'
+    "autocmd FileType java setlocal omnifunc=javacomplete#Complete
 
     Plug 'rust-lang/rust.vim'
     Plug 'racer-rust/vim-racer'
