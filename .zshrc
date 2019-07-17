@@ -19,6 +19,10 @@ ZSH_THEME="powerlevel10k/powerlevel10k"
 POWERLEVEL9K_MODE="awesome-patched"
 DEFAULT_USER=$(whoami)
 
+POWERLEVEL9K_RIGHT_PROMPT_ELEMENTS=(status root_indicator background_jobs command_execution_time  time)
+POWERLEVEL9K_DIR_SHOW_WRITABLE=true
+POWERLEVEL9K_SHORTEN_DIR_LENGTH=4
+
 # Set list of themes to pick from when loading at random
 # Setting this variable when ZSH_THEME=random will cause zsh to load
 # a theme from this variable instead of looking in ~/.oh-my-zsh/themes/
