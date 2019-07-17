@@ -2,6 +2,8 @@
 # export PATH=$HOME/bin:/usr/local/bin:$PATH
 
 # Path to your oh-my-zsh installation.
+export CLOUDSDK_PYTHON_SITEPACKAGES=1
+
 export ZSH="${HOME}/.oh-my-zsh"
 export FZF_BASE=/usr/local/opt/fzf
 export LC_ALL=en_US.UTF-8
@@ -116,10 +118,10 @@ eval $(thefuck --alias)
 alias ll='gls -alFH --group-directories-first --color=auto'
 
 # The next line updates PATH for the Google Cloud SDK.
-if [ -f '${HOME}/google-cloud-sdk/path.zsh.inc' ]; then . '${HOME}/google-cloud-sdk/path.zsh.inc'; fi
+if [ -f ${HOME}/google-cloud-sdk/path.zsh.inc ]; then . ${HOME}/google-cloud-sdk/path.zsh.inc; fi
 
 # The next line enables shell command completion for gcloud.
-if [ -f '${HOME}/google-cloud-sdk/completion.zsh.inc' ]; then . '${HOME}/google-cloud-sdk/completion.zsh.inc'; fi
+if [ -f ${HOME}/google-cloud-sdk/completion.zsh.inc ]; then . ${HOME}/google-cloud-sdk/completion.zsh.inc; fi
 
 [ -f ~/.fzf.zsh ] && source ~/.fzf.zsh
 
