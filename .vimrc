@@ -271,6 +271,8 @@ call plug#begin('~/.vim/plugged')
     " Purescript
     Plug 'frigoeu/psc-ide-vim'
 
+    Plug 'chrisbra/csv.vim'
+
     Plug 'editorconfig/editorconfig-vim'
 
     Plug 'MattesGroeger/vim-bookmarks'
