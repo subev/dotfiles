@@ -272,6 +272,7 @@ call plug#begin('~/.vim/plugged')
     Plug 'frigoeu/psc-ide-vim'
 
     Plug 'chrisbra/csv.vim'
+    au FileType csv nnoremap <buffer> 1 :WhatColumn!<CR>
 
     Plug 'editorconfig/editorconfig-vim'
 
@@ -394,29 +395,27 @@ silent! colorscheme desertEx " SlateDark, vividchalk themes is good high contras
 
     "provide alternative to use COUNT
     nnoremap 2 :w<CR>
-    nnoremap <Space>1 1
     nnoremap 3 #
     vnoremap 3 #
-    nnoremap <Space>3 3
     nnoremap 4 $
     vnoremap 4 $
-    nnoremap <Space>4 4
-    nnoremap 6 ^
-    vnoremap 6 ^
-    nnoremap <Space>6 6
-    nnoremap 8 *
-    vnoremap 8 *
-    nnoremap <Space>8 8
-
     nnoremap 5 %
     vnoremap 5 %
-    nnoremap <Space>5 5
-
-    "enable back the go forward and backward in jump history
-    nnoremap <Space>9 9
+    nnoremap 6 ^
+    vnoremap 6 ^
+    nnoremap 8 *
+    vnoremap 8 *
     nnoremap 9 <C-o>
-    nnoremap <Space>0 0
     nnoremap 0 <C-i>
+
+    au BufEnter __CtrlSFPreview__ noremap <buffer> 2 2
+    au BufEnter __CtrlSFPreview__ noremap <buffer> 3 3
+    au BufEnter __CtrlSFPreview__ noremap <buffer> 4 4
+    au BufEnter __CtrlSFPreview__ noremap <buffer> 5 5
+    au BufEnter __CtrlSFPreview__ noremap <buffer> 6 6
+    au BufEnter __CtrlSFPreview__ noremap <buffer> 8 8
+    au BufEnter __CtrlSFPreview__ noremap <buffer> 9 9
+    au BufEnter __CtrlSFPreview__ noremap <buffer> 0 0
 
     " disable the highlight search
     nnoremap <CR> :noh<CR><CR>
@@ -435,10 +434,10 @@ silent! colorscheme desertEx " SlateDark, vividchalk themes is good high contras
     " search with ag via the Ack frontend plugin
     noremap <leader>s :Ack! 
     " search with sublime-alternative
-    noremap <leader>R :CtrlSF 
-    vnoremap <leader>R y:CtrlSF \b<C-R>"\b -R
+    noremap <leader>r :CtrlSF 
+    vnoremap <leader>r y:CtrlSF \b<C-R>"\b -R
     "use leader-r to navigate to current file in nerdtree
-    noremap <leader>r :NERDTreeFind<CR>zz
+    noremap <leader>R :NERDTreeFind<CR>zz
 
     " quick-paste last yanked text
     noremap <C-p> "0p
@@ -555,6 +554,9 @@ silent! colorscheme desertEx " SlateDark, vividchalk themes is good high contras
       noremap <leader>2 :diffget BASE<CR>
       noremap <leader>3 :diffget REMOTE<CR>
       colorscheme darkBlue
+    endif
+    if has("patch-8.1.0360")
+      set diffopt+=internal,algorithm:patience
     endif
 " }
 
