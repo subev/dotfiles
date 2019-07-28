@@ -76,10 +76,18 @@ call plug#begin('~/.vim/plugged')
     Plug 'Xuyuanp/nerdtree-git-plugin'
     let g:NERDTreeQuitOnOpen = 1
     let g:NERDTreeChDirMode  = 2
+    noremap <space>p :NERDTreeFind<CR>zz
+
+    Plug 'kien/rainbow_parentheses.vim'
+    au VimEnter * RainbowParenthesesActivate
+    au BufEnter * RainbowParenthesesLoadRound
+    au BufEnter * RainbowParenthesesLoadBraces
+    au BufEnter * RainbowParenthesesLoadSquare
 
     Plug 'scrooloose/syntastic'
     nnoremap ,c :SyntasticCheck<CR>
     nnoremap ,C :SyntasticToggleMode<CR>
+    let g:syntastic_enable_racket_racket_checker=1
 
     Plug 'mhinz/vim-startify'
     let g:startify_change_to_dir = 0
@@ -272,7 +280,7 @@ call plug#begin('~/.vim/plugged')
     Plug 'frigoeu/psc-ide-vim'
 
     Plug 'chrisbra/csv.vim'
-    au FileType csv nnoremap <buffer> 1 :WhatColumn!<CR>
+    au FileType csv nnoremap <buffer> <Space><Space> :WhatColumn!<CR>
 
     Plug 'editorconfig/editorconfig-vim'
 
@@ -435,9 +443,8 @@ silent! colorscheme desertEx " SlateDark, vividchalk themes is good high contras
     noremap <leader>s :Ack! 
     " search with sublime-alternative
     noremap <leader>r :CtrlSF 
+    noremap <Space>r :CtrlSFOpen<CR> 
     vnoremap <leader>r y:CtrlSF \b<C-R>"\b -R
-    "use leader-r to navigate to current file in nerdtree
-    noremap <leader>R :NERDTreeFind<CR>zz
 
     " quick-paste last yanked text
     noremap <C-p> "0p
