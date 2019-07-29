@@ -10,7 +10,7 @@ endif
 " increase the window size, usually used for windows terminals
 " set lines=60 columns=220
 
-hi LineNr guifg=#AAAAAA guibg=#111111
+"hi LineNr guifg=#AAAAAA guibg=#111111
 "set guifont=Roboto\ Mono\ for\ Powerline:h14
 let g:snippets_dir='~/dotfiles/snippets/'
 filetype off
@@ -26,51 +26,38 @@ call plug#begin('~/.vim/plugged')
     " themes
     "Plug 'Railscasts-Theme-GUIand256color'
     Plug 'flazz/vim-colorschemes'
-    Plug 'felixhummel/setcolors.vim'
-    "although vim polyglot is loaded after this I love the syntax of jelera more than pangloss coming from polyglot
-    Plug 'jelera/vim-javascript-syntax'
-    " typescript highlighting
-    Plug 'herringtondarkholme/yats.vim'
-    Plug 'sheerun/vim-polyglot'
-    Plug 'othree/javascript-libraries-syntax.vim'
+    "Plug 'felixhummel/setcolors.vim'
+    "Plug 'sheerun/vim-polyglot'
+    "let g:polyglot_disabled = ['typescript', 'javascript']
+
+    "Plug 'jelera/vim-javascript-syntax'
+    "Plug 'herringtondarkholme/yats.vim'
+    "Plug 'othree/javascript-libraries-syntax.vim'
     Plug 'ianks/vim-tsx'
 
-    " post install (yarn install | npm install) then load plugin only for editing supported files
-    "Plug 'prettier/vim-prettier', {
-      "\ 'do': 'yarn install',
-      "\ 'for': ['javascript', 'typescript', 'css', 'less', 'scss', 'json', 'graphql'] }
-    "let g:prettier#exec_cmd_async = 1
-
     Plug 'sbdchd/neoformat'
-    let g:neoformat_java_google = {
-                \ 'exe': 'java',
-                \ 'args': ['-jar ~/Downloads/google-java-format-1.7-all-deps.jar -'],
-                \ 'stdin': 1, 
-                \ }
-
-    let g:neoformat_enabled_java = ['google']
 
     "Plug 'bigfish/vim-js-context-coloring'
-    Plug 'elzr/vim-json'
+    "Plug 'elzr/vim-json'
 
     ""match tags and navigate through %
     Plug 'tmhedberg/matchit'
     Plug 'groenewege/vim-less'
 
     "This plugin is supposed to use tab instead of ctrl-n
-    Plug 'ervandew/supertab'
-    let g:SuperTabDefaultCompletionType = "<c-n>"
+    "Plug 'ervandew/supertab'
+    "let g:SuperTabDefaultCompletionType = "<c-n>"
 
     "Plug 'msanders/snipmate.vim'
 
     "the repo of snippets for ultisnips
     Plug 'honza/vim-snippets'
-    Plug 'SirVer/ultisnips'
-    "jumping to next placeholder is <c-j><c-k>
-    let g:UltiSnipsEditSplit = 'vertical'
-    let g:UltiSnipsSnippetDirectories=['UltiSnips', $HOME.'/dotfiles/snippets/ultisnips']
+    "Plug 'SirVer/ultisnips'
+    ""jumping to next placeholder is <c-j><c-k>
+    "let g:UltiSnipsEditSplit = 'vertical'
+    "let g:UltiSnipsSnippetDirectories=['UltiSnips', $HOME.'/dotfiles/snippets/ultisnips']
 
-    Plug 'kchmck/vim-coffee-script'
+    "Plug 'kchmck/vim-coffee-script'
     Plug 'scrooloose/nerdcommenter'
     Plug 'scrooloose/nerdtree'
     Plug 'Xuyuanp/nerdtree-git-plugin'
@@ -78,11 +65,11 @@ call plug#begin('~/.vim/plugged')
     let g:NERDTreeChDirMode  = 2
     noremap <space>p :NERDTreeFind<CR>zz
 
-    Plug 'kien/rainbow_parentheses.vim'
-    au VimEnter * RainbowParenthesesActivate
-    au BufEnter * RainbowParenthesesLoadRound
-    au BufEnter * RainbowParenthesesLoadBraces
-    au BufEnter * RainbowParenthesesLoadSquare
+    "Plug 'kien/rainbow_parentheses.vim'
+    "au VimEnter * RainbowParenthesesActivate
+    "au BufEnter * RainbowParenthesesLoadRound
+    "au BufEnter * RainbowParenthesesLoadBraces
+    "au BufEnter * RainbowParenthesesLoadSquare
 
     Plug 'scrooloose/syntastic'
     nnoremap ,c :SyntasticCheck<CR>
@@ -94,15 +81,150 @@ call plug#begin('~/.vim/plugged')
     let g:startify_change_to_vcs_root = 1
     let g:startify_session_persistence = 1
 
-    Plug 'airblade/vim-gitgutter'
-    highlight GitGutterAdd  ctermfg=2 ctermbg=180
-    highlight GitGutterChange  ctermfg=3 ctermbg=180
-    highlight GitGutterDelete  ctermfg=1 ctermbg=180
+    "Plug 'airblade/vim-gitgutter'
+    "highlight GitGutterAdd  ctermfg=2 ctermbg=180
+    "highlight GitGutterChange  ctermfg=3 ctermbg=180
+    "highlight GitGutterDelete  ctermfg=1 ctermbg=180
 
-    "typescript plugins for intellisense
-    Plug 'Shougo/vimproc.vim', {'do' : 'make'}
-    Plug 'quramy/tsuquyomi'
-    let g:tsuquyomi_use_vimproc = 1
+    Plug 'neoclide/coc.nvim', {'branch': 'release'}
+
+
+    " You will have bad experience for diagnostic messages when it's default 4000.
+    set updatetime=300
+
+    " always show signcolumns
+    "set signcolumn=yes
+
+    " Use tab for trigger completion with characters ahead and navigate.
+    " Use command ':verbose imap <tab>' to make sure tab is not mapped by other plugin.
+    inoremap <silent><expr> <TAB>
+          \ pumvisible() ? "\<C-n>" :
+          \ <SID>check_back_space() ? "\<TAB>" :
+          \ coc#refresh()
+    inoremap <expr><S-TAB> pumvisible() ? "\<C-p>" : "\<C-h>"
+
+    function! s:check_back_space() abort
+      let col = col('.') - 1
+      return !col || getline('.')[col - 1]  =~# '\s'
+    endfunction
+
+    " Use <c-space> to trigger completion.
+    inoremap <silent><expr> <c-space> coc#refresh()
+
+    " Use <cr> to confirm completion, `<C-g>u` means break undo chain at current position.
+    " Coc only does snippet and additional edit on confirm.
+    inoremap <expr> <cr> pumvisible() ? "\<C-y>" : "\<C-g>u\<CR>"
+
+    " Use `[c` and `]c` to navigate diagnostics
+    "nmap <silent> [c <Plug>(coc-diagnostic-prev)
+    "nmap <silent> ]c <Plug>(coc-diagnostic-next)
+
+    " Remap keys for gotos
+    nmap <silent> ,d <Plug>(coc-definition)
+    nmap <silent> gd <Plug>(coc-type-definition)
+    nmap <silent> ,i <Plug>(coc-implementation)
+    nmap <silent> ,6 <Plug>(coc-references)
+
+    " Use K to show documentation in preview window
+    nnoremap <silent> <space>m :call <SID>show_documentation()<CR>
+
+    function! s:show_documentation()
+      if (index(['vim','help'], &filetype) >= 0)
+        execute 'h '.expand('<cword>')
+      else
+        call CocAction('doHover')
+      endif
+    endfunction
+
+    " Highlight symbol under cursor on CursorHold
+    autocmd CursorHold * silent call CocActionAsync('highlight')
+
+    " Remap for rename current word
+    nmap <leader>,r <Plug>(coc-rename)
+
+    " Remap for format selected region
+    xmap <space>f  <Plug>(coc-format-selected)
+    nmap <space>f  <Plug>(coc-format-selected)
+
+    augroup mygroup
+      autocmd!
+      " Setup formatexpr specified filetype(s).
+      autocmd FileType typescript,json setl formatexpr=CocAction('formatSelected')
+      " Update signature help on jump placeholder
+      autocmd User CocJumpPlaceholder call CocActionAsync('showSignatureHelp')
+    augroup end
+
+    " Remap for do codeAction of selected region, ex: `<leader>aap` for current paragraph
+    xmap <space>a  <Plug>(coc-codeaction-selected)
+    nmap <space>a  <Plug>(coc-codeaction-selected)
+
+    " Remap for do codeAction of current line
+    nmap <space>l  <Plug>(coc-codeaction)
+    " Fix autofix problem of current line
+    nmap <space>qf  <Plug>(coc-fix-current)
+
+    " Use <tab> for select selections ranges, needs server support, like: coc-tsserver, coc-python
+    nmap <silent> <TAB> <Plug>(coc-range-select)
+    xmap <silent> <TAB> <Plug>(coc-range-select)
+    xmap <silent> <S-TAB> <Plug>(coc-range-select-backword)
+
+    " Use `:Format` to format current buffer
+    command! -nargs=0 Format :call CocAction('format')
+
+    " Use `:Fold` to fold current buffer
+    command! -nargs=? Fold :call     CocAction('fold', <f-args>)
+
+    " use `:OR` for organize import of current buffer
+    command! -nargs=0 OR   :call     CocAction('runCommand', 'editor.action.organizeImport')
+
+    " Add status line support, for integration with other plugin, checkout `:h coc-status`
+    set statusline^=%{coc#status()}%{get(b:,'coc_current_function','')}
+
+    " Using CocList
+    " Show all diagnostics
+    nnoremap <silent> <space>ca  :<C-u>CocList diagnostics<cr>
+    " Manage extensions
+    nnoremap <silent> <space>ce  :<C-u>CocList extensions<cr>
+    " Show commands
+    nnoremap <silent> <space>cc  :<C-u>CocList commands<cr>
+    " Find symbol of current document
+    nnoremap <silent> <space>co  :<C-u>CocList outline<cr>
+    " Search workspace symbols
+    nnoremap <silent> <space>cs  :<C-u>CocList -I symbols<cr>
+    " Do default action for next item.
+    nnoremap <silent> <space>cj  :<C-u>CocNext<CR>
+    " Do default action for previous item.
+    nnoremap <silent> <space>ck  :<C-u>CocPrev<CR>
+    " Resume latest coc list
+    nnoremap <silent> <space>cp  :<C-u>CocListResume<CR>
+
+
+
+
+    ""typescript plugins for intellisense
+    "Plug 'Shougo/vimproc.vim', {'do' : 'make'}
+    "Plug 'quramy/tsuquyomi'
+    "let g:tsuquyomi_use_vimproc = 1
+    "let g:tsuquyomi_disable_quickfix = 1
+    "let g:tsuquyomi_disable_default_mappings = 1
+    ""typescript tools by tsuquyomi, just for typescript
+    "au FileType typescript,typescript.tsx nnoremap ,f :TsuQuickFix<CR>
+    "au FileType typescript,typescript.tsx nnoremap ,i :TsuImport<CR>
+    "au FileType typescript,typescript.tsx nnoremap ,d :TsuDefinition<CR>
+    "au FileType typescript,typescript.tsx nnoremap ,D :TsuImplementation<CR>
+    "au FileType typescript,typescript.tsx nnoremap ,` :TsuGoBack<CR>
+    "au FileType typescript,typescript.tsx nnoremap ,6 :TsuReferences<CR>
+    "au FileType typescript,typescript.tsx nnoremap ,r :TsuRenameSymbol<CR>
+    "au FileType typescript,typescript.tsx nmap <buffer> <Space><Space> : <C-u>echo tsuquyomi#hint()<CR>
+
+    "if has('nvim')
+      "Plug 'Shougo/deoplete.nvim'
+    "else
+      "Plug 'Shougo/deoplete.nvim'
+      "Plug 'roxma/nvim-yarp'
+      "Plug 'roxma/vim-hug-neovim-rpc'
+    "endif
+    "let g:deoplete#enable_at_startup = 1
 
     Plug 'tpope/vim-repeat'
     Plug 'tpope/vim-unimpaired'
@@ -216,15 +338,6 @@ call plug#begin('~/.vim/plugged')
     let g:jedi#completions_command = "<C-Space>"
     let g:jedi#rename_command = ",r"
 
-    if has('nvim')
-      Plug 'Shougo/deoplete.nvim'
-    else
-      Plug 'Shougo/deoplete.nvim'
-      Plug 'roxma/nvim-yarp'
-      Plug 'roxma/vim-hug-neovim-rpc'
-    endif
-    let g:deoplete#enable_at_startup = 1
-
     "Plug 'neoclide/coc.nvim', {'tag': '*', 'do': { -> coc#util#install()}}
 
     "Plug 'artur-shaik/vim-javacomplete2'
@@ -233,7 +346,6 @@ call plug#begin('~/.vim/plugged')
     Plug 'rust-lang/rust.vim'
     Plug 'racer-rust/vim-racer'
     au FileType rust nmap ,d <Plug>(rust-def)
-    set hidden
     let g:racer_cmd = "~/.cargo/bin/racer"
 
     " Haskell omni complete
@@ -331,8 +443,6 @@ silent! colorscheme desertEx " SlateDark, vividchalk themes is good high contras
   let g:syntastic_rust_checkers=["cargo"]
   let g:syntastic_haskell_checkers=["hdevtools"]
 
-  let g:tsuquyomi_disable_quickfix = 1
-  let g:tsuquyomi_disable_default_mappings = 1
   let g:syntastic_typescript_checkers = ['tsuquyomi']
   let g:syntastic_typescript_tsuquyomi_args="--strictNullChecks false"
 
@@ -371,7 +481,7 @@ silent! colorscheme desertEx " SlateDark, vividchalk themes is good high contras
 
     "au FileType qf noremap q :q<CR><CR>
 
-    set shortmess=aoOtI
+    set shortmess=caoOtI
 
     " avoid swap, temp and backup files
     set nobackup
@@ -476,24 +586,14 @@ silent! colorscheme desertEx " SlateDark, vividchalk themes is good high contras
     vmap " S"
     vmap ' S'
 
-    "replace word under cursor
-    nnoremap ,r :%s/\<<C-r><C-w>\>//g<Left><Left>
+    ""replace word under cursor
+    "nnoremap ,r :%s/\<<C-r><C-w>\>//g<Left><Left>
     "close window
     noremap ,w <C-w>c
     noremap Q q
     noremap q <C-w>c
     "create new vertical split
     noremap ,n :vnew<CR>
-
-    "typescript tools by tsuquyomi, just for typescript
-    au FileType typescript,typescript.tsx nnoremap ,f :TsuQuickFix<CR>
-    au FileType typescript,typescript.tsx nnoremap ,i :TsuImport<CR>
-    au FileType typescript,typescript.tsx nnoremap ,d :TsuDefinition<CR>
-    au FileType typescript,typescript.tsx nnoremap ,D :TsuImplementation<CR>
-    au FileType typescript,typescript.tsx nnoremap ,` :TsuGoBack<CR>
-    au FileType typescript,typescript.tsx nnoremap ,6 :TsuReferences<CR>
-    au FileType typescript,typescript.tsx nnoremap ,r :TsuRenameSymbol<CR>
-    au FileType typescript,typescript.tsx nmap <buffer> <Space><Space> : <C-u>echo tsuquyomi#hint()<CR>
 
     "use incsearch plugin
     map /  <Plug>(incsearch-forward)
@@ -502,11 +602,11 @@ silent! colorscheme desertEx " SlateDark, vividchalk themes is good high contras
     nnoremap ,o :only<CR>
 
     " center screen
-    noremap <Space><Space> zz
+    "noremap <Space><Space> zz
     " add space after
-    noremap <Space>a a<Space><ESC>h
+    "noremap <Space>a a<Space><ESC>h
     " add space before
-    noremap <Space>i i<Space><ESC>l
+    "noremap <Space>i i<Space><ESC>l
 
     "jump to the closest opening bracket of type {
     nnoremap { [{
