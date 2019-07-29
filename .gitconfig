@@ -67,3 +67,5 @@
   template = /Users/petur/.stCommitMsg
 [mergetool "mvimdiff"]
   cmd = mvim -d \"$LOCAL\" \"$BASE\" \"$REMOTE\"
+[pull]
+	rebase = true
