@@ -23,3 +23,5 @@ ln -s dotfiles/.screenrc ~/.screenrc
 ln -s dotfiles/.agignore ~/.agignore
 
 ln -s dotfiles/.agignore ~/.rgignore
+
+ln -s dotfiles/.coc-settings.json ../.vim/coc-settings.json

@@ -33,6 +33,7 @@ call plug#begin('~/.vim/plugged')
     Plug 'herringtondarkholme/yats.vim'
     Plug 'othree/javascript-libraries-syntax.vim'
     Plug 'ianks/vim-tsx'
+    Plug 'chemzqm/vim-jsx-improve'
 
     Plug 'sbdchd/neoformat'
 
@@ -86,7 +87,8 @@ call plug#begin('~/.vim/plugged')
     highlight GitGutterDelete  ctermfg=1 ctermbg=180
 
     Plug 'neoclide/coc.nvim', {'branch': 'release'}
-
+    let g:coc_global_extensions = [ 'coc-tslint', 'coc-tslint-plugin', 'coc-emmet', 'coc-git', 'coc-vimlsp',
+      \ 'coc-tabnine', 'coc-lists', 'coc-snippets', 'coc-highlight', 'coc-vetur', 'coc-html', 'coc-tsserver', 'coc-css', 'coc-json' ]
 
     " You will have bad experience for diagnostic messages when it's default 4000.
     set updatetime=300
@@ -226,8 +228,8 @@ call plug#begin('~/.vim/plugged')
 
     Plug 'tpope/vim-repeat'
     Plug 'tpope/vim-unimpaired'
-    Plug 'mattn/emmet-vim'
-    let g:user_emmet_leader_key=',,'
+    "Plug 'mattn/emmet-vim'
+    "let g:user_emmet_leader_key=',,'
     Plug 'duganchen/vim-soy'
     Plug 'mg979/vim-visual-multi'
     let g:VM_mouse_mappings = 1
@@ -717,8 +719,6 @@ silent! colorscheme desertEx " SlateDark, vividchalk themes is good high contras
 function! WorkSpaceSettings()
   let l:path = expand('%:p')
   if l:path =~ '/Leanplum/'
-    "let b:syntastic_checkers = ["jshint"]
-
     iabbrev @@@ // All rights reserved. Leanplum. 2016.
           \<CR>// Author: Petur Subev (petur@leanplum.com)
           \<CR>// 
