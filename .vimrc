@@ -13,7 +13,6 @@ endif
 "hi LineNr guifg=#AAAAAA guibg=#111111
 "set guifont=Roboto\ Mono\ for\ Powerline:h14
 let g:snippets_dir='~/dotfiles/snippets/'
-filetype off
 
 " Load vim-plug
 if empty(glob('~/.vim/autoload/plug.vim'))
@@ -30,9 +29,9 @@ call plug#begin('~/.vim/plugged')
     "Plug 'sheerun/vim-polyglot'
     "let g:polyglot_disabled = ['typescript', 'javascript']
 
-    "Plug 'jelera/vim-javascript-syntax'
-    "Plug 'herringtondarkholme/yats.vim'
-    "Plug 'othree/javascript-libraries-syntax.vim'
+    Plug 'jelera/vim-javascript-syntax'
+    Plug 'herringtondarkholme/yats.vim'
+    Plug 'othree/javascript-libraries-syntax.vim'
     Plug 'ianks/vim-tsx'
 
     Plug 'sbdchd/neoformat'
@@ -81,10 +80,10 @@ call plug#begin('~/.vim/plugged')
     let g:startify_change_to_vcs_root = 1
     let g:startify_session_persistence = 1
 
-    "Plug 'airblade/vim-gitgutter'
-    "highlight GitGutterAdd  ctermfg=2 ctermbg=180
-    "highlight GitGutterChange  ctermfg=3 ctermbg=180
-    "highlight GitGutterDelete  ctermfg=1 ctermbg=180
+    Plug 'airblade/vim-gitgutter'
+    highlight GitGutterAdd  ctermfg=2 ctermbg=180
+    highlight GitGutterChange  ctermfg=3 ctermbg=180
+    highlight GitGutterDelete  ctermfg=1 ctermbg=180
 
     Plug 'neoclide/coc.nvim', {'branch': 'release'}
 
@@ -97,10 +96,11 @@ call plug#begin('~/.vim/plugged')
 
     " Use tab for trigger completion with characters ahead and navigate.
     " Use command ':verbose imap <tab>' to make sure tab is not mapped by other plugin.
+    "Make <tab> used for trigger completion, completion confirm, snippet expand and jump like VSCode.
     inoremap <silent><expr> <TAB>
-          \ pumvisible() ? "\<C-n>" :
-          \ <SID>check_back_space() ? "\<TAB>" :
-          \ coc#refresh()
+      \ pumvisible() ? "\<C-n>" :
+      \ <SID>check_back_space() ? "\<TAB>" :
+      \ coc#refresh()
     inoremap <expr><S-TAB> pumvisible() ? "\<C-p>" : "\<C-h>"
 
     function! s:check_back_space() abort
@@ -109,15 +109,15 @@ call plug#begin('~/.vim/plugged')
     endfunction
 
     " Use <c-space> to trigger completion.
-    inoremap <silent><expr> <c-space> coc#refresh()
+    inoremap <silent><expr> <C-Space> coc#refresh()
 
     " Use <cr> to confirm completion, `<C-g>u` means break undo chain at current position.
     " Coc only does snippet and additional edit on confirm.
     inoremap <expr> <cr> pumvisible() ? "\<C-y>" : "\<C-g>u\<CR>"
 
     " Use `[c` and `]c` to navigate diagnostics
-    "nmap <silent> [c <Plug>(coc-diagnostic-prev)
-    "nmap <silent> ]c <Plug>(coc-diagnostic-next)
+    nmap <silent> <space>[ <Plug>(coc-diagnostic-prev)
+    nmap <silent> <space>] <Plug>(coc-diagnostic-next)
 
     " Remap keys for gotos
     nmap <silent> ,d <Plug>(coc-definition)
@@ -126,7 +126,7 @@ call plug#begin('~/.vim/plugged')
     nmap <silent> ,6 <Plug>(coc-references)
 
     " Use K to show documentation in preview window
-    nnoremap <silent> <space>m :call <SID>show_documentation()<CR>
+    nnoremap <silent> <space><space> :call <SID>show_documentation()<CR>
 
     function! s:show_documentation()
       if (index(['vim','help'], &filetype) >= 0)
@@ -155,9 +155,7 @@ call plug#begin('~/.vim/plugged')
     augroup end
 
     " Remap for do codeAction of selected region, ex: `<leader>aap` for current paragraph
-    xmap <space>a  <Plug>(coc-codeaction-selected)
-    nmap <space>a  <Plug>(coc-codeaction-selected)
-
+    xmap <space>l  <Plug>(coc-codeaction-selected)
     " Remap for do codeAction of current line
     nmap <space>l  <Plug>(coc-codeaction)
     " Fix autofix problem of current line
@@ -644,7 +642,7 @@ silent! colorscheme desertEx " SlateDark, vividchalk themes is good high contras
     nmap ,s vi{,s
 
     " tag auto-close with c-space
-    imap <C-Space> <C-X><C-O>
+    "imap <C-Space> <C-X><C-O>
 
     " close buffer
     nnoremap <C-W>! <Plug>Kwbd
@@ -676,13 +674,12 @@ silent! colorscheme desertEx " SlateDark, vividchalk themes is good high contras
     " show line numbers
     set number
     " highlight lineNr ctermfg=grey
-    syntax on
+    "syntax on
 
     set cursorline
     hi CursorLine guibg=NONE
 
-
-    set completeopt=longest,menuone
+    "set completeopt=longest,menuone
     inoremap <expr> <CR> pumvisible() ? "\<C-y>" : "\<C-g>u\<CR>"
 
     " show trailing whitespace
@@ -694,7 +691,7 @@ silent! colorscheme desertEx " SlateDark, vividchalk themes is good high contras
     set wildignore+=*/.git/*,*/.hg/*,*/.svn/*
     set wildignore+=*\\.git\\*,*\\.hg\\*,*\\.svn\\*
 
-    set completeopt=menuone
+    "set completeopt=menuone
 
     set tabstop=2
     set shiftwidth=2
@@ -711,21 +708,9 @@ silent! colorscheme desertEx " SlateDark, vividchalk themes is good high contras
     filetype plugin indent on
 
     au FileType gitcommit           setlocal spell
-    "au BufRead,BufNewFile *.vue    setlocal syntax=javascript
-    "au BufReadPost *.json set filetype=javascript
-    "au BufReadPost *.es6 set filetype=typescript.tsx
     "disable continuous comments vim
     au FileType * setlocal formatoptions-=c formatoptions-=r formatoptions-=o
 " }
-
-" auto reload the vimrc when it is saved
-
-augroup reload_vimrc " {
-    au!
-    au BufWritePost $MYVIMRC source $MYVIMRC
-    au BufWritePost $MYVIMRC source $MYGVIMRC
-augroup END " }
-
 
 " workspace specific options
 
@@ -745,28 +730,6 @@ function! WorkSpaceSettings()
     endif
 
   endif
-endfunction
-
-" Insert a newline after each specified string (or before if use '!').
-" If no arguments, use previous search.
-command! -bang -nargs=* -range LineBreakAt <line1>,<line2>call LineBreakAt('<bang>', <f-args>)
-function! LineBreakAt(bang, ...) range
-  let save_search = @/
-  if empty(a:bang)
-    let before = ''
-    let after = '\ze.'
-    let repl = '&\r'
-  else
-    let before = '.\zs'
-    let after = ''
-    let repl = '\r&'
-  endif
-  let pat_list = map(deepcopy(a:000), "escape(v:val, '/\\.*$^~[')")
-  let find = empty(pat_list) ? @/ : join(pat_list, '\|')
-  let find = before . '\%(' . find . '\)' . after
-  " Example: 10,20s/\%(arg1\|arg2\|arg3\)\ze./&\r/ge
-  execute a:firstline . ',' . a:lastline . 's/'. find . '/' . repl . '/ge'
-  let @/ = save_search
 endfunction
 
 function! SortWords()
