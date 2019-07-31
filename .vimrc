@@ -26,7 +26,7 @@ call plug#begin('~/.vim/plugged')
     "Plug 'Railscasts-Theme-GUIand256color'
     Plug 'flazz/vim-colorschemes'
     "Plug 'felixhummel/setcolors.vim'
-    "Plug 'sheerun/vim-polyglot'
+    Plug 'sheerun/vim-polyglot'
     "let g:polyglot_disabled = ['typescript', 'javascript']
 
     Plug 'jelera/vim-javascript-syntax'
@@ -139,7 +139,9 @@ call plug#begin('~/.vim/plugged')
     endfunction
 
     " Highlight symbol under cursor on CursorHold
-    autocmd CursorHold * silent call CocActionAsync('highlight')
+    "autocmd CursorHold * silent call CocActionAsync('highlight')
+
+    nmap <space>t :CocList<cr>
 
     " Remap for rename current word
     nmap <leader>,r <Plug>(coc-rename)
@@ -627,11 +629,6 @@ silent! colorscheme desertEx " SlateDark, vividchalk themes is good high contras
     noremap <D-k> 5<C-y>
     noremap <M-j> 5<C-e>
     noremap <M-k> 5<C-y>
-
-    nnoremap <C-h> <C-w>h
-    nnoremap <C-j> <C-w>j
-    nnoremap <C-k> <C-w>k
-    nnoremap <C-l> <C-w>l
 
     nnoremap vv <C-w>
 
