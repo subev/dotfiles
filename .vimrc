@@ -33,7 +33,6 @@ call plug#begin('~/.vim/plugged')
     Plug 'herringtondarkholme/yats.vim'
     Plug 'othree/javascript-libraries-syntax.vim'
     Plug 'ianks/vim-tsx'
-    Plug 'chemzqm/vim-jsx-improve'
 
     Plug 'sbdchd/neoformat'
 
@@ -121,6 +120,9 @@ call plug#begin('~/.vim/plugged')
     nmap <silent> <space>[ <Plug>(coc-diagnostic-prev)
     nmap <silent> <space>] <Plug>(coc-diagnostic-next)
 
+    " Use space-t to use list plugin
+    nmap <silent> <space>t :CocList<cr>
+
     " Remap keys for gotos
     nmap <silent> ,d <Plug>(coc-definition)
     nmap <silent> gd <Plug>(coc-type-definition)
@@ -178,9 +180,6 @@ call plug#begin('~/.vim/plugged')
 
     " use `:OR` for organize import of current buffer
     command! -nargs=0 OR   :call     CocAction('runCommand', 'editor.action.organizeImport')
-
-    " Add status line support, for integration with other plugin, checkout `:h coc-status`
-    set statusline^=%{coc#status()}%{get(b:,'coc_current_function','')}
 
     " Using CocList
     " Show all diagnostics
@@ -340,17 +339,12 @@ call plug#begin('~/.vim/plugged')
     let g:jedi#completions_command = "<C-Space>"
     let g:jedi#rename_command = ",r"
 
-    "Plug 'neoclide/coc.nvim', {'tag': '*', 'do': { -> coc#util#install()}}
-
-    "Plug 'artur-shaik/vim-javacomplete2'
-    "autocmd FileType java setlocal omnifunc=javacomplete#Complete
-
     Plug 'rust-lang/rust.vim'
     Plug 'racer-rust/vim-racer'
     au FileType rust nmap ,d <Plug>(rust-def)
     let g:racer_cmd = "~/.cargo/bin/racer"
 
-    " Haskell omni complete
+    " Haskell omni complete, TODO use COC
     Plug 'eagletmt/neco-ghc'
     Plug 'eagletmt/ghcmod-vim'
     au FileType haskell nnoremap <buffer> <Space><Space> :GhcModType!<CR>
@@ -375,7 +369,6 @@ call plug#begin('~/.vim/plugged')
     Plug 'bronson/vim-visual-star-search'
     Plug 'terryma/vim-expand-region'
     Plug 'wellle/targets.vim'
-    Plug 'ap/vim-css-color'
     Plug 'google/vim-searchindex'
 
     Plug 'pseewald/vim-anyfold'
