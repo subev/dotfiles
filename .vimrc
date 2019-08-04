@@ -87,7 +87,8 @@ call plug#begin('~/.vim/plugged')
 
     Plug 'neoclide/coc.nvim', {'branch': 'release'}
     let g:coc_global_extensions = [ 'coc-tslint', 'coc-tslint-plugin', 'coc-emmet', 'coc-git', 'coc-vimlsp',
-      \ 'coc-tabnine', 'coc-lists', 'coc-snippets', 'coc-highlight', 'coc-vetur', 'coc-html', 'coc-tsserver', 'coc-css', 'coc-json' ]
+      \ 'coc-tabnine', 'coc-lists', 'coc-snippets', 'coc-highlight', 'coc-vetur', 'coc-html', 'coc-tsserver',
+      \ 'coc-css', 'coc-json', 'coc-java', 'coc-yank' ]
 
     " You will have bad experience for diagnostic messages when it's default 4000.
     set updatetime=300
@@ -143,8 +144,6 @@ call plug#begin('~/.vim/plugged')
     " Highlight symbol under cursor on CursorHold
     "autocmd CursorHold * silent call CocActionAsync('highlight')
 
-    nmap <space>t :CocList<cr>
-
     " Remap for rename current word
     nmap <leader>,r <Plug>(coc-rename)
 
@@ -199,38 +198,8 @@ call plug#begin('~/.vim/plugged')
     " Resume latest coc list
     nnoremap <silent> <space>cp  :<C-u>CocListResume<CR>
 
-
-
-
-    ""typescript plugins for intellisense
-    "Plug 'Shougo/vimproc.vim', {'do' : 'make'}
-    "Plug 'quramy/tsuquyomi'
-    "let g:tsuquyomi_use_vimproc = 1
-    "let g:tsuquyomi_disable_quickfix = 1
-    "let g:tsuquyomi_disable_default_mappings = 1
-    ""typescript tools by tsuquyomi, just for typescript
-    "au FileType typescript,typescript.tsx nnoremap ,f :TsuQuickFix<CR>
-    "au FileType typescript,typescript.tsx nnoremap ,i :TsuImport<CR>
-    "au FileType typescript,typescript.tsx nnoremap ,d :TsuDefinition<CR>
-    "au FileType typescript,typescript.tsx nnoremap ,D :TsuImplementation<CR>
-    "au FileType typescript,typescript.tsx nnoremap ,` :TsuGoBack<CR>
-    "au FileType typescript,typescript.tsx nnoremap ,6 :TsuReferences<CR>
-    "au FileType typescript,typescript.tsx nnoremap ,r :TsuRenameSymbol<CR>
-    "au FileType typescript,typescript.tsx nmap <buffer> <Space><Space> : <C-u>echo tsuquyomi#hint()<CR>
-
-    "if has('nvim')
-      "Plug 'Shougo/deoplete.nvim'
-    "else
-      "Plug 'Shougo/deoplete.nvim'
-      "Plug 'roxma/nvim-yarp'
-      "Plug 'roxma/vim-hug-neovim-rpc'
-    "endif
-    "let g:deoplete#enable_at_startup = 1
-
     Plug 'tpope/vim-repeat'
     Plug 'tpope/vim-unimpaired'
-    "Plug 'mattn/emmet-vim'
-    "let g:user_emmet_leader_key=',,'
     Plug 'duganchen/vim-soy'
     Plug 'mg979/vim-visual-multi'
     let g:VM_mouse_mappings = 1
@@ -521,15 +490,6 @@ silent! colorscheme desertEx " SlateDark, vividchalk themes is good high contras
     nnoremap 9 <C-o>
     nnoremap 0 <C-i>
 
-    au BufEnter __CtrlSFPreview__ noremap <buffer> 2 2
-    au BufEnter __CtrlSFPreview__ noremap <buffer> 3 3
-    au BufEnter __CtrlSFPreview__ noremap <buffer> 4 4
-    au BufEnter __CtrlSFPreview__ noremap <buffer> 5 5
-    au BufEnter __CtrlSFPreview__ noremap <buffer> 6 6
-    au BufEnter __CtrlSFPreview__ noremap <buffer> 8 8
-    au BufEnter __CtrlSFPreview__ noremap <buffer> 9 9
-    au BufEnter __CtrlSFPreview__ noremap <buffer> 0 0
-
     " disable the highlight search
     nnoremap <CR> :noh<CR><CR>
 
@@ -658,6 +618,7 @@ silent! colorscheme desertEx " SlateDark, vividchalk themes is good high contras
 " }
 
 " Coding {
+
     set iskeyword+=_,$,@,%,#
     " hide the toolbar and the menu of GVIM
     set guioptions-=m
@@ -702,6 +663,7 @@ silent! colorscheme desertEx " SlateDark, vividchalk themes is good high contras
     au FileType gitcommit           setlocal spell
     "disable continuous comments vim
     au FileType * setlocal formatoptions-=c formatoptions-=r formatoptions-=o
+    au BufEnter *.bg* setlocal keymap=bulgarian-phonetic
 " }
 
 " workspace specific options
