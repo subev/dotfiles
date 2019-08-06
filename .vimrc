@@ -570,11 +570,8 @@ silent! colorscheme desertEx " SlateDark, vividchalk themes is good high contras
 
     nnoremap <Tab> >>
     nnoremap <S-Tab> <<
-
-    "this is a workaround to remap after plugins
-    "in this case supertab was imitating default behavior
-    au VimEnter * vnoremap <Tab> >gv
-    au VimEnter * vnoremap <S-Tab> <gv
+    vnoremap <Tab> >gv
+    vnoremap <S-Tab> <gv
 
     noremap <C-e> 5<C-e>
     noremap <C-y> 5<C-y>
