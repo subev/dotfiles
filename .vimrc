@@ -234,8 +234,14 @@ call plug#begin('~/.vim/plugged')
 
     "addon for auto closing brackets
     Plug 'jiangmiao/auto-pairs'
-    let g:AutoPairsFlyMode = 0
+    let g:AutoPairsShortcutBackInsert = '<C-b>'
     let g:AutoPairsShortcutFastWrap = '<C-e>'
+    au BufWinEnter *.ts*,*.js,*.java inoremap <silent> 9 <C-R>=AutoPairsInsert("\(")<CR>
+    au BufWinEnter *.ts*,*.js,*.java iunmap <silent><buffer> (
+    au BufWinEnter *.ts*,*.js,*.java inoremap <silent><buffer> ( 9
+    au BufWinEnter *.ts*,*.js,*.java inoremap <silent> 0 <C-R>=AutoPairsInsert("\)")<CR>
+    au BufWinEnter *.ts*,*.js,*.java iunmap <silent><buffer> )
+    au BufWinEnter *.ts*,*.js,*.java inoremap <silent><buffer> ) 0
 
     Plug 'mbbill/undotree'
     nnoremap <leader>u :UndotreeToggle<cr>
@@ -559,9 +565,9 @@ silent! colorscheme desertEx " SlateDark, vividchalk themes is good high contras
     " center screen
     "noremap <Space><Space> zz
     " add space after
-    "noremap <Space>a a<Space><ESC>h
+    noremap <Space>a a<Space><ESC>h
     " add space before
-    "noremap <Space>i i<Space><ESC>l
+    noremap <Space>i i<Space><ESC>l
 
     "jump to the closest opening bracket of type {
     nnoremap { [{
@@ -589,9 +595,6 @@ silent! colorscheme desertEx " SlateDark, vividchalk themes is good high contras
     vmap ,s :SortWords<CR>
     " Normal mode one: ,s to select inside the {} and sort the words
     nmap ,s vi{,s
-
-    " tag auto-close with c-space
-    "imap <C-Space> <C-X><C-O>
 
     " close buffer
     nnoremap <C-W>! <Plug>Kwbd
