@@ -25,3 +25,5 @@ ln -s dotfiles/.agignore ~/.agignore
 ln -s dotfiles/.agignore ~/.rgignore
 
 ln -s dotfiles/coc-settings.json ../.vim/coc-settings.json
+
+cd ~/.config/karabiner/ and do 'ln -s ../../dotfiles/karabiner.json karabiner.json'
