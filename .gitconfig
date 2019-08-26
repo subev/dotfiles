@@ -26,6 +26,7 @@
   a = add
   cc = commit --all -m
   ca = commit --amend
+  caa = commit --all --amend
   dic = diff --cached
   p = pull
   pl = pull --rebase

@@ -145,7 +145,7 @@ call plug#begin('~/.vim/plugged')
     "autocmd CursorHold * silent call CocActionAsync('highlight')
 
     " Remap for rename current word
-    nmap <leader>,r <Plug>(coc-rename)
+    nmap ,r <Plug>(coc-rename)
 
     " Remap for format selected region
     xmap <space>f  <Plug>(coc-format-selected)
@@ -498,6 +498,7 @@ silent! colorscheme desertEx " SlateDark, vividchalk themes is good high contras
 
     " disable the highlight search
     nnoremap <CR> :noh<CR><CR>
+    nnoremap <f5> :e!<CR>
 
     "sudo overwrite protect file
     cmap w!! w !sudo tee > /dev/null %
