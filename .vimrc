@@ -580,12 +580,12 @@ silent! colorscheme desertEx " SlateDark, vividchalk themes is good high contras
     vnoremap <Tab> >gv
     vnoremap <S-Tab> <gv
 
-    noremap <C-e> 5<C-e>
-    noremap <C-y> 5<C-y>
-    noremap <D-j> 5<C-e>
-    noremap <D-k> 5<C-y>
-    noremap <M-j> 5<C-e>
-    noremap <M-k> 5<C-y>
+    noremap <C-e> 8<C-e>
+    noremap <C-y> 8<C-y>
+    noremap <D-j> 8<C-e>
+    noremap <D-k> 8<C-y>
+    noremap <M-j> 8<C-e>
+    noremap <M-k> 8<C-y>
 
     nnoremap vv <C-w>
 
