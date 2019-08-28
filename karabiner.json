@@ -99,7 +99,8 @@
                                 },
                                 "to": [
                                     {
-                                        "key_code": "down_arrow"
+                                        "key_code": "tab",
+                                        "modifiers": ["right_command"]
                                     }
                                 ],
                                 "type": "basic"
@@ -118,7 +119,8 @@
                                 },
                                 "to": [
                                     {
-                                        "key_code": "up_arrow"
+                                        "key_code": "tab",
+                                        "modifiers": ["right_command", "right_shift"]
                                     }
                                 ],
                                 "type": "basic"
