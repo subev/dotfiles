@@ -7,5 +7,6 @@
   "yank.highlight.enable": false,
   "tabnine.disable_file_regex": ["*.java"],
   "typescript.preferences.importModuleSpecifier": "relative",
-  "typescript.format.insertSpaceAfterOpeningAndBeforeClosingNonemptyBraces": true
+  "typescript.format.insertSpaceAfterOpeningAndBeforeClosingNonemptyBraces": true,
+  "snippets.priority": 110
 }

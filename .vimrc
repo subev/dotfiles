@@ -12,7 +12,6 @@ endif
 
 "hi LineNr guifg=#AAAAAA guibg=#111111
 "set guifont=Roboto\ Mono\ for\ Powerline:h14
-let g:snippets_dir='~/dotfiles/snippets/'
 
 " Load vim-plug
 if empty(glob('~/.vim/autoload/plug.vim'))
@@ -43,19 +42,6 @@ call plug#begin('~/.vim/plugged')
     Plug 'tmhedberg/matchit'
     Plug 'groenewege/vim-less'
 
-    "This plugin is supposed to use tab instead of ctrl-n
-    "Plug 'ervandew/supertab'
-    "let g:SuperTabDefaultCompletionType = "<c-n>"
-
-    "Plug 'msanders/snipmate.vim'
-
-    "the repo of snippets for ultisnips
-    Plug 'honza/vim-snippets'
-    "Plug 'SirVer/ultisnips'
-    ""jumping to next placeholder is <c-j><c-k>
-    "let g:UltiSnipsEditSplit = 'vertical'
-    "let g:UltiSnipsSnippetDirectories=['UltiSnips', $HOME.'/dotfiles/snippets/ultisnips']
-
     "Plug 'kchmck/vim-coffee-script'
     Plug 'scrooloose/nerdcommenter'
     Plug 'scrooloose/nerdtree'
@@ -69,11 +55,6 @@ call plug#begin('~/.vim/plugged')
     "au BufEnter * RainbowParenthesesLoadRound
     "au BufEnter * RainbowParenthesesLoadBraces
     "au BufEnter * RainbowParenthesesLoadSquare
-
-    Plug 'scrooloose/syntastic'
-    nnoremap ,c :SyntasticCheck<CR>
-    nnoremap ,C :SyntasticToggleMode<CR>
-    let g:syntastic_enable_racket_racket_checker=1
 
     Plug 'mhinz/vim-startify'
     let g:startify_change_to_dir = 0
@@ -269,6 +250,15 @@ call plug#begin('~/.vim/plugged')
         \ }
     let g:ctrlsf_confirm_save = 0
 
+    " search with sublime-alternative
+    noremap <leader>r :CtrlSF 
+    noremap <Space>r :CtrlSFOpen<CR> 
+    vnoremap <leader>r y:CtrlSF \b<C-R>"\b -R
+    " bind R to search and replace word under the cursor or visual selection
+    nnoremap R :CtrlSF <C-R><C-W> -R -W<CR>
+    vnoremap R y:CtrlSF "<C-R>""<CR>
+
+
     "git tools blame, log, view files in other branches
     Plug 'tpope/vim-fugitive'
     Plug 'junegunn/gv.vim'
@@ -293,6 +283,8 @@ call plug#begin('~/.vim/plugged')
 
     Plug 'jlanzarotta/bufexplorer'
     nnoremap ,b :BufExplorer<CR>
+    "BufExplorer show relative paths by default
+    let g:bufExplorerShowRelativePath=1  " Show relative paths.
 
     Plug 'junegunn/fzf', { 'dir': '~/.fzf', 'do': './install --all' }
     Plug 'junegunn/fzf.vim'
@@ -403,34 +395,6 @@ silent! colorscheme desertEx " SlateDark, vividchalk themes is good high contras
     let g:ctrlp_user_command = 'rg %s --files --color=never --glob ""'
   endif
 
-  " Syntastic checkers
-  let g:syntastic_error_symbol = "✗"
-  let g:syntastic_warning_symbol = "⚠"
-  " make sure  you have eslint/jshint installed globally from npm
-  let g:syntastic_javascript_checkers = ["eslint"]
-  let g:syntastic_scss_checkers=["scss_lint", "stylelint"]
-  let g:syntastic_vue_checkers=["eslint"]
-  let g:syntastic_rust_checkers=["cargo"]
-  let g:syntastic_haskell_checkers=["hdevtools"]
-
-  let g:syntastic_typescript_checkers = ['tsuquyomi']
-  let g:syntastic_typescript_tsuquyomi_args="--strictNullChecks false"
-
-  " make use of local eslint !! wohoo
-  let local_eslint = finddir('node_modules', '.;') . '/.bin/eslint'
-  if matchstr(local_eslint, "^\/\\w") == ''
-      let local_eslint = getcwd() . "/" . local_eslint
-  endif
-  if executable(local_eslint)
-      let g:syntastic_javascript_eslint_exec = local_eslint
-      let g:syntastic_vue_eslint_exec = local_eslint
-  endif
-
-
-  let g:syntastic_always_populate_loc_list = 1
-  let g:syntastic_auto_loc_list = 1
-  "BufExplorer show relative paths by default
-  let g:bufExplorerShowRelativePath=1  " Show relative paths.
 
 " General {
     set hidden
@@ -496,9 +460,13 @@ silent! colorscheme desertEx " SlateDark, vividchalk themes is good high contras
     nnoremap 9 <C-o>
     nnoremap 0 <C-i>
 
+    nnoremap <up> <C-u>
+    nnoremap <down> <C-d>
+
     " disable the highlight search
     nnoremap <CR> :noh<CR><CR>
     nnoremap <f5> :e!<CR>
+    nnoremap <f6> :q<CR>
 
     "sudo overwrite protect file
     cmap w!! w !sudo tee > /dev/null %
@@ -513,10 +481,6 @@ silent! colorscheme desertEx " SlateDark, vividchalk themes is good high contras
 
     " search with ag via the Ack frontend plugin
     noremap <leader>s :Ack! 
-    " search with sublime-alternative
-    noremap <leader>r :CtrlSF 
-    noremap <Space>r :CtrlSFOpen<CR> 
-    vnoremap <leader>r y:CtrlSF \b<C-R>"\b -R
 
     " quick-paste last yanked text
     noremap <C-p> "0p
@@ -527,10 +491,6 @@ silent! colorscheme desertEx " SlateDark, vividchalk themes is good high contras
     "inoremap <leader><Space> :YRShow<CR>
     nnoremap <C-b> :CtrlPMRU<CR>
     nnoremap ,v :CtrlPMRU<CR>
-
-    " bind R to search and replace word under the cursor or visual selection
-    nnoremap R :CtrlSF <C-R><C-W> -R -W<CR>
-    vnoremap R y:CtrlSF "<C-R>""<CR>
 
     " bind K to search grep word under the cursor
     nnoremap K :Ack! <cword><CR>
@@ -583,8 +543,8 @@ silent! colorscheme desertEx " SlateDark, vividchalk themes is good high contras
     noremap <C-e> 8<C-e>
     noremap <C-y> 8<C-y>
 
-    nnoremap ; 15<C-e>
-    nnoremap ' 15<C-y>
+    nnoremap ; 8<C-e>
+    nnoremap ' 8<C-y>
 
     noremap <D-j> 8<C-e>
     noremap <D-k> 8<C-y>
@@ -625,6 +585,7 @@ silent! colorscheme desertEx " SlateDark, vividchalk themes is good high contras
 " Coding {
 
     set iskeyword+=_,$,@,%,#
+    set scrolloff=10
     " hide the toolbar and the menu of GVIM
     set guioptions-=m
     set guioptions-=T

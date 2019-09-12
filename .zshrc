@@ -117,6 +117,7 @@ source $ZSH/oh-my-zsh.sh
 # alias zshconfig="mate ~/.zshrc"
 # alias ohmyzsh="mate ~/.oh-my-zsh"
 eval $(thefuck --alias)
+eval "$(jump shell --bind=j)"
 
 # this needs the core utils to be installed "brew install coreutils"
 alias ll='gls -alFH --group-directories-first --color=auto'
