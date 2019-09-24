@@ -440,6 +440,8 @@ silent! colorscheme desertEx " SlateDark, vividchalk themes is good high contras
 " Keybindings {
     noremap <C-S> :w<CR>
     inoremap <C-S> <C-O>:w<CR><Esc>
+    nnoremap <PageUp> <C-u>
+    nnoremap <PageDown> <C-d>
 
     noremap <S-CR> <Esc>
     nnoremap U <C-R>
@@ -460,8 +462,8 @@ silent! colorscheme desertEx " SlateDark, vividchalk themes is good high contras
     nnoremap 9 <C-o>
     nnoremap 0 <C-i>
 
-    nnoremap <up> <C-u>
-    nnoremap <down> <C-d>
+    noremap <down> 8<C-y>
+    noremap <down> 8<C-e>
 
     " disable the highlight search
     nnoremap <CR> :noh<CR><CR>

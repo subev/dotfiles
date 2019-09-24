@@ -8,5 +8,17 @@
   "tabnine.disable_file_regex": ["*.java"],
   "typescript.preferences.importModuleSpecifier": "relative",
   "typescript.format.insertSpaceAfterOpeningAndBeforeClosingNonemptyBraces": true,
-  "snippets.priority": 110
+  "snippets.priority": 110,
+   "languageserver": {
+    "elmLS": {
+      "command": "elm-language-server",
+      "filetypes": ["elm"],
+      "rootPatterns": ["elm.json"],
+      "initializationOptions": {
+        "elmFormatPath": "elm-format",
+        "elmTestPath": "elm-test",
+        "elmAnalyseTrigger": "change"
+      }
+    }
+  }
 }
