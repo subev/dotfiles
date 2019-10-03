@@ -462,8 +462,8 @@ silent! colorscheme desertEx " SlateDark, vividchalk themes is good high contras
     nnoremap 9 <C-o>
     nnoremap 0 <C-i>
 
-    noremap <down> 8<C-y>
-    noremap <down> 8<C-e>
+    nnoremap <up> 8<C-y>
+    nnoremap <down> 8<C-e>
 
     " disable the highlight search
     nnoremap <CR> :noh<CR><CR>
@@ -479,7 +479,7 @@ silent! colorscheme desertEx " SlateDark, vividchalk themes is good high contras
     nnoremap <silent> <leader>q :let _s=@/<Bar>:%s/\s\+$//e<Bar>:let @/=_s<Bar>:nohl<CR>
 
     " toggle NerdTree
-    noremap <silent> <leader>] :NERDTreeToggle<CR>
+    noremap <silent> <F4> :NERDTreeToggle<CR>
 
     " search with ag via the Ack frontend plugin
     noremap <leader>s :Ack! 
@@ -554,6 +554,10 @@ silent! colorscheme desertEx " SlateDark, vividchalk themes is good high contras
     noremap <M-k> 8<C-y>
 
     nnoremap vv <C-w>
+    nnoremap <C-j> <C-w>j
+    nnoremap <C-k> <C-w>k
+    nnoremap <C-h> <C-w>h
+    nnoremap <C-l> <C-w>l
 
     command! -nargs=0 -range SortWords call SortWords()
     " Add a mapping, go to your string, then press vi",s
@@ -587,7 +591,7 @@ silent! colorscheme desertEx " SlateDark, vividchalk themes is good high contras
 " Coding {
 
     set iskeyword+=_,$,@,%,#
-    set scrolloff=10
+    set scrolloff=20
     " hide the toolbar and the menu of GVIM
     set guioptions-=m
     set guioptions-=T
