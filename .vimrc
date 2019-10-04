@@ -49,6 +49,8 @@ call plug#begin('~/.vim/plugged')
     let g:NERDTreeQuitOnOpen = 1
     let g:NERDTreeChDirMode  = 2
     noremap <space>p :NERDTreeFind<CR>zz
+    let NERDTreeShowHidden=1
+    noremap <silent> <F4> :NERDTreeToggle<CR>
 
     "Plug 'kien/rainbow_parentheses.vim'
     "au VimEnter * RainbowParenthesesActivate
@@ -99,8 +101,8 @@ call plug#begin('~/.vim/plugged')
     inoremap <expr> <cr> pumvisible() ? "\<C-y>" : "\<C-g>u\<CR>"
 
     " Use `[c` and `]c` to navigate diagnostics
-    nmap <silent> <space>[ <Plug>(coc-diagnostic-prev)
-    nmap <silent> <space>] <Plug>(coc-diagnostic-next)
+    nmap <silent> <space><left> <Plug>(coc-diagnostic-prev)
+    nmap <silent> <space><right> <Plug>(coc-diagnostic-next)
 
     " Use space-t to use list plugin
     nmap <silent> <space>t :CocList<cr>
@@ -464,6 +466,8 @@ silent! colorscheme desertEx " SlateDark, vividchalk themes is good high contras
 
     nnoremap <up> 8<C-y>
     nnoremap <down> 8<C-e>
+    nnoremap <left> <C-w>h
+    nnoremap <right> <C-w>l
 
     " disable the highlight search
     nnoremap <CR> :noh<CR><CR>
@@ -477,9 +481,6 @@ silent! colorscheme desertEx " SlateDark, vividchalk themes is good high contras
 
     " delete trailing whitespace
     nnoremap <silent> <leader>q :let _s=@/<Bar>:%s/\s\+$//e<Bar>:let @/=_s<Bar>:nohl<CR>
-
-    " toggle NerdTree
-    noremap <silent> <F4> :NERDTreeToggle<CR>
 
     " search with ag via the Ack frontend plugin
     noremap <leader>s :Ack! 
@@ -554,10 +555,6 @@ silent! colorscheme desertEx " SlateDark, vividchalk themes is good high contras
     noremap <M-k> 8<C-y>
 
     nnoremap vv <C-w>
-    nnoremap <C-j> <C-w>j
-    nnoremap <C-k> <C-w>k
-    nnoremap <C-h> <C-w>h
-    nnoremap <C-l> <C-w>l
 
     command! -nargs=0 -range SortWords call SortWords()
     " Add a mapping, go to your string, then press vi",s
