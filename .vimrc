@@ -219,12 +219,6 @@ call plug#begin('~/.vim/plugged')
     Plug 'jiangmiao/auto-pairs'
     let g:AutoPairsShortcutBackInsert = '<C-b>'
     let g:AutoPairsShortcutFastWrap = '<C-e>'
-    au BufWinEnter *.ts*,*.js,*.java,*.es6 inoremap <silent> 9 <C-R>=AutoPairsInsert("\(")<CR>
-    au BufWinEnter *.ts*,*.js,*.java,*.es6 iunmap <silent><buffer> (
-    au BufWinEnter *.ts*,*.js,*.java,*.es6 inoremap <silent><buffer> ( 9
-    au BufWinEnter *.ts*,*.js,*.java,*.es6 inoremap <silent> 0 <C-R>=AutoPairsInsert("\)")<CR>
-    au BufWinEnter *.ts*,*.js,*.java,*.es6 iunmap <silent><buffer> )
-    au BufWinEnter *.ts*,*.js,*.java,*.es6 inoremap <silent><buffer> ) 0
 
     Plug 'mbbill/undotree'
     nnoremap <leader>u :UndotreeToggle<cr>

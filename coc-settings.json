@@ -20,5 +20,9 @@
         "elmAnalyseTrigger": "change"
       }
     }
+  },
+  "list.normalMappings": {
+    "s": "action:vsplit",
+    "S": "action:split"
   }
 }
