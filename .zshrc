@@ -91,7 +91,7 @@ plugins=(
 )
 
 source $ZSH/oh-my-zsh.sh
-source ~/repos/Leanplum/Tools/venv/bin/activate
+if [ -f ${HOME}/repos/Leanplum/Tools/venv/bin/activate ]; then source ${HOME}/repos/Leanplum/Tools/venv/bin/activate; fi
 
 # User configuration
 
