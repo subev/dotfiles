@@ -71,7 +71,7 @@ call plug#begin('~/.vim/plugged')
     Plug 'neoclide/coc.nvim', {'branch': 'release'}
     let g:coc_global_extensions = [ 'coc-tslint', 'coc-tslint-plugin', 'coc-emmet', 'coc-git', 'coc-vimlsp',
       \ 'coc-tabnine', 'coc-lists', 'coc-snippets', 'coc-highlight', 'coc-vetur', 'coc-html', 'coc-tsserver',
-      \ 'coc-css', 'coc-json', 'coc-java', 'coc-yank' ]
+      \ 'coc-css', 'coc-json', 'coc-java', 'coc-python', 'coc-yank' ]
 
     " You will have bad experience for diagnostic messages when it's default 4000.
     set updatetime=300
@@ -294,13 +294,6 @@ call plug#begin('~/.vim/plugged')
       \   <bang>0)
 
     Plug 'junegunn/vim-easy-align'
-
-    Plug 'davidhalter/jedi-vim'
-    let g:jedi#goto_command = ",d"
-    let g:jedi#documentation_command = ",h"
-    let g:jedi#usages_command = ",6"
-    let g:jedi#completions_command = "<C-Space>"
-    let g:jedi#rename_command = ",r"
 
     Plug 'rust-lang/rust.vim'
     Plug 'racer-rust/vim-racer'
