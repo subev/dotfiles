@@ -452,7 +452,9 @@ silent! colorscheme desertEx " SlateDark, vividchalk themes is good high contras
     nnoremap 0 <C-i>
 
     nnoremap <up> 8<C-y>
+    vnoremap <up> 8<C-y>
     nnoremap <down> 8<C-e>
+    vnoremap <down> 8<C-e>
     nnoremap <left> <C-w>h
     nnoremap <right> <C-w>l
 

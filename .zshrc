@@ -123,6 +123,7 @@ eval "$(jump shell --bind=j)"
 
 # this needs the core utils to be installed "brew install coreutils"
 alias ll='gls -alFH --group-directories-first --color=auto'
+alias m=mvim
 
 # The next line updates PATH for the Google Cloud SDK.
 if [ -f ${HOME}/google-cloud-sdk/path.zsh.inc ]; then . ${HOME}/google-cloud-sdk/path.zsh.inc; fi
