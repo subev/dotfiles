@@ -7,12 +7,6 @@ else
   set pythonthreehome=/usr/local/Frameworks/Python.framework/Versions/3.7
 endif
 
-" increase the window size, usually used for windows terminals
-" set lines=60 columns=220
-
-"hi LineNr guifg=#AAAAAA guibg=#111111
-"set guifont=Roboto\ Mono\ for\ Powerline:h14
-
 " Load vim-plug
 if empty(glob('~/.vim/autoload/plug.vim'))
   silent !curl -fLo ~/.vim/autoload/plug.vim --create-dirs
@@ -22,9 +16,7 @@ call plug#begin('~/.vim/plugged')
 " Plugins {
 
     " themes
-    "Plug 'Railscasts-Theme-GUIand256color'
-    Plug 'flazz/vim-colorschemes'
-    "Plug 'felixhummel/setcolors.vim'
+    Plug 'morhetz/gruvbox'
     Plug 'sheerun/vim-polyglot'
     "let g:polyglot_disabled = ['typescript', 'javascript']
 
@@ -35,14 +27,9 @@ call plug#begin('~/.vim/plugged')
 
     Plug 'sbdchd/neoformat'
 
-    "Plug 'bigfish/vim-js-context-coloring'
-    "Plug 'elzr/vim-json'
-
     ""match tags and navigate through %
     Plug 'tmhedberg/matchit'
-    Plug 'groenewege/vim-less'
 
-    "Plug 'kchmck/vim-coffee-script'
     Plug 'scrooloose/nerdcommenter'
     Plug 'scrooloose/nerdtree'
     Plug 'Xuyuanp/nerdtree-git-plugin'
@@ -52,21 +39,15 @@ call plug#begin('~/.vim/plugged')
     let NERDTreeShowHidden=1
     noremap <silent> <F4> :NERDTreeToggle<CR>
 
-    "Plug 'kien/rainbow_parentheses.vim'
-    "au VimEnter * RainbowParenthesesActivate
-    "au BufEnter * RainbowParenthesesLoadRound
-    "au BufEnter * RainbowParenthesesLoadBraces
-    "au BufEnter * RainbowParenthesesLoadSquare
-
     Plug 'mhinz/vim-startify'
     let g:startify_change_to_dir = 0
     let g:startify_change_to_vcs_root = 1
     let g:startify_session_persistence = 1
 
     Plug 'airblade/vim-gitgutter'
-    highlight GitGutterAdd  ctermfg=2 ctermbg=180
-    highlight GitGutterChange  ctermfg=3 ctermbg=180
-    highlight GitGutterDelete  ctermfg=1 ctermbg=180
+    "highlight GitGutterAdd  ctermfg=2 ctermbg=180
+    "highlight GitGutterChange  ctermfg=3 ctermbg=180
+    "highlight GitGutterDelete  ctermfg=1 ctermbg=180
 
     Plug 'neoclide/coc.nvim', {'branch': 'release'}
     let g:coc_global_extensions = [ 'coc-tslint', 'coc-tslint-plugin', 'coc-emmet', 'coc-git', 'coc-vimlsp',
@@ -235,7 +216,6 @@ call plug#begin('~/.vim/plugged')
     Plug 'mileszs/ack.vim'
     Plug 'dyng/ctrlsf.vim'
     let g:ctrlsf_ackprg = 'rg'
-    "let g:ctrlsf_debug_mode = 1
     let g:ctrlsf_mapping = {
       \ "next": "n",
       \ "prev": "N",
@@ -295,11 +275,6 @@ call plug#begin('~/.vim/plugged')
 
     Plug 'junegunn/vim-easy-align'
 
-    Plug 'rust-lang/rust.vim'
-    Plug 'racer-rust/vim-racer'
-    au FileType rust nmap ,d <Plug>(rust-def)
-    let g:racer_cmd = "~/.cargo/bin/racer"
-
     " Haskell omni complete, TODO use COC
     Plug 'eagletmt/neco-ghc'
     Plug 'eagletmt/ghcmod-vim'
@@ -312,13 +287,6 @@ call plug#begin('~/.vim/plugged')
     au FileType haskell nnoremap <buffer> <Space>c :GhcModCheckAsync!<CR>
     au FileType haskell nnoremap <buffer> <Space>l :GhcModLintAsync!<CR>
 
-    Plug 'fsharp/vim-fsharp', {
-      \ 'for': 'fsharp',
-      \ 'do':  'make fsautocomplete',
-      \}
-    let g:fsharp_only_check_errors_on_write = 1
-
-    "Plug 'nathanaelkane/vim-indent-guides'
     Plug 'Yggdroot/indentLine'
     let g:indent_guides_enable_on_vim_startup = 1
 
@@ -339,31 +307,12 @@ call plug#begin('~/.vim/plugged')
         "-  - toggle fold (expand as much as possible and collapse only 1 level back)
     set foldlevel=1
 
-    " Purescript
-    Plug 'frigoeu/psc-ide-vim'
-
     Plug 'chrisbra/csv.vim'
     au FileType csv nnoremap <buffer> <Space><Space> :WhatColumn!<CR>
 
     Plug 'editorconfig/editorconfig-vim'
-
-    Plug 'MattesGroeger/vim-bookmarks'
-    let g:bookmark_save_per_working_dir = 1
-
-    nmap <Leader>m <Plug>BookmarkToggle
-    nmap <Leader>mi <Plug>BookmarkAnnotate
-    nmap <Leader>ma <Plug>BookmarkShowAll
-    nmap <Leader>mj <Plug>BookmarkNext
-    nmap <Leader>mk <Plug>BookmarkPrev
-    nmap <Leader>mc <Plug>BookmarkClear
-    nmap <Leader>mx <Plug>BookmarkClearAll
-    nmap <Leader>mg <Plug>BookmarkMoveToLine
-
 " }
 call plug#end()
-
-silent! colorscheme desertEx " SlateDark, vividchalk themes is good high contrast too
-
   " The Silver Searcher
   if executable('ag')
     " Use ag over grep
@@ -399,28 +348,12 @@ silent! colorscheme desertEx " SlateDark, vividchalk themes is good high contras
     set ignorecase
     set smartcase
     set incsearch
-    set showmatch
-    set hlsearch
-
-    "au FileType qf noremap q :q<CR><CR>
-
-    set shortmess=caoOtI
 
     " avoid swap, temp and backup files
     set nobackup
     set nowritebackup
     set noswapfile
 
-    " show the cursor position all the time
-    set ruler
-
-    " display incomplete commands
-    set showcmd
-    set wildmenu
-
-    " terminal settings
-    "set t_Co=256
-    set mouse=a
     if !has('nvim')
       set ttymouse=xterm2
     endif
@@ -475,13 +408,8 @@ silent! colorscheme desertEx " SlateDark, vividchalk themes is good high contras
     noremap <leader>s :Ack! 
 
     " quick-paste last yanked text
-    noremap <C-p> "0p
-    noremap <C-P> "0P
+    noremap ; "0p
 
-    "search with YankRing (Ditto like plugin)
-    "nnoremap <leader><Space> :YRShow<CR>
-    "inoremap <leader><Space> :YRShow<CR>
-    nnoremap <C-b> :CtrlPMRU<CR>
     nnoremap ,v :CtrlPMRU<CR>
 
     " bind K to search grep word under the cursor
@@ -503,7 +431,6 @@ silent! colorscheme desertEx " SlateDark, vividchalk themes is good high contras
     ""replace word under cursor
     "nnoremap ,r :%s/\<<C-r><C-w>\>//g<Left><Left>
     "close window
-    noremap ,w <C-w>c
     noremap Q q
     noremap q <C-w>c
     "create new vertical split
@@ -525,8 +452,6 @@ silent! colorscheme desertEx " SlateDark, vividchalk themes is good high contras
     "jump to the closest opening bracket of type {
     nnoremap { [{
 
-    " indent!
-
     nnoremap <Tab> >>
     nnoremap <S-Tab> <<
     vnoremap <Tab> >gv
@@ -535,14 +460,8 @@ silent! colorscheme desertEx " SlateDark, vividchalk themes is good high contras
     noremap <C-e> 8<C-e>
     noremap <C-y> 8<C-y>
 
-    nnoremap ; 8<C-e>
-    nnoremap ' 8<C-y>
-
     noremap <D-j> 8<C-e>
     noremap <D-k> 8<C-y>
-    noremap <M-j> 8<C-e>
-    noremap <M-k> 8<C-y>
-
     nnoremap vv <C-w>
 
     command! -nargs=0 -range SortWords call SortWords()
@@ -550,11 +469,6 @@ silent! colorscheme desertEx " SlateDark, vividchalk themes is good high contras
     " vi" selects everything inside the quotation
     " ,s calls the sorting algorithm
     vmap ,s :SortWords<CR>
-    " Normal mode one: ,s to select inside the {} and sort the words
-    nmap ,s vi{,s
-
-    " close buffer
-    nnoremap <C-W>! <Plug>Kwbd
 
     noremap <leader>ve :e $MYVIMRC<CR>
     noremap <leader>vu :source %<CR>
@@ -575,8 +489,9 @@ silent! colorscheme desertEx " SlateDark, vividchalk themes is good high contras
 " }
 
 " Coding {
+    set termguicolors
+    colorscheme gruvbox
 
-    set iskeyword+=_,$,@,%,#
     set scrolloff=20
     " hide the toolbar and the menu of GVIM
     set guioptions-=m
@@ -612,9 +527,7 @@ silent! colorscheme desertEx " SlateDark, vividchalk themes is good high contras
     "switch paste behavior to avoid added tabs
     set pastetoggle=<F10>
 
-    set autoindent
     set smartindent
-    set smarttab
 
     filetype plugin indent on
 
