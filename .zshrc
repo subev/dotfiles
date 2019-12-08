@@ -124,6 +124,7 @@ eval "$(jump shell --bind=j)"
 # this needs the core utils to be installed "brew install coreutils"
 alias ll='gls -alFH --group-directories-first --color=auto'
 alias m=mvim
+alias n=nvim
 # This speeds up pasting w/ autosuggest
 # https://github.com/zsh-users/zsh-autosuggestions/issues/238
 pasteinit() {
