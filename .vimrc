@@ -587,8 +587,8 @@ silent! colorscheme desertEx " SlateDark, vividchalk themes is good high contras
     " highlight lineNr ctermfg=grey
     "syntax on
 
-    set cursorline
-    hi CursorLine guibg=NONE
+    "set cursorline
+    "hi CursorLine guibg=NONE
 
     "set completeopt=longest,menuone
     inoremap <expr> <CR> pumvisible() ? "\<C-y>" : "\<C-g>u\<CR>"
