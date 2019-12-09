@@ -499,6 +499,7 @@ call plug#end()
 
     " show line numbers
     set number
+    set mouse=a
     " highlight lineNr ctermfg=grey
     "syntax on
 
