@@ -51,7 +51,7 @@ call plug#begin('~/.vim/plugged')
 
     Plug 'neoclide/coc.nvim', {'branch': 'release'}
     let g:coc_global_extensions = [ 'coc-tslint', 'coc-tslint-plugin', 'coc-emmet', 'coc-git', 'coc-vimlsp',
-      \ 'coc-tabnine', 'coc-lists', 'coc-snippets', 'coc-highlight', 'coc-vetur', 'coc-html', 'coc-tsserver',
+      \ 'coc-lists', 'coc-snippets', 'coc-highlight', 'coc-vetur', 'coc-html', 'coc-tsserver',
       \ 'coc-css', 'coc-json', 'coc-java', 'coc-python', 'coc-yank' ]
 
     " You will have bad experience for diagnostic messages when it's default 4000.
@@ -113,7 +113,7 @@ call plug#begin('~/.vim/plugged')
 
     " Remap for format selected region
     xmap <space>f  <Plug>(coc-format-selected)
-    nmap <space>f  <Plug>(coc-format-selected)
+    nmap <space>f  <Plug>(coc-format)
 
     augroup mygroup
       autocmd!
