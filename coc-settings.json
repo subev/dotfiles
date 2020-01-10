@@ -24,5 +24,7 @@
   "list.normalMappings": {
     "s": "action:vsplit",
     "S": "action:split"
-  }
+  },
+  "suggest.enablePreview": true,
+  "list.maxPreviewHeight": 30
 }

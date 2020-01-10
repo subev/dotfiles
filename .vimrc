@@ -52,7 +52,7 @@ call plug#begin('~/.vim/plugged')
     Plug 'neoclide/coc.nvim', {'branch': 'release'}
     let g:coc_global_extensions = [ 'coc-tslint', 'coc-tslint-plugin', 'coc-emmet', 'coc-git', 'coc-vimlsp',
       \ 'coc-lists', 'coc-snippets', 'coc-highlight', 'coc-vetur', 'coc-html', 'coc-tsserver',
-      \ 'coc-css', 'coc-json', 'coc-java', 'coc-python', 'coc-yank' ]
+      \ 'coc-css', 'coc-json', 'coc-java', 'coc-python', 'coc-yank', 'coc-prettier' ]
 
     " You will have bad experience for diagnostic messages when it's default 4000.
     set updatetime=300
@@ -152,7 +152,7 @@ call plug#begin('~/.vim/plugged')
     " Show commands
     nnoremap <silent> <space>cc  :<C-u>CocList commands<cr>
     " Find symbol of current document
-    nnoremap <silent> <space>co  :<C-u>CocList outline<cr>
+    nnoremap <silent> <space>o  :<C-u>CocList outline<cr>
     " Search workspace symbols
     nnoremap <silent> <space>cs  :<C-u>CocList -I symbols<cr>
     " Do default action for next item.
@@ -214,6 +214,14 @@ call plug#begin('~/.vim/plugged')
 
     " this one should be depricated soon
     Plug 'mileszs/ack.vim'
+    Plug 'Yggdroot/LeaderF', { 'do': './install.sh' }
+    let g:Lf_WindowPosition = 'popup'
+    let g:Lf_PreviewInPopup = 1
+    nmap ,f :Leaderf file<cr>
+    let g:Lf_DefaultMode = 'NameOnly'
+
+    let g:Lf_CommandMap = {'<C-K>': ['<Up>'], '<C-J>': ['<Down>']}
+
     Plug 'dyng/ctrlsf.vim'
     let g:ctrlsf_ackprg = 'rg'
     let g:ctrlsf_mapping = {
@@ -265,7 +273,7 @@ call plug#begin('~/.vim/plugged')
     Plug 'junegunn/fzf', { 'dir': '~/.fzf', 'do': './install --all' }
     Plug 'junegunn/fzf.vim'
     nmap <F1> :Helptags<cr>
-    nmap <leader>f :FZF<cr>
+    "nmap <leader>f :FZF<cr>
     command! -bang -nargs=* Rg
       \ call fzf#vim#grep(
       \   'rg --column --line-number --no-heading --color=always --smart-case '.shellescape(<q-args>), 1,
