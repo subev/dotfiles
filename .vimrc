@@ -17,11 +17,9 @@ call plug#begin('~/.vim/plugged')
 
     " themes
     Plug 'morhetz/gruvbox'
-    Plug 'sheerun/vim-polyglot'
-    "let g:polyglot_disabled = ['typescript', 'javascript']
-
-    Plug 'jelera/vim-javascript-syntax'
     Plug 'herringtondarkholme/yats.vim'
+    Plug 'sheerun/vim-polyglot'
+
     Plug 'othree/javascript-libraries-syntax.vim'
     Plug 'ianks/vim-tsx'
 
