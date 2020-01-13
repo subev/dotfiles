@@ -17,7 +17,6 @@ call plug#begin('~/.vim/plugged')
 
     " themes
     Plug 'morhetz/gruvbox'
-    Plug 'herringtondarkholme/yats.vim'
     Plug 'sheerun/vim-polyglot'
 
     Plug 'othree/javascript-libraries-syntax.vim'
@@ -108,10 +107,14 @@ call plug#begin('~/.vim/plugged')
 
     " Remap for rename current word
     nmap ,r <Plug>(coc-rename)
+    nmap ,R <Plug>(coc-refactor)
 
     " Remap for format selected region
     xmap <space>f  <Plug>(coc-format-selected)
     nmap <space>f  <Plug>(coc-format)
+
+    xmap if <Plug>(coc-funcobj-i)
+    xmap af <Plug>(coc-funcobj-a)
 
     augroup mygroup
       autocmd!
@@ -233,8 +236,8 @@ call plug#begin('~/.vim/plugged')
     let g:ctrlsf_confirm_save = 0
 
     " search with sublime-alternative
-    noremap <leader>r :CtrlSF 
-    noremap <Space>r :CtrlSFOpen<CR> 
+    noremap <leader>r :CtrlSF<space>
+    noremap <Space>r :CtrlSFOpen<CR><space>
     vnoremap <leader>r y:CtrlSF \b<C-R>"\b -R
     " bind R to search and replace word under the cursor or visual selection
     nnoremap R :CtrlSF <C-R><C-W> -R -W<CR>
@@ -411,7 +414,7 @@ call plug#end()
     nnoremap <silent> <leader>q :let _s=@/<Bar>:%s/\s\+$//e<Bar>:let @/=_s<Bar>:nohl<CR>
 
     " search with ag via the Ack frontend plugin
-    noremap <leader>s :Ack! 
+    noremap <leader>s :Ack!<space>
 
     " quick-paste last yanked text
     noremap ; "0p
@@ -421,7 +424,7 @@ call plug#end()
     " bind K to search grep word under the cursor
     nnoremap K :Ack! <cword><CR>
     vnoremap K y:Ack! "<C-R>""<CR>
-    vnoremap <leader>s y:Ack! "<C-R>"" 
+    vnoremap <leader>s y:Ack! "<C-R>""<space>
     "search for the visually selected text
     vnoremap // y/<C-R>"<CR>
 
@@ -551,7 +554,7 @@ function! WorkSpaceSettings()
   if l:path =~ '/Leanplum/'
     iabbrev @@@ // All rights reserved. Leanplum. 2016.
           \<CR>// Author: Petur Subev (petur@leanplum.com)
-          \<CR>// 
+          \<CR>//<space>
 
     if l:path =~ '.*\.py$'
       setlocal tabstop=2
