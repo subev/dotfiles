@@ -49,7 +49,7 @@ call plug#begin('~/.vim/plugged')
     Plug 'neoclide/coc.nvim', {'branch': 'release'}
     let g:coc_global_extensions = [ 'coc-tslint', 'coc-tslint-plugin', 'coc-emmet', 'coc-git', 'coc-vimlsp',
       \ 'coc-lists', 'coc-snippets', 'coc-highlight', 'coc-vetur', 'coc-html', 'coc-tsserver',
-      \ 'coc-css', 'coc-json', 'coc-java', 'coc-python', 'coc-yank', 'coc-prettier' ]
+      \ 'coc-css', 'coc-json', 'coc-java', 'coc-python', 'coc-yank', 'coc-prettier', 'coc-omnisharp' ]
 
     " You will have bad experience for diagnostic messages when it's default 4000.
     set updatetime=300
@@ -514,9 +514,6 @@ call plug#end()
 
     "set cursorline
     "hi CursorLine guibg=NONE
-
-    "set completeopt=longest,menuone
-    inoremap <expr> <CR> pumvisible() ? "\<C-y>" : "\<C-g>u\<CR>"
 
     " show trailing whitespace
     set list listchars=tab:>-,trail:.

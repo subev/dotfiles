@@ -4,28 +4,30 @@ dotfiles
 
 unix settings 
 
-ln -s dotfiles/.bashrc ~/.bashrc
+ln -s "$HOME/dotfiles/.bashrc" "$HOME/.bashrc"
 
-ln -s dotfiles/.zshrc ~/.zshrc
+ln -s "$HOME/dotfiles/.zshrc" "$HOME/.zshrc"
 
-ln -s dotfiles/.fzf.zsh ~/.fzf.zsh
+ln -s "$HOME/dotfiles/.fzf.zsh" "$HOME/.fzf.zsh"
 
-ln -s dotfiles/.bash_profile ~/.bash_profile
+ln -s "$HOME/dotfiles/.bash_profile" "$HOME/.bash_profile"
 
-ln -s dotfiles/.gitconfig ~/.gitconfig
+ln -s "$HOME/dotfiles/.gitconfig" "$HOME/.gitconfig"
 
-ln -s dotfiles/.vimrc ~/.vimrc
+ln -s "$HOME/dotfiles/.vimrc" "$HOME/.vimrc"
 
-ln -s dotfiles/.gvimrc ~/.gvimrc
+ln -s "$HOME/dotfiles/.gvimrc" "$HOME/.gvimrc"
 
-ln -s dotfiles/.inputrc ~/.inputrc
+ln -s "$HOME/dotfiles/.inputrc" "$HOME/.inputrc"
 
-ln -s dotfiles/.screenrc ~/.screenrc
+ln -s "$HOME/dotfiles/.screenrc" "$HOME/.screenrc"
 
-ln -s dotfiles/.agignore ~/.agignore
+ln -s "$HOME/dotfiles/.agignore" "$HOME/.agignore"
 
-ln -s dotfiles/.agignore ~/.rgignore
+ln -s "$HOME/dotfiles/.agignore" "$HOME/.rgignore"
 
-ln -s dotfiles/coc-settings.json ../.vim/coc-settings.json
+ln -s "$HOME/dotfiles/coc-settings.json" "$HOME/.vim/coc-settings.json"
 
-cd ~/.config/karabiner/ and do 'ln -s ../../dotfiles/karabiner.json karabiner.json'
+ln -s "$HOME/dotfiles/karabiner.json" "$HOME/.config/karabiner/karabiner.json'
+
+ln -s "$HOME/dotfiles/.ideavimrc" "$HOME/.ideavimrc"

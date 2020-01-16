@@ -1,0 +1,63 @@
+"actions listed here https://github.com/centic9/IntelliJ-Action-IDs/blob/master/docs/_data/actions.csv
+let mapleader='\'
+
+set ignorecase
+set smartcase
+set scrolloff=8
+set surround
+set clipboard=unnamedplus,unnamed
+
+"nnoremap gi :action GotoImplementation<CR>
+"nnoremap fu :action FindUsages<CR>
+"nnoremap <Leader>fu :action FindUsages<CR>
+nnoremap gu :action ShowUsages<CR>
+
+" key bindings for quickly moving between windows
+" h left, l right, k up, j down
+nmap <left> <c-w>h
+nmap <right> <c-w>l
+
+" Redo
+nnoremap U <C-r>
+
+nnoremap ,d :action GotoDeclaration<CR>
+nnoremap ,i :action GotoImplementation<CR>
+"nnoremap ,t :action GotoTest<CR>
+"nnoremap ,a :action GotoAction<CR>
+"nnoremap ,c :action GotoClass<CR>
+"nnoremap ,f :action GotoFile<CR>
+"nnoremap ,s :action GotoSymbol<CR>
+
+nnoremap <space>p :action ShowFilePath<CR>
+nnoremap <Leader>1 :action OptimizeImports<CR>
+nnoremap <space>l :action ShowPopupMenu<CR>
+
+"nnoremap <Leader>rc :action ChooseRunConfiguration<CR>
+nnoremap ,r :action RenameElement<CR>
+"nnoremap <Leader>rf :action RenameFile<CR>
+
+nnoremap ,f :action SearchEverywhere<CR>
+"nnoremap <Leader>tc :action CloseActiveTab<CR>
+
+nnoremap <Leader>r :action FindInPath<CR>
+nnoremap <space>o :action FileStructurePopup<CR>
+
+
+nnoremap <space>f :action ReformatCode<CR>
+vnoremap <space>f :action ReformatCode<CR>
+
+nnoremap <leader>cc :action CommentByLineComment<CR>
+vnoremap <leader>cc :action CommentByLineComment<CR>
+
+nnoremap <space>l :action ShowIntentionActions<CR>
+
+nnoremap <up> 8<C-y>
+vnoremap <up> 8<C-y>
+nnoremap <down> 8<C-e>
+vnoremap <down> 8<C-e>
+
+noremap Q q
+noremap q <C-w>c
+
+"nmap <leader>l :action KJumpAction.Line<cr>
+"nmap <leader>w :action KJumpAction.Word0<cr>
