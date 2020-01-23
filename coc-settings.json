@@ -25,6 +25,7 @@
     "s": "action:vsplit",
     "S": "action:split"
   },
+  "codeLens.enable": true,
   "suggest.enablePreview": true,
   "list.maxPreviewHeight": 30
 }

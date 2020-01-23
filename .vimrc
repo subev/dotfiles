@@ -90,6 +90,7 @@ call plug#begin('~/.vim/plugged')
     nmap <silent> gd <Plug>(coc-type-definition)
     nmap <silent> ,i <Plug>(coc-implementation)
     nmap <silent> ,6 <Plug>(coc-references)
+    nmap <silent> ,w <Plug>(coc-codelens-action)
 
     " Use K to show documentation in preview window
     nnoremap <silent> <space><space> :call <SID>show_documentation()<CR>
