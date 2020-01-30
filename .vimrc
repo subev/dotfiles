@@ -180,18 +180,11 @@ call plug#begin('~/.vim/plugged')
     nmap f <Plug>(easymotion-overwin-f2)
     nmap F <Plug>(easymotion-overwin-line)
 
-    "Plug 'majutsushi/tagbar'
-    "This addon does not work well with easymotion when jumping over win
-    "nmap <F3> :TagbarToggle<CR>
-    "let g:tagbar_compact = 1
-    "let g:tagbar_autofocus = 1
-    "let g:tagbar_foldlevel = 1
-
     "Plug 'rking/ag.vim'
     " This addon does the oposite of 'J' in vim
     Plug 'AndrewRadev/splitjoin.vim'
     "gS and gJ are the two shortcuts to Split and Join
-    let g:splitjoin_split_mapping = 'gS'
+    let g:splitjoin_split_mapping = 'gs'
     let g:splitjoin_join_mapping = 'gj'
 
     Plug 'AndrewRadev/sideways.vim'
