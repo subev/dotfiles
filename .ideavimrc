@@ -28,7 +28,7 @@ nnoremap ,i :action GotoImplementation<CR>
 "nnoremap ,f :action GotoFile<CR>
 "nnoremap ,s :action GotoSymbol<CR>
 
-nnoremap <space>p :action ShowFilePath<CR>
+nnoremap <space>p :action SelectIn<CR>
 nnoremap <Leader>1 :action OptimizeImports<CR>
 nnoremap <space>l :action ShowPopupMenu<CR>
 
