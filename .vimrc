@@ -129,6 +129,7 @@ call plug#begin('~/.vim/plugged')
     xmap <space>l  <Plug>(coc-codeaction-selected)
     " Remap for do codeAction of current line
     nmap <space>l  <Plug>(coc-codeaction)
+    nmap <space>k  :CocList<cr>
     " Fix autofix problem of current line
     nmap <space>qf  <Plug>(coc-fix-current)
 
@@ -209,13 +210,14 @@ call plug#begin('~/.vim/plugged')
 
     " this one should be depricated soon
     Plug 'mileszs/ack.vim'
+
     Plug 'Yggdroot/LeaderF', { 'do': './install.sh' }
     let g:Lf_WindowPosition = 'popup'
     let g:Lf_PreviewInPopup = 1
     nmap ,f :Leaderf file<cr>
     let g:Lf_DefaultMode = 'NameOnly'
-
-    let g:Lf_CommandMap = {'<C-K>': ['<Up>'], '<C-J>': ['<Down>']}
+    let g:Lf_CommandMap = {'<C-K>': ['<Up>'], '<C-J>': ['<Down>'], '<C-]>': ['<C-V>']}
+    xnoremap gf :<C-U><C-R>=printf("Leaderf! rg -F -e %s ", leaderf#Rg#visual())<CR>
 
     Plug 'dyng/ctrlsf.vim'
     let g:ctrlsf_ackprg = 'rg'
