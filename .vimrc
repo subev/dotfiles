@@ -17,6 +17,7 @@ call plug#begin('~/.vim/plugged')
 
     " themes
     Plug 'morhetz/gruvbox'
+    set background=dark    " Setting dark mode
     Plug 'sheerun/vim-polyglot'
 
     Plug 'othree/javascript-libraries-syntax.vim'
@@ -42,6 +43,7 @@ call plug#begin('~/.vim/plugged')
     let g:startify_session_persistence = 1
 
     Plug 'airblade/vim-gitgutter'
+    "g:gitgutter_signs = 0
     "highlight GitGutterAdd  ctermfg=2 ctermbg=180
     "highlight GitGutterChange  ctermfg=3 ctermbg=180
     "highlight GitGutterDelete  ctermfg=1 ctermbg=180
@@ -171,6 +173,7 @@ call plug#begin('~/.vim/plugged')
     Plug 'mg979/vim-visual-multi'
     let g:VM_mouse_mappings = 1
     map <F2> \\A
+    map <F3> \\C
 
     Plug 'haya14busa/incsearch.vim'
     Plug 'easymotion/vim-easymotion'
@@ -215,6 +218,7 @@ call plug#begin('~/.vim/plugged')
     let g:Lf_WindowPosition = 'popup'
     let g:Lf_PreviewInPopup = 1
     nmap ,f :Leaderf file<cr>
+    let g:Lf_UseMemoryCache = 0
     let g:Lf_DefaultMode = 'NameOnly'
     let g:Lf_CommandMap = {'<C-K>': ['<Up>'], '<C-J>': ['<Down>'], '<C-]>': ['<C-V>']}
     xnoremap gf :<C-U><C-R>=printf("Leaderf! rg -F -e %s ", leaderf#Rg#visual())<CR>
@@ -242,6 +246,8 @@ call plug#begin('~/.vim/plugged')
 
     "git tools blame, log, view files in other branches
     Plug 'tpope/vim-fugitive'
+    nnoremap gm :Gvsplit origin/master:%<cr>
+
     Plug 'junegunn/gv.vim'
     Plug 'tpope/vim-rhubarb'
     " change surrounding brancjes
@@ -258,9 +264,26 @@ call plug#begin('~/.vim/plugged')
     set statusline=%F%m%r%h%w[%L][%{&ff}]%y[%p%%][%04l,%04v]
     set laststatus=2
 
+    Plug 'ryanoasis/vim-devicons'
+
+    "this addon is pretty heavy
+    Plug 'tiagofumo/vim-nerdtree-syntax-highlight'
+    "if all are enabled(default) there is huge lag in NerdTree
+    let g:NERDTreeFileExtensionHighlightFullName = 1
+    let g:NERDTreeSyntaxDisableDefaultExtensions = 1
+    let g:NERDTreeDisableExactMatchHighlight = 1
+    let g:NERDTreeDisablePatternMatchHighlight = 1
+    let g:NERDTreeSyntaxEnabledExtensions = ['java', 'jsx', 'tsx', 'json', 'js', 'ts', 'xml', 'yaml', 'py', 'vim', 'html', 'css', 'scss', 'c++', 'c']
+    let s:orange = "D4843E"
+    let g:NERDTreeExtensionHighlightColor = {}
+    let g:NERDTreeHighlightCursorline = 0
+    let g:NERDTreeExtensionHighlightColor['tsx'] = s:orange
+
     Plug 'vim-airline/vim-airline'
     let g:airline_powerline_fonts = 1
     let g:airline#parts#ffenc#skip_expected_string='utf-8[unix]'
+    " Just show the filename (no path) in the tab
+    let g:airline#extensions#tabline#fnamemod = ':t'
 
     Plug 'jlanzarotta/bufexplorer'
     nnoremap ,b :BufExplorer<CR>
@@ -353,6 +376,7 @@ call plug#end()
     set ignorecase
     set smartcase
     set incsearch
+    set hlsearch
 
     " avoid swap, temp and backup files
     set nobackup
