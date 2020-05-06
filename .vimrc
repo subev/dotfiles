@@ -266,19 +266,6 @@ call plug#begin('~/.vim/plugged')
 
     Plug 'ryanoasis/vim-devicons'
 
-    "this addon is pretty heavy
-    Plug 'tiagofumo/vim-nerdtree-syntax-highlight'
-    "if all are enabled(default) there is huge lag in NerdTree
-    let g:NERDTreeFileExtensionHighlightFullName = 1
-    let g:NERDTreeSyntaxDisableDefaultExtensions = 1
-    let g:NERDTreeDisableExactMatchHighlight = 1
-    let g:NERDTreeDisablePatternMatchHighlight = 1
-    let g:NERDTreeSyntaxEnabledExtensions = ['java', 'jsx', 'tsx', 'json', 'js', 'ts', 'xml', 'yaml', 'py', 'vim', 'html', 'css', 'scss', 'c++', 'c']
-    let s:orange = "D4843E"
-    let g:NERDTreeExtensionHighlightColor = {}
-    let g:NERDTreeHighlightCursorline = 0
-    let g:NERDTreeExtensionHighlightColor['tsx'] = s:orange
-
     Plug 'vim-airline/vim-airline'
     let g:airline_powerline_fonts = 1
     let g:airline#parts#ffenc#skip_expected_string='utf-8[unix]'
@@ -302,18 +289,6 @@ call plug#begin('~/.vim/plugged')
       \   <bang>0)
 
     Plug 'junegunn/vim-easy-align'
-
-    " Haskell omni complete, TODO use COC
-    Plug 'eagletmt/neco-ghc'
-    Plug 'eagletmt/ghcmod-vim'
-    au FileType haskell nnoremap <buffer> <Space><Space> :GhcModType!<CR>
-    au FileType haskell nnoremap <buffer> <Space>i :GhcModInfo!<CR>
-    au FileType haskell nnoremap <buffer> <Space>t :GhcModType!<CR>
-    au FileType haskell noremap <buffer> <CR> :GhcModTypeClear<CR>:noh<CR><CR>
-    au FileType haskell nnoremap <buffer> ,tt :GhcModTypeInsert!<CR>
-    au FileType haskell nnoremap <buffer> ,s :GhcModSplitFunCase!<CR>
-    au FileType haskell nnoremap <buffer> <Space>c :GhcModCheckAsync!<CR>
-    au FileType haskell nnoremap <buffer> <Space>l :GhcModLintAsync!<CR>
 
     Plug 'Yggdroot/indentLine'
     let g:indent_guides_enable_on_vim_startup = 1
@@ -456,6 +431,8 @@ call plug#end()
     vmap } S}
     vmap " S"
     vmap ' S'
+    nmap g] /<<<<<<<cr>
+    nmap g[ ?<<<<<<<cr>
 
     ""replace word under cursor
     "nnoremap ,r :%s/\<<C-r><C-w>\>//g<Left><Left>
@@ -498,6 +475,8 @@ call plug#end()
     " vi" selects everything inside the quotation
     " ,s calls the sorting algorithm
     vmap ,s :SortWords<CR>
+    "yank current full file path to clipboard
+    nnoremap ,yp :let @+=expand('%:p')<CR>
 
     noremap <leader>ve :e $MYVIMRC<CR>
     noremap <leader>vu :source %<CR>

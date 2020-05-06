@@ -5,6 +5,7 @@ export CLOUDSDK_PYTHON_SITEPACKAGES=1
 export PATH=$HOME/google-cloud-sdk/platform/google_appengine:$PATH
 
 export PATH=$HOME/.stack/programs/x86_64-osx/ghc-8.0.2/bin:$PATH
+export PATH=$HOME/.local/bin:$PATH
 
 export RUST_SRC_PATH=${HOME}/.rustup/toolchains/stable-x86_64-apple-darwin/lib/rustlib/src/rust/src
 

@@ -5,6 +5,9 @@ export JAVA_HOME=`/usr/libexec/java_home -v 1.8`
 # Path to your oh-my-zsh installation.
 export CLOUDSDK_PYTHON_SITEPACKAGES=1
 
+# Stack seems to output haskell executables in this path like hie-wrapper
+export PATH=$HOME/.local/bin:$PATH
+
 export ZSH="${HOME}/.oh-my-zsh"
 export FZF_BASE=/usr/local/opt/fzf
 export LC_ALL=en_US.UTF-8
