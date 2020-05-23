@@ -42,7 +42,9 @@
     "s": "action:vsplit",
     "S": "action:split"
   },
+  "list.insertMappings": {
+    "<C-d>": "do:switch"
+  },
   "suggest.enablePreview": true,
-  "list.maxPreviewHeight": 30,
-  "codeLens.enable": true
+  "list.maxPreviewHeight": 30
 }

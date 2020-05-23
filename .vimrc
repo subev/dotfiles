@@ -130,6 +130,7 @@ call plug#begin('~/.vim/plugged')
     " Remap for do codeAction of selected region, ex: `<leader>aap` for current paragraph
     xmap <space>l  <Plug>(coc-codeaction-selected)
     " Remap for do codeAction of current line
+    nmap <space>j  :CocListResume<cr>
     nmap <space>l  <Plug>(coc-codeaction)
     nmap <space>k  :CocList<cr>
     " Fix autofix problem of current line
@@ -247,6 +248,7 @@ call plug#begin('~/.vim/plugged')
     "git tools blame, log, view files in other branches
     Plug 'tpope/vim-fugitive'
     nnoremap gm :Gvsplit origin/master:%<cr>
+    noremap ,g :G<CR>
 
     Plug 'junegunn/gv.vim'
     Plug 'tpope/vim-rhubarb'
@@ -271,6 +273,12 @@ call plug#begin('~/.vim/plugged')
     let g:airline#parts#ffenc#skip_expected_string='utf-8[unix]'
     " Just show the filename (no path) in the tab
     let g:airline#extensions#tabline#fnamemod = ':t'
+    function! AirlineInit()
+      " Make branch hide when window width < 100
+      call airline#parts#define_minwidth('branch', 100)
+      let g:airline_section_b = airline#section#create(['branch'])
+    endfunction
+    autocmd User AirlineAfterInit call AirlineInit()
 
     Plug 'jlanzarotta/bufexplorer'
     nnoremap ,b :BufExplorer<CR>
@@ -469,6 +477,7 @@ call plug#end()
     noremap <D-j> 8<C-e>
     noremap <D-k> 8<C-y>
     nnoremap vv <C-w>
+    nnoremap db V$%d
 
     command! -nargs=0 -range SortWords call SortWords()
     " Add a mapping, go to your string, then press vi",s

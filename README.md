@@ -31,3 +31,5 @@ ln -s "$HOME/dotfiles/coc-settings.json" "$HOME/.vim/coc-settings.json"
 ln -s "$HOME/dotfiles/karabiner.json" "$HOME/.config/karabiner/karabiner.json'
 
 ln -s "$HOME/dotfiles/.ideavimrc" "$HOME/.ideavimrc"
+
+ln -s "$HOME/dotfiles/gruvbox.tmTheme" "$HOME/.config/bat/themes/gruvbox.tmTheme"
