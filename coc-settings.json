@@ -46,5 +46,6 @@
     "<C-d>": "do:switch"
   },
   "suggest.enablePreview": true,
-  "list.maxPreviewHeight": 30
+  "list.maxPreviewHeight": 30,
+  "suggest.timeout": 10000
 }

@@ -29,6 +29,7 @@ call plug#begin('~/.vim/plugged')
     Plug 'tmhedberg/matchit'
 
     Plug 'scrooloose/nerdcommenter'
+    let g:NERDCustomDelimiters = { 'typescript': { 'left': '// '} }
     Plug 'scrooloose/nerdtree'
     Plug 'Xuyuanp/nerdtree-git-plugin'
     let g:NERDTreeQuitOnOpen = 1
@@ -43,6 +44,8 @@ call plug#begin('~/.vim/plugged')
     let g:startify_session_persistence = 1
 
     Plug 'airblade/vim-gitgutter'
+    nmap <space>h <Plug>(GitGutterPreviewHunk)
+    nmap <space>x <Plug>(GitGutterUndoHunk)
     "g:gitgutter_signs = 0
     "highlight GitGutterAdd  ctermfg=2 ctermbg=180
     "highlight GitGutterChange  ctermfg=3 ctermbg=180
@@ -94,7 +97,6 @@ call plug#begin('~/.vim/plugged')
     nmap <silent> ,6 <Plug>(coc-references)
     nmap <silent> ,w <Plug>(coc-codelens-action)
 
-    " Use K to show documentation in preview window
     nnoremap <silent> <space><space> :call <SID>show_documentation()<CR>
 
     function! s:show_documentation()
@@ -188,7 +190,7 @@ call plug#begin('~/.vim/plugged')
     "Plug 'rking/ag.vim'
     " This addon does the oposite of 'J' in vim
     Plug 'AndrewRadev/splitjoin.vim'
-    "gS and gJ are the two shortcuts to Split and Join
+    " changing the default gS and gJ
     let g:splitjoin_split_mapping = 'gs'
     let g:splitjoin_join_mapping = 'gj'
 
@@ -248,6 +250,7 @@ call plug#begin('~/.vim/plugged')
     "git tools blame, log, view files in other branches
     Plug 'tpope/vim-fugitive'
     nnoremap gm :Gvsplit origin/master:%<cr>
+    nnoremap gb :Gblame<cr>
     noremap ,g :G<CR>
 
     Plug 'junegunn/gv.vim'
@@ -265,8 +268,6 @@ call plug#begin('~/.vim/plugged')
 
     set statusline=%F%m%r%h%w[%L][%{&ff}]%y[%p%%][%04l,%04v]
     set laststatus=2
-
-    Plug 'ryanoasis/vim-devicons'
 
     Plug 'vim-airline/vim-airline'
     let g:airline_powerline_fonts = 1
@@ -396,6 +397,34 @@ call plug#end()
     nnoremap 9 <C-o>
     nnoremap 0 <C-i>
 
+    nnoremap db V$%d
+    "yank/change/visual inside closest brackets
+    nmap c9 ci(
+    nmap d9 di(
+    nmap y5 yib
+    nmap yb yiB
+    nmap c5 cib
+    nmap cb ciB
+    nmap v5 vib
+    nmap d5 dib
+    nmap db diB
+    nmap d4 d$
+    nmap yq yiq
+
+    nnoremap c6 c^
+    " change inside quotes
+    nmap c' ciq
+    nmap d' diq
+    nmap v' viq
+    nmap vq vaq
+    nmap cq caq
+    nmap dq daq
+
+    nnoremap yl ^y$
+    nnoremap dl ^d$"_dd
+
+    "TODO add all crazy number shortcuts
+
     nnoremap <up> 8<C-y>
     vnoremap <up> 8<C-y>
     nnoremap <down> 8<C-e>
@@ -432,6 +461,7 @@ call plug#end()
     vnoremap // y/<C-R>"<CR>
 
     vmap ( S(
+    vmap 0 S)
     vmap ) S)
     vmap [ S[
     vmap ] S]
@@ -456,8 +486,6 @@ call plug#end()
 
     nnoremap ,o :only<CR>
 
-    " center screen
-    "noremap <Space><Space> zz
     " add space after
     noremap <Space>a a<Space><ESC>h
     " add space before
@@ -477,13 +505,13 @@ call plug#end()
     noremap <D-j> 8<C-e>
     noremap <D-k> 8<C-y>
     nnoremap vv <C-w>
-    nnoremap db V$%d
 
     command! -nargs=0 -range SortWords call SortWords()
     " Add a mapping, go to your string, then press vi",s
     " vi" selects everything inside the quotation
     " ,s calls the sorting algorithm
     vmap ,s :SortWords<CR>
+
     "yank current full file path to clipboard
     nnoremap ,yp :let @+=expand('%:p')<CR>
 
