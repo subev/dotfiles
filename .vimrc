@@ -513,7 +513,7 @@ call plug#end()
     vmap ,s :SortWords<CR>
 
     "yank current full file path to clipboard
-    nnoremap ,yp :let @+=expand('%:p')<CR>
+    nnoremap yp :let @+=expand('%:p')<CR>
 
     noremap <leader>ve :e $MYVIMRC<CR>
     noremap <leader>vu :source %<CR>
