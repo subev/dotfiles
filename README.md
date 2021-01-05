@@ -28,7 +28,7 @@ ln -s "$HOME/dotfiles/.agignore" "$HOME/.rgignore"
 
 ln -s "$HOME/dotfiles/coc-settings.json" "$HOME/.vim/coc-settings.json"
 
-ln -s "$HOME/dotfiles/karabiner.json" "$HOME/.config/karabiner/karabiner.json'
+ln -s "$HOME/dotfiles/karabiner.json" "$HOME/.config/karabiner/karabiner.json"
 
 ln -s "$HOME/dotfiles/.ideavimrc" "$HOME/.ideavimrc"
 
