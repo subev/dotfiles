@@ -1,11 +1,4 @@
-if has('nvim')
-  let g:python2_host_prog = '/usr/local/bin/python'
-  let g:python3_host_prog = '/usr/local/bin/python3'
-else
-  command! -nargs=1 Py py3 <args>
-  set pythonthreedll=/usr/local/Frameworks/Python.framework/Versions/3.7/Python
-  set pythonthreehome=/usr/local/Frameworks/Python.framework/Versions/3.7
-endif
+let g:python3_host_prog = '/usr/local/bin/python3'
 
 " Load vim-plug
 if empty(glob('~/.vim/autoload/plug.vim'))

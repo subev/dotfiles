@@ -1,8 +1,14 @@
-dotfiles
+### dotfiles
 
 ========
 
 unix settings 
+```
+brew install coreutils python3 
+
+brew install nvim  --head
+
+pip3 install --user neovim
 
 ln -s "$HOME/dotfiles/.bashrc" "$HOME/.bashrc"
 
@@ -26,10 +32,17 @@ ln -s "$HOME/dotfiles/.agignore" "$HOME/.agignore"
 
 ln -s "$HOME/dotfiles/.agignore" "$HOME/.rgignore"
 
-ln -s "$HOME/dotfiles/coc-settings.json" "$HOME/.vim/coc-settings.json"
+mkdir -p ~/.config/nvim/
+
+ln -s "$HOME/dotfiles/.vimrc" "$HOME/config/.nvim/init.vim"
+
+ln -s "$HOME/dotfiles/coc-settings.json" "$HOME/config/.nvim/coc-settings.json"
 
 ln -s "$HOME/dotfiles/karabiner.json" "$HOME/.config/karabiner/karabiner.json"
 
 ln -s "$HOME/dotfiles/.ideavimrc" "$HOME/.ideavimrc"
 
+mkdir -p ~/.config/bat/themes/
+
 ln -s "$HOME/dotfiles/gruvbox.tmTheme" "$HOME/.config/bat/themes/gruvbox.tmTheme"
+```

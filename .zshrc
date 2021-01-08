@@ -1,6 +1,13 @@
+# Enable Powerlevel10k instant prompt. Should stay close to the top of ~/.zshrc.
+# Initialization code that may require console input (password prompts, [y/n]
+# confirmations, etc.) must go above this block; everything else may go below.
+if [[ -r "${XDG_CACHE_HOME:-$HOME/.cache}/p10k-instant-prompt-${(%):-%n}.zsh" ]]; then
+  source "${XDG_CACHE_HOME:-$HOME/.cache}/p10k-instant-prompt-${(%):-%n}.zsh"
+fi
+
 # If you come from bash you might have to change your $PATH.
 # export PATH=$HOME/bin:/usr/local/bin:$PATH
-export JAVA_HOME=`/usr/libexec/java_home -v 1.8`
+#export JAVA_HOME=`/usr/libexec/java_home -v 1.8`
 
 # Path to your oh-my-zsh installation.
 export CLOUDSDK_PYTHON_SITEPACKAGES=1
@@ -126,7 +133,7 @@ eval "$(jump shell --bind=j)"
 
 # this needs the core utils to be installed "brew install coreutils"
 alias ll='gls -alFH --group-directories-first --color=auto'
-alias m=mvim
+#alias m=mvim
 alias n=nvim
 alias gbrsdelete="git for-each-ref --sort=committerdate refs/heads/ --format='%(refname:short)' | xargs git br -d"
 # This speeds up pasting w/ autosuggest
@@ -158,3 +165,6 @@ export NVM_DIR="$HOME/.nvm"
 [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"  # This loads nvm
 [ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"  # This loads nvm bash_completion
 export EDITOR=/usr/bin/nvim
+
+# To customize prompt, run `p10k configure` or edit ~/.p10k.zsh.
+[[ ! -f ~/.p10k.zsh ]] || source ~/.p10k.zsh
