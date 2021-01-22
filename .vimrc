@@ -21,14 +21,17 @@ call plug#begin('~/.vim/plugged')
     ""match tags and navigate through %
     Plug 'tmhedberg/matchit'
 
+    Plug 'JamshedVesuna/vim-markdown-preview'
+    let vim_markdown_preview_github = 1
+
     Plug 'scrooloose/nerdcommenter'
     let g:NERDCustomDelimiters = { 'typescript': { 'left': '// '} }
     Plug 'scrooloose/nerdtree'
     Plug 'Xuyuanp/nerdtree-git-plugin'
     let g:NERDTreeQuitOnOpen = 1
     let g:NERDTreeChDirMode  = 2
+    let NERDTreeShowHidden = 1
     noremap <space>p :NERDTreeFind<CR>zz
-    let NERDTreeShowHidden=1
     noremap <silent> <F4> :NERDTreeToggle<CR>
 
     Plug 'mhinz/vim-startify'
@@ -39,15 +42,11 @@ call plug#begin('~/.vim/plugged')
     Plug 'airblade/vim-gitgutter'
     nmap <space>h <Plug>(GitGutterPreviewHunk)
     nmap <space>x <Plug>(GitGutterUndoHunk)
-    "g:gitgutter_signs = 0
-    "highlight GitGutterAdd  ctermfg=2 ctermbg=180
-    "highlight GitGutterChange  ctermfg=3 ctermbg=180
-    "highlight GitGutterDelete  ctermfg=1 ctermbg=180
 
     Plug 'neoclide/coc.nvim', {'branch': 'release'}
-    let g:coc_global_extensions = [ 'coc-tslint', 'coc-tslint-plugin', 'coc-emmet', 'coc-git', 'coc-vimlsp',
-      \ 'coc-lists', 'coc-snippets', 'coc-highlight', 'coc-vetur', 'coc-html', 'coc-tsserver',
-      \ 'coc-css', 'coc-json', 'coc-java', 'coc-python', 'coc-yank', 'coc-prettier', 'coc-omnisharp' ]
+    let g:coc_global_extensions = [ 'coc-emmet', 'coc-git', 'coc-vimlsp',
+      \ 'coc-lists', 'coc-snippets', 'coc-html', 'coc-tsserver', 'coc-jest',
+      \ 'coc-css', 'coc-json', 'coc-java', 'coc-pyright', 'coc-yank', 'coc-prettier', 'coc-omnisharp' ]
 
     " You will have bad experience for diagnostic messages when it's default 4000.
     set updatetime=300
@@ -81,7 +80,10 @@ call plug#begin('~/.vim/plugged')
     nmap <silent> <space><right> <Plug>(coc-diagnostic-next)
 
     " Use space-t to use list plugin
-    nmap <silent> <space>t :CocList<cr>
+    nnoremap <silent> <space>ta :call CocAction('runCommand', 'jest.projectTest')<CR>
+    nnoremap <silent> <space>tc :call CocAction('runCommand', 'jest.fileTest', ['%'])<CR>
+    nnoremap <silent> <space>tt :call CocAction('runCommand', 'jest.singleTest')<CR>
+    nnoremap <silent> <space>1 :call CocAction('runCommand', 'eslint.executeAutofix')<CR>
 
     " Remap keys for gotos
     nmap <silent> ,d <Plug>(coc-definition)
@@ -258,21 +260,24 @@ call plug#begin('~/.vim/plugged')
     let g:ctrlp_show_hidden = 1
     let g:ctrlp_working_path_mode = 'rw'
     let g:ctrlp_by_filename = 1
+    let g:ctrlp_mruf_exclude = '/tmp/.*\|/temp/.*\|/private/.*\|.*/node_modules/.*\|.*/.pyenv/.*' " MacOSX/Linux
 
-    set statusline=%F%m%r%h%w[%L][%{&ff}]%y[%p%%][%04l,%04v]
-    set laststatus=2
+    Plug 'itchyny/lightline.vim'
+    let g:lightline = {
+    \ 'active': {
+    \   'left': [ [ 'mode', 'paste' ],
+    \             [ 'cocstatus', 'readonly', 'filename', 'modified' ] ],
+    \ 'right': [ [ 'lineinfo' ],
+    \            [ 'percent' ],
+    \            [ 'filetype' ] ],
+    \ },
+    \ 'component_function': {
+    \   'cocstatus': 'coc#status'
+    \ },
+    \ }
 
-    Plug 'vim-airline/vim-airline'
-    let g:airline_powerline_fonts = 1
-    let g:airline#parts#ffenc#skip_expected_string='utf-8[unix]'
-    " Just show the filename (no path) in the tab
-    let g:airline#extensions#tabline#fnamemod = ':t'
-    function! AirlineInit()
-      " Make branch hide when window width < 100
-      call airline#parts#define_minwidth('branch', 100)
-      let g:airline_section_b = airline#section#create(['branch'])
-    endfunction
-    autocmd User AirlineAfterInit call AirlineInit()
+    " Use autocmd to force lightline update.
+    autocmd User CocStatusChange,CocDiagnosticChange call lightline#update()
 
     Plug 'jlanzarotta/bufexplorer'
     nnoremap ,b :BufExplorer<CR>
@@ -298,7 +303,6 @@ call plug#begin('~/.vim/plugged')
     Plug 'bronson/vim-visual-star-search'
     Plug 'terryma/vim-expand-region'
     Plug 'wellle/targets.vim'
-    Plug 'google/vim-searchindex'
 
     Plug 'pseewald/vim-anyfold'
     nmap zf :AnyFoldActivate<CR>:set foldlevel=1<CR>:set foldenable<CR>
@@ -341,6 +345,8 @@ call plug#end()
 
 " General {
     set hidden
+
+    set shortmess-=S
 
     if $TMUX == ''
       set clipboard+=unnamed
@@ -414,6 +420,7 @@ call plug#end()
     nmap dq daq
 
     nnoremap yl ^y$
+    vnoremap = yO<Esc>P
     nnoremap dl ^d$"_dd
 
     "TODO add all crazy number shortcuts
@@ -424,6 +431,8 @@ call plug#end()
     vnoremap <down> 8<C-e>
     nnoremap <left> <C-w>h
     nnoremap <right> <C-w>l
+    nnoremap <s-up> <C-w>k
+    nnoremap <s-down> <C-w>j
 
     " disable the highlight search
     nnoremap <CR> :noh<CR><CR>
@@ -453,6 +462,8 @@ call plug#end()
     "search for the visually selected text
     vnoremap // y/<C-R>"<CR>
 
+    vnoremap < c<<space>/><Esc>hhP
+    <vnoremap></vnoremap> > c<><Esc>Pf>a</><Esc>P
     vmap ( S(
     vmap 0 S)
     vmap ) S)
@@ -480,9 +491,9 @@ call plug#end()
     nnoremap ,o :only<CR>
 
     " add space after
-    noremap <Space>a a<Space><ESC>h
+    noremap <Space>a a<Space><Esc>h
     " add space before
-    noremap <Space>i i<Space><ESC>l
+    noremap <Space>i i<Space><Esc>l
 
     "jump to the closest opening bracket of type {
     nnoremap { [{
@@ -573,24 +584,6 @@ call plug#end()
     au BufEnter *.bg* setlocal keymap=bulgarian-phonetic
 " }
 
-" workspace specific options
-
-function! WorkSpaceSettings()
-  let l:path = expand('%:p')
-  if l:path =~ '/Leanplum/'
-    iabbrev @@@ // All rights reserved. Leanplum. 2016.
-          \<CR>// Author: Petur Subev (petur@leanplum.com)
-          \<CR>//<space>
-
-    if l:path =~ '.*\.py$'
-      setlocal tabstop=2
-      setlocal shiftwidth=2
-      setlocal softtabstop=2
-    endif
-
-  endif
-endfunction
-
 function! SortWords()
   " Get the visual mark points
   let StartPosition = getpos("'<")
@@ -648,5 +641,3 @@ function! SortWords()
       call setline(StartPosition[1], NewLine)
   endif
 endfunction
-
-au! BufReadPost,BufNewFile * call WorkSpaceSettings()

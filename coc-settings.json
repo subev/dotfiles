@@ -1,4 +1,7 @@
 {
+  "eslint.autoFixOnSave": false,
+  "python.formatting.provider": "black",
+  "python.linting.pylintEnabled": true,
   "git.addedSign.hlGroup": "GitGutterAdd",
   "git.changedSign.hlGroup": "GitGutterChange",
   "git.removedSign.hlGroup": "GitGutterDelete",
@@ -46,5 +49,6 @@
   },
   "suggest.enablePreview": true,
   "list.maxPreviewHeight": 30,
-  "suggest.timeout": 10000
+  "suggest.timeout": 10000,
+  "coc.preferences.extensionUpdateCheck": "never"
 }

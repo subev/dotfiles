@@ -8,6 +8,8 @@ brew install coreutils python3
 
 brew install nvim  --head
 
+brew install grip
+
 pip3 install --user neovim
 
 ln -s "$HOME/dotfiles/.bashrc" "$HOME/.bashrc"

@@ -20,6 +20,7 @@ export FZF_BASE=/usr/local/opt/fzf
 export LC_ALL=en_US.UTF-8
 export TERM="xterm-256color"
 export HOMEBREW_NO_AUTO_UPDATE=1
+export AWS_PROFILE=petur
 
 # Set name of the theme to load --- if set to "random", it will
 # load a random theme each time oh-my-zsh is loaded, in which case,
