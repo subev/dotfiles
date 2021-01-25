@@ -244,8 +244,10 @@ call plug#begin('~/.vim/plugged')
 
     "git tools blame, log, view files in other branches
     Plug 'tpope/vim-fugitive'
-    nnoremap gm :Gvsplit origin/master:%<cr>
+    nnoremap gM :Gvsplit origin/master:%<cr>
+    nnoremap gm :Gvdiffsplit origin/master:%<cr>
     nnoremap gb :Gblame<cr>
+    vnoremap gb :Gbrowse<cr>
     noremap ,g :G<CR>
 
     Plug 'junegunn/gv.vim'
@@ -463,7 +465,7 @@ call plug#end()
     vnoremap // y/<C-R>"<CR>
 
     vnoremap < c<<space>/><Esc>hhP
-    <vnoremap></vnoremap> > c<><Esc>Pf>a</><Esc>P
+    vnoremap > c<><Esc>Pf>a</><Esc>P
     vmap ( S(
     vmap 0 S)
     vmap ) S)
@@ -473,8 +475,8 @@ call plug#end()
     vmap } S}
     vmap " S"
     vmap ' S'
-    nmap g] /<<<<<<<cr>
-    nmap g[ ?<<<<<<<cr>
+    nmap g] <Plug>(coc-git-nextconflict)
+    nmap g[ <Plug>(coc-git-prevconflict)
 
     ""replace word under cursor
     "nnoremap ,r :%s/\<<C-r><C-w>\>//g<Left><Left>
