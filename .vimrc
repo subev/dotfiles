@@ -11,7 +11,12 @@ call plug#begin('~/.vim/plugged')
     " themes
     Plug 'morhetz/gruvbox'
     set background=dark    " Setting dark mode
+
     Plug 'sheerun/vim-polyglot'
+    let g:vim_markdown_conceal = 0
+    let g:vim_markdown_folding_disabled = 1
+    map <Plug> <Plug>Markdown_MoveToCurHeader
+    au FileType markdown nnoremap <silent><buffer> <Space>t :Toc<CR>
 
     Plug 'othree/javascript-libraries-syntax.vim'
     Plug 'ianks/vim-tsx'
@@ -21,8 +26,8 @@ call plug#begin('~/.vim/plugged')
     ""match tags and navigate through %
     Plug 'tmhedberg/matchit'
 
-    Plug 'JamshedVesuna/vim-markdown-preview'
-    let vim_markdown_preview_github = 1
+    Plug 'iamcco/markdown-preview.nvim', { 'do': { -> mkdp#util#install() }, 'for': ['markdown', 'vim-plug']}
+    let g:mkdp_auto_close = 0
 
     Plug 'scrooloose/nerdcommenter'
     let g:NERDCustomDelimiters = { 'typescript': { 'left': '// '} }
@@ -31,6 +36,7 @@ call plug#begin('~/.vim/plugged')
     let g:NERDTreeQuitOnOpen = 1
     let g:NERDTreeChDirMode  = 2
     let NERDTreeShowHidden = 1
+    let NERDTreeWinSize=70
     noremap <space>p :NERDTreeFind<CR>zz
     noremap <silent> <F4> :NERDTreeToggle<CR>
 
@@ -42,6 +48,7 @@ call plug#begin('~/.vim/plugged')
     Plug 'airblade/vim-gitgutter'
     nmap <space>h <Plug>(GitGutterPreviewHunk)
     nmap <space>x <Plug>(GitGutterUndoHunk)
+    nmap <space>v <Plug>(GitGutterStageHunk)
 
     Plug 'neoclide/coc.nvim', {'branch': 'release'}
     let g:coc_global_extensions = [ 'coc-emmet', 'coc-git', 'coc-vimlsp',
@@ -167,6 +174,17 @@ call plug#begin('~/.vim/plugged')
 
     Plug 'tpope/vim-repeat'
     Plug 'tpope/vim-unimpaired'
+
+    Plug 'kana/vim-smartword'
+    map w  <Plug>(smartword-w)
+    map b  <Plug>(smartword-b)
+    map e  <Plug>(smartword-e)
+
+    Plug 'bkad/camelcasemotion'
+    map <silent> W <Plug>CamelCaseMotion_w
+    map <silent> B <Plug>CamelCaseMotion_b
+    nmap <silent> E gE
+
     Plug 'duganchen/vim-soy'
     Plug 'mg979/vim-visual-multi'
     let g:VM_mouse_mappings = 1
@@ -174,6 +192,9 @@ call plug#begin('~/.vim/plugged')
     map <F3> \\C
 
     Plug 'haya14busa/incsearch.vim'
+    map /  <Plug>(incsearch-forward)
+    map ?  <Plug>(incsearch-backward)
+
     Plug 'easymotion/vim-easymotion'
     let g:EasyMotion_smartcase = 1
     let g:EasyMotion_keys = 'asdghklqwertyuiopzxcvbnmfj'
@@ -254,6 +275,7 @@ call plug#begin('~/.vim/plugged')
     Plug 'tpope/vim-rhubarb'
     " change surrounding brancjes
     Plug 'tpope/vim-surround'
+    vmap s S
 
     let g:ragtag_global_maps = 1
 
@@ -287,7 +309,6 @@ call plug#begin('~/.vim/plugged')
     let g:bufExplorerShowRelativePath=1  " Show relative paths.
 
     Plug 'junegunn/fzf', { 'dir': '~/.fzf', 'do': './install --all' }
-    Plug 'junegunn/fzf.vim'
     nmap <F1> :Helptags<cr>
     "nmap <leader>f :FZF<cr>
     command! -bang -nargs=* Rg
@@ -402,24 +423,41 @@ call plug#end()
     "yank/change/visual inside closest brackets
     nmap c9 ci(
     nmap d9 di(
-    nmap y5 yib
-    nmap yb yiB
-    nmap c5 cib
-    nmap cb ciB
-    nmap v5 vib
-    nmap d5 dib
-    nmap db diB
-    nmap d4 d$
-    nmap yq yiq
+    nmap y9 yi(
+    nmap v9 vi(
 
-    nnoremap c6 c^
-    " change inside quotes
-    nmap c' ciq
-    nmap d' diq
-    nmap v' viq
-    nmap vq vaq
+    nmap ds9 ds(
+    nmap da9 da(
+
+    nmap c[ ci{
+    nmap d[ di{
+    nmap y[ yi{
+
+    nmap c5 cib
+    nmap d5 dib
+    nmap y5 yib
+
+    nmap yb yiB
+    nmap cb ciB
+    nmap db diB
+
+    nnoremap cw cw
+    nnoremap dw dw
+    nmap yw yiw
+
     nmap cq caq
     nmap dq daq
+    nmap yq yiq
+    nmap vq vaq
+
+    nmap c' ciq
+    nmap d' diq
+    nmap y' yiq
+    nmap v' viq
+
+    nmap d4 d$
+    nnoremap c6 c^
+    nnoremap ~ ~h
 
     nnoremap yl ^y$
     vnoremap = yO<Esc>P
@@ -467,7 +505,7 @@ call plug#end()
     vnoremap < c<<space>/><Esc>hhP
     vnoremap > c<><Esc>Pf>a</><Esc>P
     vmap ( S(
-    vmap 0 S)
+    vmap 9 S)
     vmap ) S)
     vmap [ S[
     vmap ] S]
@@ -475,6 +513,7 @@ call plug#end()
     vmap } S}
     vmap " S"
     vmap ' S'
+    vmap ` S`
     nmap g] <Plug>(coc-git-nextconflict)
     nmap g[ <Plug>(coc-git-prevconflict)
 
@@ -485,10 +524,6 @@ call plug#end()
     noremap q <C-w>c
     "create new vertical split
     noremap ,n :vnew<CR>
-
-    "use incsearch plugin
-    map /  <Plug>(incsearch-forward)
-    map ?  <Plug>(incsearch-backward)
 
     nnoremap ,o :only<CR>
 
@@ -584,6 +619,7 @@ call plug#end()
     "disable continuous comments vim
     au FileType * setlocal formatoptions-=c formatoptions-=r formatoptions-=o
     au BufEnter *.bg* setlocal keymap=bulgarian-phonetic
+    au FileType help setlocal number
 " }
 
 function! SortWords()
