@@ -163,6 +163,8 @@ call plug#begin('~/.vim/plugged')
     nnoremap <silent> <space>cc  :<C-u>CocList commands<cr>
     " Find symbol of current document
     nnoremap <silent> <space>o  :<C-u>CocList outline<cr>
+    " Find symbol of current workspace
+    nnoremap <silent> <space>O  :<C-u>CocList symbols<cr>
     " Search workspace symbols
     nnoremap <silent> <space>cs  :<C-u>CocList -I symbols<cr>
     " Do default action for next item.
@@ -236,7 +238,7 @@ call plug#begin('~/.vim/plugged')
     Plug 'Yggdroot/LeaderF', { 'do': './install.sh' }
     let g:Lf_WindowPosition = 'popup'
     let g:Lf_PreviewInPopup = 1
-    nmap ,f :Leaderf file<cr>
+    "nmap ,f :Leaderf file<cr>
     let g:Lf_UseMemoryCache = 0
     let g:Lf_DefaultMode = 'NameOnly'
     let g:Lf_CommandMap = {'<C-K>': ['<Up>'], '<C-J>': ['<Down>'], '<C-]>': ['<C-V>']}
@@ -309,8 +311,16 @@ call plug#begin('~/.vim/plugged')
     let g:bufExplorerShowRelativePath=1  " Show relative paths.
 
     Plug 'junegunn/fzf', { 'dir': '~/.fzf', 'do': './install --all' }
+    Plug 'junegunn/fzf.vim'
     nmap <F1> :Helptags<cr>
+    nnoremap ,v :History<cr>
+    nnoremap ,f :Files<cr>
+    nnoremap <space>` :BLines<cr>
+    vnoremap <space>` y:BLines <c-r>"<cr>
+
+    "more useful here https://github.com/junegunn/fzf.vim#commands
     "nmap <leader>f :FZF<cr>
+
     command! -bang -nargs=* Rg
       \ call fzf#vim#grep(
       \   'rg --column --line-number --no-heading --color=always --smart-case '.shellescape(<q-args>), 1,
@@ -429,13 +439,20 @@ call plug#end()
     nmap ds9 ds(
     nmap da9 da(
 
-    nmap c[ ci{
-    nmap d[ di{
-    nmap y[ yi{
+    nmap c[ ci[
+    nmap d[ di[
+    nmap y[ yi[
+    nmap v[ vi[
+
+    nmap c{ ci{
+    nmap d{ di{
+    nmap y{ yi{
+    nmap v{ vi{
 
     nmap c5 cib
     nmap d5 dib
     nmap y5 yib
+    nmap v5 vib
 
     nmap yb yiB
     nmap cb ciB
@@ -457,6 +474,7 @@ call plug#end()
 
     nmap d4 d$
     nnoremap c6 c^
+    nnoremap c<space> ct<space>
     nnoremap ~ ~h
 
     nnoremap yl ^y$
@@ -469,6 +487,7 @@ call plug#end()
     vnoremap <up> 8<C-y>
     nnoremap <down> 8<C-e>
     vnoremap <down> 8<C-e>
+    nnoremap § <C-w>v
     nnoremap <left> <C-w>h
     nnoremap <right> <C-w>l
     nnoremap <s-up> <C-w>k
@@ -492,8 +511,6 @@ call plug#end()
 
     " quick-paste last yanked text
     noremap ; "0p
-
-    nnoremap ,v :CtrlPMRU<CR>
 
     " bind K to search grep word under the cursor
     nnoremap K :Ack! <cword><CR>
