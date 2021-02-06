@@ -187,7 +187,6 @@ call plug#begin('~/.vim/plugged')
     map <silent> B <Plug>CamelCaseMotion_b
     nmap <silent> E gE
 
-    Plug 'duganchen/vim-soy'
     Plug 'mg979/vim-visual-multi'
     let g:VM_mouse_mappings = 1
     map <F2> \\A
@@ -205,7 +204,6 @@ call plug#begin('~/.vim/plugged')
     nmap f <Plug>(easymotion-overwin-f2)
     nmap F <Plug>(easymotion-overwin-line)
 
-    "Plug 'rking/ag.vim'
     " This addon does the oposite of 'J' in vim
     Plug 'AndrewRadev/splitjoin.vim'
     " changing the default gS and gJ
@@ -231,18 +229,6 @@ call plug#begin('~/.vim/plugged')
     vmap L <Plug>MoveBlockDown
     nmap H <Plug>MoveLineUp
     nmap L <Plug>MoveLineDown
-
-    " this one should be depricated soon
-    Plug 'mileszs/ack.vim'
-
-    Plug 'Yggdroot/LeaderF', { 'do': './install.sh' }
-    let g:Lf_WindowPosition = 'popup'
-    let g:Lf_PreviewInPopup = 1
-    "nmap ,f :Leaderf file<cr>
-    let g:Lf_UseMemoryCache = 0
-    let g:Lf_DefaultMode = 'NameOnly'
-    let g:Lf_CommandMap = {'<C-K>': ['<Up>'], '<C-J>': ['<Down>'], '<C-]>': ['<C-V>']}
-    xnoremap gf :<C-U><C-R>=printf("Leaderf! rg -F -e %s ", leaderf#Rg#visual())<CR>
 
     Plug 'dyng/ctrlsf.vim'
     let g:ctrlsf_ackprg = 'rg'
@@ -279,15 +265,6 @@ call plug#begin('~/.vim/plugged')
     Plug 'tpope/vim-surround'
     vmap s S
 
-    let g:ragtag_global_maps = 1
-
-    Plug 'kien/ctrlp.vim'
-    let g:ctrlp_max_files=0
-    let g:ctrlp_show_hidden = 1
-    let g:ctrlp_working_path_mode = 'rw'
-    let g:ctrlp_by_filename = 1
-    let g:ctrlp_mruf_exclude = '/tmp/.*\|/temp/.*\|/private/.*\|.*/node_modules/.*\|.*/.pyenv/.*' " MacOSX/Linux
-
     Plug 'itchyny/lightline.vim'
     let g:lightline = {
     \ 'active': {
@@ -318,8 +295,7 @@ call plug#begin('~/.vim/plugged')
     nnoremap <space>` :BLines<cr>
     vnoremap <space>` y:BLines <c-r>"<cr>
 
-    "more useful here https://github.com/junegunn/fzf.vim#commands
-    "nmap <leader>f :FZF<cr>
+    "more useful commands https://github.com/junegunn/fzf.vim#commands
 
     command! -bang -nargs=* Rg
       \ call fzf#vim#grep(
@@ -330,11 +306,18 @@ call plug#begin('~/.vim/plugged')
 
     Plug 'junegunn/vim-easy-align'
 
+    " vertical guides
     Plug 'Yggdroot/indentLine'
     let g:indent_guides_enable_on_vim_startup = 1
 
     Plug 'bronson/vim-visual-star-search'
+    vmap 3 #
+    vmap 8 *
+
+    " use + and _ to incrementally visually select
     Plug 'terryma/vim-expand-region'
+
+    " adds text objects for pairs such as brackets and quiotes, commas etc.
     Plug 'wellle/targets.vim'
 
     Plug 'pseewald/vim-anyfold'
@@ -470,7 +453,7 @@ call plug#end()
     nmap c' ciq
     nmap d' diq
     nmap y' yiq
-    nmap v' viq
+    nmap v' ]bBviq
 
     nmap d4 d$
     nnoremap c6 c^
@@ -564,12 +547,6 @@ call plug#end()
     noremap <D-k> 8<C-y>
     nnoremap vv <C-w>
 
-    command! -nargs=0 -range SortWords call SortWords()
-    " Add a mapping, go to your string, then press vi",s
-    " vi" selects everything inside the quotation
-    " ,s calls the sorting algorithm
-    vmap ,s :SortWords<CR>
-
     "yank current full file path to clipboard
     nnoremap yp :let @+=expand('%:p')<CR>
 
@@ -632,67 +609,10 @@ call plug#end()
 
     filetype plugin indent on
 
-    au FileType gitcommit           setlocal spell
+    au FileType gitcommit setlocal spell
     "disable continuous comments vim
     au FileType * setlocal formatoptions-=c formatoptions-=r formatoptions-=o
+    " enable vim motions to work while writing in bulgarian
     au BufEnter *.bg* setlocal keymap=bulgarian-phonetic
     au FileType help setlocal number
 " }
-
-function! SortWords()
-  " Get the visual mark points
-  let StartPosition = getpos("'<")
-  let EndPosition = getpos("'>")
-
-  if StartPosition[0] != EndPosition[0]
-      echoerr "Range spans multiple buffers"
-  elseif StartPosition[1] != EndPosition[1]
-      " This is a multiple line range, probably easiest to work line wise
-
-      " This could be made a lot more complicated and sort the whole
-      " lot, but that would require thoughts on how many
-      " words/characters on each line, so that can be an exercise for
-      " the reader!
-      for LineNum in range(StartPosition[1], EndPosition[1])
-          call setline(LineNum, join(sort(split(getline('.'), ' ')), " "))
-      endfor
-  else
-      " Single line range, sort words
-      let CurrentLine = getline(StartPosition[1])
-
-      " Split the line into the prefix, the selected bit and the suffix
-
-      " The start bit
-      if StartPosition[2] > 1
-          let StartOfLine = CurrentLine[:StartPosition[2]-2]
-      else
-          let StartOfLine = ""
-      endif
-      " The end bit
-      if EndPosition[2] < len(CurrentLine)
-          let EndOfLine = CurrentLine[EndPosition[2]:]
-      else
-          let EndOfLine = ""
-      endif
-      " The middle bit
-      let BitToSort = CurrentLine[StartPosition[2]-1:EndPosition[2]-1]
-
-      " Move spaces at the start of the section to variable StartOfLine
-      while BitToSort[0] == ' '
-          let BitToSort = BitToSort[1:]
-          let StartOfLine .= ' '
-      endwhile
-      " Move spaces at the end of the section to variable EndOfLine
-      while BitToSort[len(BitToSort)-1] == ' '
-          let BitToSort = BitToSort[:len(BitToSort)-2]
-          let EndOfLine = ' ' . EndOfLine
-      endwhile
-
-      " Sort the middle bit
-      let Sorted = join(sort(split(BitToSort, ' ')), ' ')
-      " Reform the line
-      let NewLine = StartOfLine . Sorted . EndOfLine
-      " Write it out
-      call setline(StartPosition[1], NewLine)
-  endif
-endfunction
