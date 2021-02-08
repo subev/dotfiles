@@ -13,6 +13,7 @@ call plug#begin('~/.vim/plugged')
     set background=dark    " Setting dark mode
 
     Plug 'sheerun/vim-polyglot'
+    set conceallevel=0
     let g:vim_markdown_conceal = 0
     let g:vim_markdown_folding_disabled = 1
     map <Plug> <Plug>Markdown_MoveToCurHeader
@@ -50,16 +51,15 @@ call plug#begin('~/.vim/plugged')
     nmap <space>x <Plug>(GitGutterUndoHunk)
     nmap <space>v <Plug>(GitGutterStageHunk)
 
+    Plug 'honza/vim-snippets'
+
     Plug 'neoclide/coc.nvim', {'branch': 'release'}
     let g:coc_global_extensions = [ 'coc-emmet', 'coc-git', 'coc-vimlsp',
-      \ 'coc-lists', 'coc-snippets', 'coc-html', 'coc-tsserver', 'coc-jest',
+      \ 'coc-lists', 'coc-snippets', 'coc-html', 'coc-tsserver', 'coc-jest', 'coc-eslint',
       \ 'coc-css', 'coc-json', 'coc-java', 'coc-pyright', 'coc-yank', 'coc-prettier', 'coc-omnisharp' ]
 
     " You will have bad experience for diagnostic messages when it's default 4000.
     set updatetime=300
-
-    " always show signcolumns
-    "set signcolumn=yes
 
     " Use tab for trigger completion with characters ahead and navigate.
     " Use command ':verbose imap <tab>' to make sure tab is not mapped by other plugin.
@@ -74,6 +74,9 @@ call plug#begin('~/.vim/plugged')
       let col = col('.') - 1
       return !col || getline('.')[col - 1]  =~# '\s'
     endfunction
+
+    " jump through predefined locations in current snippet
+    let g:coc_snippet_next = '<tab>'
 
     " Use <c-space> to trigger completion.
     inoremap <silent><expr> <C-Space> coc#refresh()
@@ -108,6 +111,8 @@ call plug#begin('~/.vim/plugged')
         call CocAction('doHover')
       endif
     endfunction
+
+    :nmap <space>e :CocCommand explorer<CR>
 
     " Highlight symbol under cursor on CursorHold
     "autocmd CursorHold * silent call CocActionAsync('highlight')
@@ -269,15 +274,14 @@ call plug#begin('~/.vim/plugged')
     let g:lightline = {
     \ 'active': {
     \   'left': [ [ 'mode', 'paste' ],
-    \             [ 'cocstatus', 'readonly', 'filename', 'modified' ] ],
+    \             [ 'cocstatus', 'readonly', 'relativepath', 'modified' ]],
     \ 'right': [ [ 'lineinfo' ],
     \            [ 'percent' ],
     \            [ 'filetype' ] ],
     \ },
     \ 'component_function': {
-    \   'cocstatus': 'coc#status'
-    \ },
-    \ }
+    \   'cocstatus': 'coc#status',
+    \ }}
 
     " Use autocmd to force lightline update.
     autocmd User CocStatusChange,CocDiagnosticChange call lightline#update()
@@ -311,14 +315,14 @@ call plug#begin('~/.vim/plugged')
     let g:indent_guides_enable_on_vim_startup = 1
 
     Plug 'bronson/vim-visual-star-search'
-    vmap 3 #
-    vmap 8 *
 
     " use + and _ to incrementally visually select
     Plug 'terryma/vim-expand-region'
 
     " adds text objects for pairs such as brackets and quiotes, commas etc.
     Plug 'wellle/targets.vim'
+
+    Plug 'haya14busa/vim-textobj-function-syntax'
 
     Plug 'pseewald/vim-anyfold'
     nmap zf :AnyFoldActivate<CR>:set foldlevel=1<CR>:set foldenable<CR>
@@ -336,6 +340,7 @@ call plug#begin('~/.vim/plugged')
     au FileType csv nnoremap <buffer> <Space><Space> :WhatColumn!<CR>
 
     Plug 'editorconfig/editorconfig-vim'
+    " use workspace properties if project uses editorconfig
 " }
 call plug#end()
   " The Silver Searcher
@@ -552,9 +557,6 @@ call plug#end()
 
     noremap <leader>ve :e $MYVIMRC<CR>
     noremap <leader>vu :source %<CR>
-
-    "free the mapping <C-i> taken by snipmate
-    "unmap <C-i>
 
     " Settings for VimDiff as MergeTool
     if &diff

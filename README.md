@@ -1,9 +1,10 @@
-### dotfiles
+# dotfiles
 
 ========
 
-unix settings 
-```
+unix settings
+
+```bash
 brew install coreutils python3 
 
 brew install nvim  --head
@@ -47,4 +48,6 @@ ln -s "$HOME/dotfiles/.ideavimrc" "$HOME/.ideavimrc"
 mkdir -p ~/.config/bat/themes/
 
 ln -s "$HOME/dotfiles/gruvbox.tmTheme" "$HOME/.config/bat/themes/gruvbox.tmTheme"
+
+ln -s "$HOME/dotfiles/ultisnips/" "$HOME/.config/coc/"
 ```
