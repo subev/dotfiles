@@ -17,6 +17,7 @@ export PATH=$HOME/.local/bin:$PATH
 
 export ZSH="${HOME}/.oh-my-zsh"
 export FZF_BASE=/usr/local/opt/fzf
+export FZF_DEFAULT_COMMAND='rg --files'
 export LC_ALL=en_US.UTF-8
 export TERM="xterm-256color"
 export HOMEBREW_NO_AUTO_UPDATE=1
@@ -169,3 +170,4 @@ export EDITOR=/usr/bin/nvim
 
 # To customize prompt, run `p10k configure` or edit ~/.p10k.zsh.
 [[ ! -f ~/.p10k.zsh ]] || source ~/.p10k.zsh
+source ~/repos/forms/forms/vars_forms.sh

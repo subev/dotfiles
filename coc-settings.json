@@ -1,5 +1,8 @@
 {
   "eslint.autoFixOnSave": false,
+  //"eslint.options": {
+  //"configFile": ".eslintrc.legacy.js"
+  //},
   "python.formatting.provider": "black",
   "python.linting.pylintEnabled": true,
   "git.addedSign.hlGroup": "GitGutterAdd",
@@ -7,11 +10,27 @@
   "git.removedSign.hlGroup": "GitGutterDelete",
   "git.topRemovedSign.hlGroup": "GitGutterDelete",
   "git.changeRemovedSign.hlGroup": "GitGutterChangeDelete",
-  "yank.highlight.enable": false,
+  "yank.highlight.enable": true,
+  "yank.highlight.duration": 100,
+  "explorer.width": 70,
+  "explorer.quitOnOpen": true,
   "typescript.preferences.importModuleSpecifier": "relative",
   "typescript.format.insertSpaceAfterOpeningAndBeforeClosingNonemptyBraces": true,
   "snippets.priority": 110,
   "languageserver": {
+    "ccls": {
+      "command": "ccls",
+      "filetypes": ["c", "cpp", "cuda", "objc", "objcpp"],
+      "rootPatterns": [".ccls-root", "compile_commands.json"],
+      "initializationOptions": {
+        "cache": {
+          "directory": ".ccls-cache"
+        },
+        "client": {
+          "snippetSupport": true
+        }
+      }
+    },
     "elmLS": {
       "command": "elm-language-server",
       "filetypes": ["elm"],

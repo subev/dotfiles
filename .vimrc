@@ -17,7 +17,7 @@ call plug#begin('~/.vim/plugged')
     let g:vim_markdown_conceal = 0
     let g:vim_markdown_folding_disabled = 1
     map <Plug> <Plug>Markdown_MoveToCurHeader
-    au FileType markdown nnoremap <silent><buffer> <Space>t :Toc<CR>
+    au FileType markdown nnoremap <silent><buffer> <Space>o :Toc<CR>
 
     Plug 'othree/javascript-libraries-syntax.vim'
     Plug 'ianks/vim-tsx'
@@ -28,6 +28,7 @@ call plug#begin('~/.vim/plugged')
     Plug 'tmhedberg/matchit'
 
     Plug 'iamcco/markdown-preview.nvim', { 'do': { -> mkdp#util#install() }, 'for': ['markdown', 'vim-plug']}
+    au FileType markdown nnoremap <silent><buffer> <Space>7 :MarkdownPreview<CR>
     let g:mkdp_auto_close = 0
 
     Plug 'scrooloose/nerdcommenter'
@@ -52,6 +53,8 @@ call plug#begin('~/.vim/plugged')
     nmap <space>v <Plug>(GitGutterStageHunk)
 
     Plug 'honza/vim-snippets'
+
+    " COC CONFIG {
 
     Plug 'neoclide/coc.nvim', {'branch': 'release'}
     let g:coc_global_extensions = [ 'coc-emmet', 'coc-git', 'coc-vimlsp',
@@ -178,6 +181,12 @@ call plug#begin('~/.vim/plugged')
     nnoremap <silent> <space>ck  :<C-u>CocPrev<CR>
     " Resume latest coc list
     nnoremap <silent> <space>cp  :<C-u>CocListResume<CR>
+    " Show yanks history
+    nnoremap <silent> <space>y  :<C-u>CocList -A --normal yank<cr>
+
+    " END OF COC }
+
+    Plug 'm-pilia/vim-ccls'
 
     Plug 'tpope/vim-repeat'
     Plug 'tpope/vim-unimpaired'
@@ -199,7 +208,6 @@ call plug#begin('~/.vim/plugged')
 
     Plug 'haya14busa/incsearch.vim'
     map /  <Plug>(incsearch-forward)
-    map ?  <Plug>(incsearch-backward)
 
     Plug 'easymotion/vim-easymotion'
     let g:EasyMotion_smartcase = 1
@@ -246,6 +254,8 @@ call plug#begin('~/.vim/plugged')
         \ "at" : "start"
         \ }
     let g:ctrlsf_confirm_save = 0
+    au FileType ctrlsf nnoremap <silent><buffer> <space>` :BLines<cr>
+    au FileType ctrlsf vnoremap <silent><buffer> <space>` y:BLines <c-r>"<cr>
 
     " search with sublime-alternative
     noremap <leader>r :CtrlSF<space>
@@ -293,20 +303,24 @@ call plug#begin('~/.vim/plugged')
 
     Plug 'junegunn/fzf', { 'dir': '~/.fzf', 'do': './install --all' }
     Plug 'junegunn/fzf.vim'
+    Plug 'pbogut/fzf-mru.vim'
+    let $FZF_DEFAULT_OPTS = '--layout=reverse --exact'
     nmap <F1> :Helptags<cr>
-    nnoremap ,v :History<cr>
+    nnoremap ,v :FZFMru<cr>
     nnoremap ,f :Files<cr>
-    nnoremap <space>` :BLines<cr>
-    vnoremap <space>` y:BLines <c-r>"<cr>
+    nnoremap <space>` :CustomBLines<cr>
+    nnoremap <space>~ :BLines<cr>
+    nnoremap <space>§ :Rg<cr>
+    vnoremap <space>§ y:Rg <c-r>"<cr>
+    vnoremap <space>` y:CustomBLines <c-r>"<cr>
 
     "more useful commands https://github.com/junegunn/fzf.vim#commands
 
-    command! -bang -nargs=* Rg
-      \ call fzf#vim#grep(
-      \   'rg --column --line-number --no-heading --color=always --smart-case '.shellescape(<q-args>), 1,
-      \   <bang>0 ? fzf#vim#with_preview('up:60%')
-      \           : fzf#vim#with_preview('right:50%:hidden', '?'),
-      \   <bang>0)
+    command! -bang -nargs=* CustomBLines
+    \ call fzf#vim#grep(
+    \   'rg --with-filename --column --line-number --no-heading --smart-case . '.fnameescape(expand('%:p')), 1,
+    \   fzf#vim#with_preview({'options': '--layout reverse --query '.shellescape(<q-args>).' --with-nth=4.. --delimiter=":"'}, 'right:50%'))
+    " \   fzf#vim#with_preview({'options': '--layout reverse  --with-nth=-1.. --delimiter="/"'}, 'right:50%'))
 
     Plug 'junegunn/vim-easy-align'
 
@@ -458,7 +472,7 @@ call plug#end()
     nmap c' ciq
     nmap d' diq
     nmap y' yiq
-    nmap v' ]bBviq
+    nmap v' viq
 
     nmap d4 d$
     nnoremap c6 c^
@@ -485,6 +499,8 @@ call plug#end()
     nnoremap <CR> :noh<CR><CR>
     nnoremap <f5> :e!<CR>
     nnoremap <f6> :q<CR>
+    " preview current file with Google Chrome
+    nnoremap <space>7 :silent ! open -a 'Google Chrome' %:p<cr>
 
     "sudo overwrite protect file
     cmap w!! w !sudo tee > /dev/null %
@@ -530,7 +546,9 @@ call plug#end()
     "create new vertical split
     noremap ,n :vnew<CR>
 
-    nnoremap ,o :only<CR>
+    nmap ,o <c-w>\|
+    nmap ,O <c-w>o
+    nmap va <c-w>=
 
     " add space after
     noremap <Space>a a<Space><Esc>h

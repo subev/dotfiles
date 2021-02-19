@@ -21,6 +21,8 @@ ln -s "$HOME/dotfiles/.fzf.zsh" "$HOME/.fzf.zsh"
 
 ln -s "$HOME/dotfiles/.bash_profile" "$HOME/.bash_profile"
 
+ln -s "$HOME/dotfiles/.tmux.conf" "$HOME/.tmux.conf"
+
 ln -s "$HOME/dotfiles/.gitconfig" "$HOME/.gitconfig"
 
 ln -s "$HOME/dotfiles/.vimrc" "$HOME/.vimrc"
