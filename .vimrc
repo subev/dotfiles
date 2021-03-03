@@ -273,6 +273,9 @@ call plug#begin('~/.vim/plugged')
     nnoremap gb :Gblame<cr>
     vnoremap gb :Gbrowse<cr>
     noremap ,g :G<CR>
+    noremap ,gg :G<CR>
+    noremap ,gp :G pull
+    noremap ,gs :G push
 
     Plug 'junegunn/gv.vim'
     Plug 'tpope/vim-rhubarb'
@@ -304,9 +307,9 @@ call plug#begin('~/.vim/plugged')
     Plug 'junegunn/fzf', { 'dir': '~/.fzf', 'do': './install --all' }
     Plug 'junegunn/fzf.vim'
     Plug 'pbogut/fzf-mru.vim'
-    let $FZF_DEFAULT_OPTS = '--layout=reverse --exact'
+    let $FZF_DEFAULT_OPTS = '--layout=reverse'
     nmap <F1> :Helptags<cr>
-    nnoremap ,v :FZFMru<cr>
+
     nnoremap ,f :Files<cr>
     nnoremap <space>` :CustomBLines<cr>
     nnoremap <space>~ :BLines<cr>
@@ -321,6 +324,14 @@ call plug#begin('~/.vim/plugged')
     \   'rg --with-filename --column --line-number --no-heading --smart-case . '.fnameescape(expand('%:p')), 1,
     \   fzf#vim#with_preview({'options': '--layout reverse --query '.shellescape(<q-args>).' --with-nth=4.. --delimiter=":"'}, 'right:50%'))
     " \   fzf#vim#with_preview({'options': '--layout reverse  --with-nth=-1.. --delimiter="/"'}, 'right:50%'))
+
+    Plug 'kien/ctrlp.vim'
+    let g:ctrlp_max_files=0
+    let g:ctrlp_show_hidden = 1
+    let g:ctrlp_working_path_mode = 'rw'
+    let g:ctrlp_by_filename = 1
+    let g:ctrlp_mruf_exclude = '/tmp/.*\|/temp/.*\|/private/.*\|.*/node_modules/.*\|.*/.pyenv/.*' " MacOSX/Linux
+    nnoremap ,v :CtrlPMRU<CR>
 
     Plug 'junegunn/vim-easy-align'
 
@@ -340,6 +351,7 @@ call plug#begin('~/.vim/plugged')
 
     Plug 'pseewald/vim-anyfold'
     nmap zf :AnyFoldActivate<CR>:set foldlevel=1<CR>:set foldenable<CR>
+    nmap zF :AnyFoldActivate<CR>:set foldlevel=0<CR>:set foldenable<CR>
     "use - to toggle
     nnoremap <expr> - (foldclosed(line(".")) == -1) ? 'za':'zA'
 
@@ -421,7 +433,7 @@ call plug#end()
     nnoremap 3 #
     vnoremap 3 #
     nnoremap 4 $
-    vnoremap 4 $
+    vnoremap 4 $h
     nnoremap 5 %
     vnoremap 5 %
     nnoremap 6 ^
@@ -501,6 +513,8 @@ call plug#end()
     nnoremap <f6> :q<CR>
     " preview current file with Google Chrome
     nnoremap <space>7 :silent ! open -a 'Google Chrome' %:p<cr>
+    nnoremap <space>g y::silent ! open -a 'Google Chrome' 'http://google.com/search?q='<left>
+    vnoremap <space>g y::silent ! open -a 'Google Chrome' 'http://google.com/search?q=<c-r>"'<CR>
 
     "sudo overwrite protect file
     cmap w!! w !sudo tee > /dev/null %
@@ -546,9 +560,8 @@ call plug#end()
     "create new vertical split
     noremap ,n :vnew<CR>
 
-    nmap ,o <c-w>\|
-    nmap ,O <c-w>o
-    nmap va <c-w>=
+    nnoremap ,o <c-w>\|
+    nnoremap ,O <c-w>o
 
     " add space after
     noremap <Space>a a<Space><Esc>h
