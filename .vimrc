@@ -495,6 +495,7 @@ call plug#end()
     nmap v' viq
 
     nmap d4 d$
+    nmap y4 y$
     nnoremap c6 c^
     nnoremap c<space> ct<space>
     nnoremap ~ ~h

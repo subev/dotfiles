@@ -39,3 +39,24 @@ snippet fc "function component"
 export const ${1:foo}: React.FC<${3}> = ({ ${2} }) => {
   return <div>${4}</div>;
 };
+endsnippet
+
+snippet usecb "useCallback"
+const ${1} = useCallback(() => {
+  
+}, []);
+endsnippet
+
+snippet usest "useState"
+const [${1}, ${2}] = useState();
+endsnippet
+
+snippet useref "useRef"
+const ${1} = useRef<HTMLDivElement | null>(null);
+endsnippet
+
+snippet useef "useEffect"
+useEffect(() => {
+  ${1}
+}, [${2}]);
+endsnippet
