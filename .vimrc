@@ -218,6 +218,14 @@ call plug#begin('~/.vim/plugged')
     nmap F <Plug>(easymotion-overwin-line)
 
     " This addon does the oposite of 'J' in vim
+    Plug 'AndrewRadev/switch.vim'
+    let g:switch_mapping = "7"
+    let g:switch_custom_definitions =
+    \ [
+    \   ['!==', '==='],
+    \   ['!=', '==']
+    \ ]
+
     Plug 'AndrewRadev/splitjoin.vim'
     " changing the default gS and gJ
     let g:splitjoin_split_mapping = 'gs'
