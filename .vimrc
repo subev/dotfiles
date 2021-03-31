@@ -13,6 +13,7 @@ call plug#begin('~/.vim/plugged')
     set background=dark    " Setting dark mode
 
     Plug 'sheerun/vim-polyglot'
+
     set conceallevel=0
     let g:vim_markdown_conceal = 0
     let g:vim_markdown_folding_disabled = 1
@@ -278,12 +279,15 @@ call plug#begin('~/.vim/plugged')
     Plug 'tpope/vim-fugitive'
     nnoremap gM :Gvsplit origin/master:%<cr>
     nnoremap gm :Gvdiffsplit origin/master:%<cr>
+    nnoremap gD :Gvdiffsplit<cr>
     nnoremap gb :Gblame<cr>
     vnoremap gb :Gbrowse<cr>
     noremap ,g :G<CR>
+    noremap ,g<space> :G<space>
     noremap ,gg :G<CR>
     noremap ,gp :G pull
     noremap ,gs :G push
+    noremap ,gf :G fetch
 
     Plug 'junegunn/gv.vim'
     Plug 'tpope/vim-rhubarb'
@@ -349,26 +353,18 @@ call plug#begin('~/.vim/plugged')
 
     Plug 'bronson/vim-visual-star-search'
 
-    " use + and _ to incrementally visually select
-    Plug 'terryma/vim-expand-region'
+    "" use + and _ to incrementally visually select
+    "Plug 'terryma/vim-expand-region'
 
     " adds text objects for pairs such as brackets and quiotes, commas etc.
     Plug 'wellle/targets.vim'
 
     Plug 'haya14busa/vim-textobj-function-syntax'
 
-    Plug 'pseewald/vim-anyfold'
-    nmap zf :AnyFoldActivate<CR>:set foldlevel=1<CR>:set foldenable<CR>
-    nmap zF :AnyFoldActivate<CR>:set foldlevel=0<CR>:set foldenable<CR>
-    "use - to toggle
-    nnoremap <expr> - (foldclosed(line(".")) == -1) ? 'za':'zA'
-
-    "folding cheat sheet:
-        "zr - expand more levels
-        "zm - collapse more levels
-        "zi - toggle fold mode
-        "-  - toggle fold (expand as much as possible and collapse only 1 level back)
-    set foldlevel=1
+    nmap <expr> - (foldclosed(line(".")) == -1) ? 'za':'zA'
+    nmap zf :setlocal foldmethod=syntax<cr>:setlocal foldlevel=0<cr>zN
+    nmap _ zc
+    set nofoldenable
 
     Plug 'chrisbra/csv.vim'
     au FileType csv nnoremap <buffer> <Space><Space> :WhatColumn!<CR>
@@ -500,7 +496,10 @@ call plug#end()
     nnoremap c<space> ct<space>
     nnoremap ~ ~h
 
+    "yank line without return of carret
     nnoremap yl ^y$
+    "yank whole buffer
+    nnoremap Y ggVGy<C-o>zz
     vnoremap = yO<Esc>P
     nnoremap dl ^d$"_dd
 

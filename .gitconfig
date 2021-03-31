@@ -28,7 +28,7 @@
   cc = commit --all -m
   ca = commit --amend
   caa = commit --all --amend
-  dic = diff --cached
+  dic = diff --cached -w
   p = pull
   pl = pull --rebase
   ps = push
@@ -45,7 +45,7 @@
   lp = log --all --abbrev-commit --date=relative -p
   lsp = log --abbrev-commit --date=relative -p
   lastchanges =  log --all --graph --pretty=format:'%Cred%h%Creset -%C(yellow)%d%Creset %s %Cgreen(%cr)%Creset %Cblue%an%Creset' --abbrev-commit --date="relative" --stat
-  d = diff
+  d = diff -w
 
 [filter "lfs"]
   clean = git-lfs clean -- %f

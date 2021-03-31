@@ -103,7 +103,6 @@ plugins=(
 )
 
 source $ZSH/oh-my-zsh.sh
-if [ -f ${HOME}/repos/Leanplum/Tools/venv/bin/activate ]; then source ${HOME}/repos/Leanplum/Tools/venv/bin/activate; fi
 
 # User configuration
 
@@ -162,6 +161,7 @@ if [[ -n $VIRTUAL_ENV && -e "${VIRTUAL_ENV}/bin/activate" ]]; then
 fi
 
 [ -f ~/.fzf.zsh ] && source ~/.fzf.zsh
+[ -f ~/dotfiles/workflows.sh ] && source ~/dotfiles/workflows.sh
 
 export NVM_DIR="$HOME/.nvm"
 [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"  # This loads nvm
