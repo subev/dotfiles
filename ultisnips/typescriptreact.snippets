@@ -68,5 +68,5 @@ useMemo(() => {
 endsnippet
 
 snippet constap "consoleTap"
-const consoleTap = (f, s) => (...args) => { console.log(`>>>${s}>>>`, ...args); return f(...args); };
+const consoleTap = (f, s) => (...args) => { console.log('>>> ' + s + '>>>', ...args); return f(...args); };
 endsnippet

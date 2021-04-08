@@ -11,6 +11,8 @@ brew install nvim  --head
 
 brew install grip
 
+brew install jq
+
 pip3 install --user neovim
 
 ln -s "$HOME/dotfiles/.bashrc" "$HOME/.bashrc"

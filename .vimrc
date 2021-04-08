@@ -5,8 +5,9 @@ if empty(glob('~/.vim/autoload/plug.vim'))
   silent !curl -fLo ~/.vim/autoload/plug.vim --create-dirs
     \ https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim
 endif
+
+" Plugins ----- {{{
 call plug#begin('~/.vim/plugged')
-" Plugins {
 
     " themes
     Plug 'morhetz/gruvbox'
@@ -47,6 +48,8 @@ call plug#begin('~/.vim/plugged')
     let g:startify_change_to_dir = 0
     let g:startify_change_to_vcs_root = 1
     let g:startify_session_persistence = 1
+
+    Plug 'skanehira/gh.vim'
 
     Plug 'airblade/vim-gitgutter'
     nmap <space>h <Plug>(GitGutterPreviewHunk)
@@ -369,23 +372,20 @@ call plug#begin('~/.vim/plugged')
     Plug 'chrisbra/csv.vim'
     au FileType csv nnoremap <buffer> <Space><Space> :WhatColumn!<CR>
 
-    Plug 'editorconfig/editorconfig-vim'
     " use workspace properties if project uses editorconfig
-" }
-call plug#end()
+    Plug 'editorconfig/editorconfig-vim'
+
   " The Silver Searcher
   if executable('ag')
     " Use ag over grep
     set grepprg=ag\ --nogroup\ --nocolor
     let g:ackprg = 'ag --vimgrep'
-
      " Use ag in CtrlP for listing files. Lightning fast and respects .gitignore
     let g:ctrlp_user_command = 'ag %s -l --nocolor -g ""'
-
     " ag is fast enough that CtrlP doesn't need to cache
     let g:ctrlp_use_caching = 0
   endif
-
+  " or ripgrep
   if executable ('rg')
     set grepprg=rg\ --color=never
     "set grepformat=%f:%l:%c:%m,%f:%l:%m
@@ -393,36 +393,14 @@ call plug#end()
     let g:ctrlp_user_command = 'rg %s --files --color=never --glob ""'
   endif
 
+call plug#end()
+" }}}
+
 
 " General {
-    set hidden
-
-    set shortmess-=S
-
-    if $TMUX == ''
-      set clipboard+=unnamed
-    endif
-    set encoding=utf-8
-
-    set colorcolumn=100
-
-    " searching
-    set ignorecase
-    set smartcase
-    set incsearch
-    set hlsearch
-
-    " avoid swap, temp and backup files
-    set nobackup
-    set nowritebackup
-    set noswapfile
-
-    if !has('nvim')
-      set ttymouse=xterm2
-    endif
 " }
 
-" Keybindings {
+" Keybindings ---{{{
     noremap <C-S> :w<CR>
     inoremap <C-S> <C-O>:w<CR><Esc>
     nnoremap <PageUp> <C-u>
@@ -472,10 +450,6 @@ call plug#end()
     nmap y5 yib
     nmap v5 vib
 
-    nmap yb yiB
-    nmap cb ciB
-    nmap db diB
-
     nnoremap cw cw
     nnoremap dw dw
     nmap yw yiw
@@ -500,10 +474,9 @@ call plug#end()
     nnoremap yl ^y$
     "yank whole buffer
     nnoremap Y ggVGy<C-o>zz
-    vnoremap = yO<Esc>P
+    " duplicate
+    vnoremap Y yO<Esc>P
     nnoremap dl ^d$"_dd
-
-    "TODO add all crazy number shortcuts
 
     nnoremap <up> 8<C-y>
     vnoremap <up> 8<C-y>
@@ -607,9 +580,9 @@ call plug#end()
     if has("patch-8.1.0360")
       set diffopt+=internal,algorithm:patience
     endif
-" }
+" }}}
 
-" Coding {
+" General variables set {{{
     set termguicolors
     colorscheme gruvbox
 
@@ -656,4 +629,37 @@ call plug#end()
     " enable vim motions to work while writing in bulgarian
     au BufEnter *.bg* setlocal keymap=bulgarian-phonetic
     au FileType help setlocal number
-" }
+
+    set hidden
+
+    set shortmess-=S
+
+    if $TMUX == ''
+      set clipboard+=unnamed
+    endif
+    set encoding=utf-8
+
+    set colorcolumn=100
+
+    " searching
+    set ignorecase
+    set smartcase
+    set incsearch
+    set hlsearch
+
+    " avoid swap, temp and backup files
+    set nobackup
+    set nowritebackup
+    set noswapfile
+
+    if !has('nvim')
+      set ttymouse=xterm2
+    endif
+" }}}
+
+" Vimscript file settings ---------------------- {{{
+augroup filetype_vim
+    autocmd!
+    autocmd FileType vim setlocal foldmethod=marker
+augroup END
+" }}}
