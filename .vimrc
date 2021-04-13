@@ -39,7 +39,7 @@ call plug#begin('~/.vim/plugged')
   let g:NERDTreeQuitOnOpen = 1
   let g:NERDTreeChDirMode  = 2
   let NERDTreeShowHidden = 1
-  let NERDTreeWinSize=70
+  let NERDTreeWinSize = 70
   noremap <space>p :NERDTreeFind<CR>zz
   noremap <silent> <F4> :NERDTreeToggle<CR>
 
@@ -331,7 +331,7 @@ call plug#begin('~/.vim/plugged')
   " \   fzf#vim#with_preview({'options': '--layout reverse  --with-nth=-1.. --delimiter="/"'}, 'right:50%'))
 
   Plug 'kien/ctrlp.vim'
-  let g:ctrlp_max_files=0
+  let g:ctrlp_max_files = 0
   let g:ctrlp_show_hidden = 1
   let g:ctrlp_working_path_mode = 'rw'
   let g:ctrlp_by_filename = 1
@@ -482,6 +482,8 @@ call plug#end()
   nnoremap <space>7 :silent ! open -a 'Google Chrome' %:p<cr>
   nnoremap <space>g y:silent ! open -a 'Google Chrome' 'http://google.com/search?q='<left>
   vnoremap <space>g y:silent ! open -a 'Google Chrome' 'http://google.com/search?q=<c-r>"'<CR>
+  "execute current buffer or current selection in via ts-node (ignoring erros)
+  noremap <space>= :w !ts-node-transpile-only<cr>
 
   "sudo overwrite protect file
   cmap w!! w !sudo tee > /dev/null %
@@ -650,7 +652,7 @@ call plug#end()
     " enable vim motions to work while writing in bulgarian
     au BufEnter *.bg* setlocal keymap=bulgarian-phonetic
     au FileType help setlocal number
-    au FileType vim setlocal shiftwidth = 2
+    au FileType vim setlocal shiftwidth=2
   augroup end
 " }}}
 

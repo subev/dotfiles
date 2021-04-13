@@ -1,0 +1,80 @@
+# A valid snippet should starts with:
+#
+#		snippet trigger_word [ "description" [ options ] ]
+#
+# and end with:
+#
+#		endsnippet
+#
+# Snippet options:
+#
+#		b - Beginning of line.
+#		i - In-word expansion.
+#		w - Word boundary.
+#		r - Regular expression
+#		e - Custom context snippet
+#		A - Snippet will be triggered automatically, when condition matches.
+#
+# Basic example:
+#
+#		snippet emitter "emitter properties" b
+#		private readonly ${1} = new Emitter<$2>()
+#		public readonly ${1/^_(.*)/$1/}: Event<$2> = this.$1.event
+#		endsnippet
+#
+# Online reference: https://github.com/SirVer/ultisnips/blob/master/doc/UltiSnips.txt
+snippet test "Sample spec test"
+it('should render', () => {
+  
+});
+endsnippet
+
+snippet fc "function component"
+export const ${1:foo}: React.FC<${3}> = ({ ${2} }) => {
+  return <div>${4}</div>;
+};
+endsnippet
+
+snippet usecb "useCallback"
+const ${1} = useCallback(() => {
+  
+}, []);
+endsnippet
+
+snippet usest "useState"
+const [${1}, ${2}] = useState();
+endsnippet
+
+snippet useref "useRef"
+const ${1} = useRef<HTMLDivElement | null>(null);
+endsnippet
+
+snippet useef "useEffect"
+useEffect(() => {
+  ${1}
+}, [${2}]);
+endsnippet
+
+snippet usememo "useMemo"
+useMemo(() => {
+  ${1}
+}, [${2}]);
+endsnippet
+
+snippet consl "console log"
+console.log('${1:>>>>}', ${2});
+endsnippet
+
+snippet constap "consoleTap"
+const consoleTap = (f: Function, s: string) => (...args: unknown[]) => {
+  console.log(">>> " + s + ">>>", ...args);
+  return f(...args);
+};
+endsnippet
+
+snippet ll "log"
+const log = <T>(x: T): T => {
+  console.log(x);
+  return x;
+};
+endsnippet
