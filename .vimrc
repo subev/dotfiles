@@ -299,6 +299,9 @@ call plug#begin('~/.vim/plugged')
   \ },
   \ 'component_function': {
   \   'cocstatus': 'coc#status',
+  \ },
+  \ 'component': {
+  \   'lineinfo': "%{line('.') . ':' . col('.') . '/' . line('$')}",
   \ }}
 
   " Use autocmd to force lightline update.
