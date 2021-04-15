@@ -17,6 +17,9 @@
   "typescript.preferences.importModuleSpecifier": "relative",
   "typescript.format.insertSpaceAfterOpeningAndBeforeClosingNonemptyBraces": true,
   "snippets.priority": 110,
+  "snippets.extends": {
+    "typescriptreact": ["typescript"]
+  },
   "languageserver": {
     "ccls": {
       "command": "ccls",

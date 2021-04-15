@@ -273,14 +273,20 @@ call plug#begin('~/.vim/plugged')
   nnoremap gM :Gvsplit origin/master:%<cr>
   nnoremap gm :Gvdiffsplit origin/master:%<cr>
   nnoremap gD :Gvdiffsplit<cr>
-  nnoremap gb :Gblame<cr>
+  nnoremap gb :G blame<cr>
   vnoremap gb :Gbrowse<cr>
   noremap ,g :G<CR>
   noremap ,g<space> :G<space>
-  noremap ,gg :G<CR>
+  noremap ,gg :G<CR><c-w>H
   noremap ,gp :G pull
   noremap ,gs :G push
   noremap ,gf :G fetch
+  " restore mappings
+  au FileType fugitive nnoremap <buffer> 2 2
+  au FileType fugitive nnoremap <buffer> 3 3
+  " use 2X to call `checkout --ours` or 3X to call `checkout --theirs`
+  au FileType fugitive nmap <buffer> g1 2X
+  au FileType fugitive nmap <buffer> g3 3X
 
   Plug 'junegunn/gv.vim'
   Plug 'tpope/vim-rhubarb'
@@ -521,8 +527,13 @@ call plug#end()
   vmap " S"
   vmap ' S'
   vmap ` S`
-  nmap g] <Plug>(coc-git-nextconflict)
-  nmap g[ <Plug>(coc-git-prevconflict)
+  nnoremap g] :<C-U>call GoNextConflict()<CR>
+  nnoremap g[ :<C-U>call GoPrevConflict()<CR>
+
+  nnoremap g1 :<C-U>call MergeKeepLeft()<CR>
+  nnoremap g2 :<C-U>call MergeKeepBoth()<CR>
+  nnoremap g3 :<C-U>call MergeKeepRight()<CR>
+
 
   ""replace word under cursor
   "nnoremap ,r :%s/\<<C-r><C-w>\>//g<Left><Left>
@@ -571,6 +582,70 @@ call plug#end()
   if has("patch-8.1.0360")
     set diffopt+=internal,algorithm:patience
   endif
+" }}}
+
+" Functions {{{
+  function! GoNextConflict()
+    let lastsearch = @/
+    let @/ = '<<<<<<<'
+    execute "normal! /\<cr>"
+
+    let @/ = lastsearch
+  endfunction
+
+  function! GoPrevConflict()
+    let lastsearch = @/
+    let @/ = '<<<<<<<'
+    execute "normal! ?\<cr>"
+
+    let @/ = lastsearch
+  endfunction
+
+  function! MergeKeepLeft()
+    let lastsearch = @/
+    let @/ = '<<<<<<<'
+    execute "normal! ?\<cr>dd"
+
+    let @/ = '|||||||'
+    execute "normal! /\<cr>V"
+
+    let @/ = '>>>>>>>'
+    execute "normal! /\<cr>d"
+
+    let @/ = lastsearch
+  endfunction
+
+  function! MergeKeepBoth()
+    let lastsearch = @/
+    let @/ = '<<<<<<<'
+    execute "normal! ?\<cr>dd"
+
+    let @/ = '|||||||'
+    execute "normal! /\<cr>V"
+
+    let @/ = '======='
+    execute "normal! /\<cr>d"
+
+    let @/ = '>>>>>>>'
+    execute "normal! /\<cr>dd"
+
+    let @/ = lastsearch
+  endfunction
+
+  function! MergeKeepRight()
+    let lastsearch = @/
+    let @/ = '<<<<<<<'
+    execute "normal! ?\<cr>V"
+
+    let @/ = '======='
+    execute "normal! /\<cr>d"
+
+    let @/ = '>>>>>>>'
+    execute "normal! /\<cr>dd"
+
+    let @/ = lastsearch
+  endfunction
+
 " }}}
 
 " General variables set {{{
