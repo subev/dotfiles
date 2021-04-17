@@ -18,7 +18,6 @@ call plug#begin('~/.vim/plugged')
   let g:vim_markdown_conceal = 0
   let g:vim_markdown_folding_disabled = 1
   map <Plug> <Plug>Markdown_MoveToCurHeader
-  au FileType markdown nnoremap <silent><buffer> <Space>o :Toc<CR>
 
   Plug 'othree/javascript-libraries-syntax.vim'
   Plug 'ianks/vim-tsx'
@@ -29,7 +28,6 @@ call plug#begin('~/.vim/plugged')
   Plug 'tmhedberg/matchit'
 
   Plug 'iamcco/markdown-preview.nvim', { 'do': { -> mkdp#util#install() }, 'for': ['markdown', 'vim-plug']}
-  au FileType markdown nnoremap <silent><buffer> <Space>7 :MarkdownPreview<CR>
   let g:mkdp_auto_close = 0
 
   Plug 'scrooloose/nerdcommenter'
@@ -256,8 +254,6 @@ call plug#begin('~/.vim/plugged')
       \ "at" : "start"
       \ }
   let g:ctrlsf_confirm_save = 0
-  au FileType ctrlsf nnoremap <silent><buffer> <space>` :BLines<cr>
-  au FileType ctrlsf vnoremap <silent><buffer> <space>` y:BLines <c-r>"<cr>
 
   " search with sublime-alternative
   noremap <leader>r :CtrlSF<space>
@@ -282,11 +278,7 @@ call plug#begin('~/.vim/plugged')
   noremap ,gs :G push
   noremap ,gf :G fetch
   " restore mappings
-  au FileType fugitive nnoremap <buffer> 2 2
-  au FileType fugitive nnoremap <buffer> 3 3
   " use 2X to call `checkout --ours` or 3X to call `checkout --theirs`
-  au FileType fugitive nmap <buffer> g1 2X
-  au FileType fugitive nmap <buffer> g3 3X
 
   Plug 'junegunn/gv.vim'
   Plug 'tpope/vim-rhubarb'
@@ -369,7 +361,6 @@ call plug#begin('~/.vim/plugged')
   set nofoldenable
 
   Plug 'chrisbra/csv.vim'
-  au FileType csv nnoremap <buffer> <Space><Space> :WhatColumn!<CR>
 
   " use workspace properties if project uses editorconfig
   Plug 'editorconfig/editorconfig-vim'
@@ -724,6 +715,24 @@ call plug#end()
     " Update signature help on jump placeholder
     autocmd User CocJumpPlaceholder call CocActionAsync('showSignatureHelp')
 
+    au FileType markdown nnoremap <silent><buffer> <Space>o :Toc<CR>
+
+    au FileType markdown nnoremap <silent><buffer> <Space>7 :MarkdownPreview<CR>
+
+    au FileType ctrlsf nnoremap <silent><buffer> <space>` :BLines<cr>
+
+    au FileType ctrlsf vnoremap <silent><buffer> <space>` y:BLines <c-r>"<cr>
+
+    au FileType fugitive nnoremap <buffer> 2 2
+
+    au FileType fugitive nnoremap <buffer> 3 3
+
+    au FileType fugitive nmap <buffer> g1 2X
+
+    au FileType fugitive nmap <buffer> g3 3X
+
+    au FileType csv nnoremap <buffer> <Space><Space> :WhatColumn!<CR>
+
     au FileType gitcommit setlocal spell
     "disable continuous comments vim
     au FileType * setlocal formatoptions-=c formatoptions-=r formatoptions-=o
@@ -734,7 +743,7 @@ call plug#end()
   augroup end
 " }}}
 
-" Vimscript file settings ---------------------- {{{
+" Vimscript file settings {{{
 augroup filetype_vim
     autocmd!
     autocmd FileType vim setlocal foldmethod=marker
