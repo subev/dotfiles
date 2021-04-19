@@ -1,10 +1,27 @@
 #!/bin/zsh
 function gitbrdel() {
-  git branch --sort=committerdate |
+  local branches remote
+  while [[ "$#" -gt 0 ]]; do
+    case $1 in
+        -r|--remote) remote=1 ;;
+        *) echo "Unknown parameter passed: $1"; return 1 ;;
+    esac
+    shift
+  done
+
+  branches=$(git branch --sort=committerdate |
     grep --invert-match '\*' |
     cut -c 3- |
-    fzf --tac --multi --preview="git ls master..{}" |
-    xargs -r git branch --delete --force
+    fzf --tac --multi --preview="git ls master..{}");
+  while IFS= read -r line; do
+    if [[ $remote ]]; then
+      echo "deleting remotely..."
+      git push origin -d $line;
+    fi
+    #echo "deleting >>>$line<<<"
+    git branch -D $line;
+  done <<< $branches;
+  echo "done"
 }
 
 function gitco() {
