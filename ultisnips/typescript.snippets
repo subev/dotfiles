@@ -61,20 +61,46 @@ useMemo(() => {
 }, [${2}]);
 endsnippet
 
-snippet consl "console log"
-console.log('${1:>>>>}', ${2});
-endsnippet
-
-snippet constap "consoleTap"
-const consoleTap = (f: Function, s: string) => (...args: unknown[]) => {
+snippet tapLog "consoleTap"
+const taplog = (f: Function, s: string) => (...args: unknown[]) => {
   console.log(">>> " + s + ">>>", ...args);
   return f(...args);
 };
 endsnippet
 
-snippet ll "log"
-const log = <T>(x: T): T => {
-  console.log(x);
+snippet log "log"
+const log = <T>(message: string, x: T): T => {
+  console.log(message, x);
   return x;
+};
+endsnippet
+
+snippet range "range sequance generator"
+const range: {
+  (stop: number): number[];
+  (start: number, stop: number, step: number): number[];
+} = (start: number, stop?: number, step = 1) =>
+  Array.from(
+    { length: stop === undefined ? start : (stop - start) / step + 1 },
+    (_, i) => (stop === undefined ? 0 : start) + i * step
+  );
+endsnippet
+
+snippet swap "swaps two elements in array"
+const swap = <T extends unknown>(a: number, b: number, arr: T[]): T[] => {
+  const temp = arr[a];
+  arr[a] = arr[b];
+  arr[b] = temp;
+  return arr;
+};
+endsnippet
+
+snippet times "call the fn X times"
+const times = <T extends unknown>(f: () => T, t: number) => {
+  let result: T;
+  while (t--) {
+    result = f();
+  }
+  return result;
 };
 endsnippet

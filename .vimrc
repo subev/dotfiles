@@ -13,6 +13,12 @@ call plug#begin('~/.vim/plugged')
   set background=dark    " Setting dark mode
 
   Plug 'sheerun/vim-polyglot'
+  let g:polyglot_disabled = ['ftdetect']
+
+  Plug 'ianding1/leetcode.vim'
+  let g:leetcode_browser = 'firefox'
+  let g:leetcode_solution_filetype = 'javascript'
+  nnoremap <space>4 :LeetCodeTest<cr>
 
   set conceallevel=0
   let g:vim_markdown_conceal = 0
@@ -63,7 +69,8 @@ call plug#begin('~/.vim/plugged')
       \ 'coc-css', 'coc-json', 'coc-java', 'coc-pyright', 'coc-yank', 'coc-prettier', 'coc-omnisharp' ]
 
     " You will have bad experience for diagnostic messages when it's default 4000.
-    set updatetime=300
+    set updatetime=500
+    autocmd CursorHold * silent call CocActionAsync('highlight')
 
     " Use tab for trigger completion with characters ahead and navigate.
     " Use command ':verbose imap <tab>' to make sure tab is not mapped by other plugin.
@@ -106,7 +113,8 @@ call plug#begin('~/.vim/plugged')
     nmap <silent> ,6 <Plug>(coc-references)
     nmap <silent> ,w <Plug>(coc-codelens-action)
 
-    nnoremap <silent> <space><space> :call <SID>show_documentation()<CR>
+    nnoremap <silent> <space><space> :call <SID>show_documentation()<CR>:call CocAction('highlight')<CR>
+    nnoremap <silent> <space><backspace> :call CocAction('highlight')<CR>
 
     function! s:show_documentation()
       if CocAction('doHover')
@@ -116,9 +124,6 @@ call plug#begin('~/.vim/plugged')
     endfunction
 
     :nmap <space>e :CocCommand explorer<CR>
-
-    " Highlight symbol under cursor on CursorHold
-    "autocmd CursorHold * silent call CocActionAsync('highlight')
 
     " Remap for rename current word
     nmap ,r <Plug>(coc-rename)
@@ -356,7 +361,7 @@ call plug#begin('~/.vim/plugged')
   Plug 'haya14busa/vim-textobj-function-syntax'
 
   nmap <expr> - (foldclosed(line(".")) == -1) ? 'za':'zA'
-  nmap zf :setlocal foldmethod=syntax<cr>:setlocal foldlevel=0<cr>zN
+  nmap zf :setlocal foldmethod=syntax<cr>:setlocal foldlevel=1<cr>zN
   nmap _ zc
   set nofoldenable
 

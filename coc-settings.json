@@ -51,10 +51,17 @@
       "ignoredRootPaths": ["~"]
     },
     "haskell": {
-      "command": "hie-wrapper",
+      // downloaded and added to ~/.local/bin from https://github.com/haskell/haskell-language-server#coc
+      "command": "haskell-language-server-macOS-8.10.4",
       "args": ["--lsp"],
-      "rootPatterns": ["stack.yaml", "cabal.config", "package.yaml"],
-      "filetypes": ["hs", "lhs", "haskell"],
+      "rootPatterns": [
+        "*.cabal",
+        "stack.yaml",
+        "cabal.project",
+        "package.yaml",
+        "hie.yaml"
+      ],
+      "filetypes": ["haskell", "lhaskell"],
       "initializationOptions": {
         "languageServerHaskell": {
           "hlintOn": true
