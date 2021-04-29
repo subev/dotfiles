@@ -133,8 +133,19 @@ call plug#begin('~/.vim/plugged')
     xmap <space>f  <Plug>(coc-format-selected)
     nmap <space>f  <Plug>(coc-format)
 
+    " select inside function and all function
     xmap if <Plug>(coc-funcobj-i)
+    omap if <Plug>(coc-funcobj-i)
+
+    omap af <Plug>(coc-funcobj-a)
     xmap af <Plug>(coc-funcobj-a)
+
+    " select inside class/struct/interface and all function
+    xmap ic <Plug>(coc-classobj-i)
+    omap ic <Plug>(coc-classobj-i)
+
+    xmap ac <Plug>(coc-classobj-a)
+    omap ac <Plug>(coc-classobj-a)
 
     " Remap for do codeAction of selected region, ex: `<leader>aap` for current paragraph
     xmap <space>l  <Plug>(coc-codeaction-selected)
@@ -295,17 +306,21 @@ call plug#begin('~/.vim/plugged')
   let g:lightline = {
   \ 'active': {
   \   'left': [ [ 'mode', 'paste' ],
-  \             [ 'cocstatus', 'readonly', 'relativepath', 'modified' ]],
-  \ 'right': [ [ 'lineinfo' ],
-  \            [ 'percent' ],
-  \            [ 'filetype' ] ],
+  \             [ 'readonly', 'lightfilepath', 'modified', 'cocstatus' ]],
+  \   'right': [ [ 'lineinfo' ],
+  \            [ 'percent' ] ],
   \ },
   \ 'component_function': {
   \   'cocstatus': 'coc#status',
+  \   'lightfilepath': 'LightlineFilepath',
   \ },
   \ 'component': {
   \   'lineinfo': "%{line('.') . ':' . col('.') . '/' . line('$')}",
   \ }}
+
+  function! LightlineFilepath()
+    return winwidth(0) > 100 ? expand('%f') : expand('%:t')
+  endfunction
 
   " Use autocmd to force lightline update.
   autocmd User CocStatusChange,CocDiagnosticChange call lightline#update()
@@ -362,6 +377,7 @@ call plug#begin('~/.vim/plugged')
 
   nmap <expr> - (foldclosed(line(".")) == -1) ? 'za':'zA'
   nmap zf :setlocal foldmethod=syntax<cr>:setlocal foldlevel=1<cr>zN
+  vnoremap - <esc>:setlocal foldmethod=manual<cr>gvzf
   nmap _ zc
   set nofoldenable
 
@@ -480,7 +496,7 @@ call plug#end()
   nnoremap <s-down> <C-w>j
 
   " disable the highlight search
-  nnoremap <CR> :noh<CR><CR>
+  nnoremap <CR> :noh<CR>
   nnoremap <f5> :e!<CR>
   nnoremap <f6> :q<CR>
   " preview current file with Google Chrome
@@ -710,6 +726,8 @@ call plug#end()
   if !has('nvim')
     set ttymouse=xterm2
   endif
+
+  hi CocHighlightText ctermbg=241 guibg=#665c54
 " }}}
 
 " AutoCommands {{{
@@ -745,6 +763,7 @@ call plug#end()
     au BufEnter *.bg* setlocal keymap=bulgarian-phonetic
     au FileType help setlocal number
     au FileType vim setlocal shiftwidth=2
+    au FileType vim vnoremap <buffer> <Space>= :<C-u>@*<CR>
   augroup end
 " }}}
 
