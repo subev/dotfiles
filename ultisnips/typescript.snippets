@@ -104,3 +104,107 @@ const times = <T extends unknown>(f: () => T, t: number) => {
   return result;
 };
 endsnippet
+
+snippet objmap "get new object by mapping the values of an object"
+  const map = (obj, f) =>
+    Object.fromEntries(Object.entries(obj).map(([k, v]) => [k, f(v, k)]));
+endsnippet
+
+snippet sortNums "pure sort numbers"
+const sortNums = (
+  arr: Array<number>,
+  f = (a: number, b: number) => (a - b > 0 ? 1 : -1)
+) => arr.slice(0).sort(f);
+endsnippet
+
+snippet longestSeq "longest sequence of x in array/string"
+const longestSeq = <T extends unknown>(x: T, arr: Array<T> | string) => {
+  let count = 0;
+  let max = 0;
+  for (let i = 0; i < arr.length; i++) {
+    console.log({i,x,v:arr[i], count})
+    if (arr[i] === x) {
+      count++;
+    } else {
+      count = 0;
+    }
+    if (count > max) {
+      max = count;
+    }
+  }
+  return max;
+};
+endsnippet
+
+snippet clamp "limits a number in between two others"
+const clamp = (num: number, min: number, max: number) =>
+  Math.min(Math.max(num, min), max);
+endsnippet
+
+snippet shiftRotate "rotates an array x times"
+const arrayRotate = <T extends unknown>(x: number, arr: T[]) => {
+  arr = arr.slice(0)
+  x -= arr.length * Math.floor(x / arr.length);
+  arr.push.apply(arr, arr.splice(0, x));
+  return arr;
+};
+endsnippet
+
+snippet symmetric "the symmetric difference of two sets, also known as the disjunctive union"
+const symmetricDifference = <T extends unknown>(
+  setA: Iterable<T>,
+  setB: Iterable<T>
+) => {
+  let diff = new Set(setA);
+  for (let elem of setB) {
+    if (diff.has(elem)) {
+      diff.delete(elem);
+    } else {
+      diff.add(elem);
+    }
+  }
+  return [...diff];
+};
+endsnippet
+
+snippet countBy "counts how many times a value returns the same result from a fn"
+// if Object.fromEntries is not supported just return a map and deal with it
+const countBy = <T extends unknown>(arr: T[], f = (x: T) => x) =>
+  Object.fromEntries(
+    arr.reduce((m, x) => {
+      const prop = f(x);
+      if (!m.has(prop)) {
+        m.set(prop, 1);
+      } else {
+        m.set(prop, m.get(prop) + 1);
+      }
+
+      return m;
+    }, new Map<T, number>())
+  );
+endsnippet
+
+snippet evolve "proccess an object with a transformer object that has the same signature and transforming functions as values" b
+const evolve = <
+  O extends { [k: string]: unknown },
+  T extends { [P in keyof O]?: (t: T[P]) => any },
+  R extends { [K in keyof O]: ReturnType<T[K]> }
+>(
+  transformations: T,
+  object: O
+) => {
+  const result = {} as R;
+
+  for (const key in object) {
+    const transformation = transformations[key];
+    const type = typeof transformation;
+    result[key] =
+      type === "function"
+        ? transformation(object[key])
+        : transformation && type === "object"
+        ? evolve(transformation, object[key])
+        : object[key];
+  }
+  return result;
+};
+endsnippet

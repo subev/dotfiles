@@ -114,7 +114,7 @@ call plug#begin('~/.vim/plugged')
     nmap <silent> ,w <Plug>(coc-codelens-action)
 
     nnoremap <silent> <space><space> :call <SID>show_documentation()<CR>:call CocAction('highlight')<CR>
-    nnoremap <silent> <space><backspace> :call CocAction('highlight')<CR>
+    nmap <silent> <space><backspace> <Plug>(coc-references)
 
     function! s:show_documentation()
       if CocAction('doHover')
@@ -200,9 +200,9 @@ call plug#begin('~/.vim/plugged')
   Plug 'tpope/vim-unimpaired'
 
   Plug 'kana/vim-smartword'
-  map w  <Plug>(smartword-w)
-  map b  <Plug>(smartword-b)
-  map e  <Plug>(smartword-e)
+  nmap w  <Plug>(smartword-w)
+  nmap b  <Plug>(smartword-b)
+  nmap e  <Plug>(smartword-e)
 
   Plug 'bkad/camelcasemotion'
   map <silent> W <Plug>CamelCaseMotion_w
@@ -581,8 +581,19 @@ call plug#end()
   "yank current full file path to clipboard
   nnoremap yp :let @+=expand('%:p')<CR>
 
+  "go to sibling style file
+  nnoremap gts :e <C-R>=expand('%:r') . '.scss'<CR><CR>
+  "go to tsx
+  nnoremap gtt :e <C-R>=expand('%:r') . '.tsx'<CR><CR>
+  "go to js
+  nnoremap gtj :e <C-R>=expand('%:r') . '.js'<CR><CR>
+  "go migrate flow and go to tsx
+  nmap gtf :!flow-to-ts %:p -o tsx<cr>:e <C-R>=expand('%:r') . '.tsx'<CR><CR>
+
   noremap <leader>ve :e $MYVIMRC<CR>
   noremap <leader>vu :source %<CR>
+
+  tnoremap <ESC><ESC> <C-\><C-N>
 
   " Settings for VimDiff as MergeTool
   if &diff
@@ -592,7 +603,7 @@ call plug#end()
     colorscheme darkBlue
   endif
   if has("patch-8.1.0360")
-    set diffopt+=internal,algorithm:patience
+    set diffopt+=internal,algorithm:patience,iwhteall
   endif
 " }}}
 
@@ -657,6 +668,25 @@ call plug#end()
 
     let @/ = lastsearch
   endfunction
+
+  " redirect the output of a Vim or external command into a scratch buffer
+  " similar to :r!ls -a
+  function! Redir(cmd)
+    if a:cmd =~ '^!'
+      execute "let output = system('" . substitute(a:cmd, '^!', '', '') . "')"
+    else
+      redir => output
+      execute a:cmd
+      redir END
+    endif
+    vnew
+    setlocal nobuflisted buftype=nofile bufhidden=wipe noswapfile
+    call setline(1, split(output, "\n"))
+    put! = a:cmd
+    put = '----'
+  endfunction
+
+  command! -nargs=1 Redir silent call Redir(<f-args>)
 
 " }}}
 
