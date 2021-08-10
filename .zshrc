@@ -12,6 +12,8 @@ fi
 # Path to your oh-my-zsh installation.
 export CLOUDSDK_PYTHON_SITEPACKAGES=1
 
+export ZSH_DISABLE_COMPFIX=true
+
 # Stack seems to output haskell executables in this path like hie-wrapper
 export PATH=$HOME/.local/bin:$PATH
 

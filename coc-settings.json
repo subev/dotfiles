@@ -1,8 +1,4 @@
 {
-  "eslint.autoFixOnSave": false,
-  //"eslint.options": {
-  //"configFile": ".eslintrc.legacy.js"
-  //},
   "python.formatting.provider": "black",
   "python.linting.pylintEnabled": true,
   "git.addedSign.hlGroup": "GitGutterAdd",

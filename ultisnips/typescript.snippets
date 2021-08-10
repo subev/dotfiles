@@ -208,3 +208,27 @@ const evolve = <
   return result;
 };
 endsnippet
+
+snippet binary "Binnary search a sorted array to find an index of target"
+const binaryIndexOf = <T>(
+  arr: Array<T>,
+  target: T,
+  left = 0,
+  right = arr.length
+): number => {
+  const mid = Math.floor((right + left) / 2);
+  const current = arr[mid];
+  if (current === target) {
+    return mid;
+  }
+  if (left === mid) {
+    return -1;
+  }
+
+  if (current < target) {
+    return binaryIndexOf(arr, target, mid, right);
+  } else {
+    return binaryIndexOf(arr, target, left, mid);
+  }
+};
+endsnippet

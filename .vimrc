@@ -1,3 +1,4 @@
+packadd nvim-treesitter
 let g:python3_host_prog = '/usr/local/bin/python3'
 
 " Load vim-plug
@@ -12,9 +13,6 @@ call plug#begin('~/.vim/plugged')
   Plug 'morhetz/gruvbox'
   set background=dark    " Setting dark mode
 
-  Plug 'sheerun/vim-polyglot'
-  let g:polyglot_disabled = ['ftdetect']
-
   Plug 'ianding1/leetcode.vim'
   let g:leetcode_browser = 'firefox'
   let g:leetcode_solution_filetype = 'javascript'
@@ -24,9 +22,6 @@ call plug#begin('~/.vim/plugged')
   let g:vim_markdown_conceal = 0
   let g:vim_markdown_folding_disabled = 1
   map <Plug> <Plug>Markdown_MoveToCurHeader
-
-  Plug 'othree/javascript-libraries-syntax.vim'
-  Plug 'ianks/vim-tsx'
 
   Plug 'sbdchd/neoformat'
 
@@ -60,6 +55,48 @@ call plug#begin('~/.vim/plugged')
   nmap <space>v <Plug>(GitGutterStageHunk)
 
   Plug 'honza/vim-snippets'
+
+  Plug 'nvim-treesitter/nvim-treesitter', {'do': ':TSUpdate'}  " We recommend updating the parsers on update
+  Plug 'RRethy/nvim-treesitter-textsubjects'
+  Plug 'nvim-treesitter/playground'
+lua <<EOF
+require'nvim-treesitter.configs'.setup {
+  highlight = {
+    enable = true,              -- false will disable the whole extension
+    -- disable = { "c", "rust" },  -- list of language that will be disabled
+    -- Setting this to true will run `:h syntax` and tree-sitter at the same time.
+    -- Set this to `true` if you depend on 'syntax' being enabled (like for indentation).
+    -- Using this option may slow down your editor, and you may see some duplicate highlights.
+    -- Instead of true it can also be a list of languages
+    -- additional_vim_regex_highlighting = false,
+  },
+  textsubjects = {
+      enable = true,
+      keymaps = {
+          ['.'] = 'textsubjects-smart',
+          ['+'] = 'textsubjects-container-outer',
+      }
+  },
+  playground = {
+    enable = true,
+    disable = {},
+    updatetime = 25, -- Debounced time for highlighting nodes in the playground from source code
+    persist_queries = false, -- Whether the query persists across vim sessions
+    keybindings = {
+      toggle_query_editor = 'o',
+      toggle_hl_groups = 'i',
+      toggle_injected_languages = 't',
+      toggle_anonymous_nodes = 'a',
+      toggle_language_display = 'I',
+      focus_language = 'f',
+      unfocus_language = 'F',
+      update = 'R',
+      goto_node = '<cr>',
+      show_help = '?',
+    },
+  }
+}
+EOF
 
   " CoC Config {{{
 
@@ -286,7 +323,7 @@ call plug#begin('~/.vim/plugged')
   nnoremap gm :Gvdiffsplit origin/master:%<cr>
   nnoremap gD :Gvdiffsplit<cr>
   nnoremap gb :G blame<cr>
-  vnoremap gb :Gbrowse<cr>
+  vnoremap gb :GBrowse<cr>
   noremap ,g :G<CR>
   noremap ,g<space> :G<space>
   noremap ,gg :G<CR><c-w>H
@@ -326,8 +363,9 @@ call plug#begin('~/.vim/plugged')
   autocmd User CocStatusChange,CocDiagnosticChange call lightline#update()
 
   Plug 'jlanzarotta/bufexplorer'
-  nnoremap ,b :BufExplorer<CR>
+  nnoremap ,b :BufExplorerVerticalSplit<CR>
   "BufExplorer show relative paths by default
+  let g:bufExplorerShowNoName=1
   let g:bufExplorerShowRelativePath=1  " Show relative paths.
 
   Plug 'junegunn/fzf', { 'dir': '~/.fzf', 'do': './install --all' }
@@ -433,8 +471,11 @@ call plug#end()
   nnoremap 0 <C-i>
 
   nnoremap db V$%d
+  "delete calling a function along with the preceding dot
+  nnoremap dc f(bhxdwda(
   "yank/change/visual inside closest brackets
   nmap c9 ci(
+  nmap ca9 ca(
   nmap d9 di(
   nmap y9 yi(
   nmap v9 vi(
@@ -591,6 +632,7 @@ call plug#end()
   nmap gtf :!flow-to-ts %:p -o tsx<cr>:e <C-R>=expand('%:r') . '.tsx'<CR><CR>
 
   noremap <leader>ve :e $MYVIMRC<CR>
+  noremap <leader>vE :vsplit $MYVIMRC<CR>
   noremap <leader>vu :source %<CR>
 
   tnoremap <ESC><ESC> <C-\><C-N>
