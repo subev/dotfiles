@@ -5,13 +5,8 @@
 unix settings
 
 ```bash
-brew install coreutils python3 
-
-brew install nvim  --head
-
-brew install grip
-
-brew install jq
+brew install coreutils python3 grip jq ripgrep git-delta autojump bat thefuck nvm
+brew install nvim --head
 
 pip3 install --user neovim
 
@@ -54,4 +49,9 @@ mkdir -p ~/.config/bat/themes/
 ln -s "$HOME/dotfiles/gruvbox.tmTheme" "$HOME/.config/bat/themes/gruvbox.tmTheme"
 
 ln -s "$HOME/dotfiles/ultisnips/" "$HOME/.config/coc/"
+
+# tree-sitter for neovim
+mkdir -p ~/.local/share/nvim/site/pack/nvim-treesitter/start
+cd ~/.local/share/nvim/site/pack/nvim-treesitter/start
+git clone https://github.com/nvim-treesitter/nvim-treesitter.git
 ```

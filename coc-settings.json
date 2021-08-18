@@ -6,6 +6,7 @@
   "git.removedSign.hlGroup": "GitGutterDelete",
   "git.topRemovedSign.hlGroup": "GitGutterDelete",
   "git.changeRemovedSign.hlGroup": "GitGutterChangeDelete",
+  "git.conflict.enabled": false,
   "yank.highlight.enable": true,
   "yank.highlight.duration": 100,
   "explorer.width": 70,

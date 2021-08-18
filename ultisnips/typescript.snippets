@@ -78,7 +78,7 @@ endsnippet
 snippet range "range sequance generator"
 const range: {
   (stop: number): number[];
-  (start: number, stop: number, step: number): number[];
+  (start: number, stop: number, step?: number): number[];
 } = (start: number, stop?: number, step = 1) =>
   Array.from(
     { length: stop === undefined ? start : (stop - start) / step + 1 },
@@ -231,4 +231,25 @@ const binaryIndexOf = <T>(
     return binaryIndexOf(arr, target, left, mid);
   }
 };
+endsnippet
+
+snippet chunk "Devide array into chunks with batchSize (paginate)"
+const chunk = <T>(arr: Array<T>, batchSize: number) =>
+  Array.from({ length: Math.ceil(arr.length / batchSize) }, (_v, idx) =>
+    arr.slice(idx * batchSize, (idx + 1) * batchSize)
+  );
+endsnippet
+
+snippet curry "Curry a function"
+const curry =
+  (f) =>
+  (...args) =>
+    f.length <= args.length ? f(...args) : curry(f.bind(null, ...args));
+endsnippet
+
+snippet reverseArgs "Reverses (swaps) the arguments order"
+const reverseArgs =
+  (f) =>
+  (...args) =>
+    f(...args.slice(0).reverse());
 endsnippet
