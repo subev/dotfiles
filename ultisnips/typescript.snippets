@@ -79,7 +79,7 @@ snippet range "range sequance generator"
 const range: {
   (stop: number): number[];
   (start: number, stop: number, step?: number): number[];
-} = (start: number, stop?: number, step = 1) =>
+} = (start: number, stop?: number, step: number = 1) =>
   Array.from(
     { length: stop === undefined ? start : (stop - start) / step + 1 },
     (_, i) => (stop === undefined ? 0 : start) + i * step
@@ -252,4 +252,38 @@ const reverseArgs =
   (f) =>
   (...args) =>
     f(...args.slice(0).reverse());
+endsnippet
+
+snippet powerSet "Creates the power set of an array (array of sub-arrays)"
+const powerSet = <T extends unknown>(arr: Array<T>) => {
+  const result = [];
+  for (let index = 0; index < Math.pow(2, arr.length); index++) {
+    result.push(arr.filter((x, i) => index & (1 << i)));
+  }
+  return result;
+};
+endsnippet
+
+snippet isAnagram "Checks if two string are annagram of each other"
+const isAnagram = (a: string, b: string) => {
+  const mapa = a
+    .split('')
+    .reduce(
+      (m, c) => m.set(c, m.has(c) ? m.get(c)! + 1 : 1),
+      new Map<string, number>()
+    );
+  const mapb = b
+    .split('')
+    .reduce(
+      (m, c) => m.set(c, m.has(c) ? m.get(c)! + 1 : 1),
+      new Map<string, number>()
+    );
+  if (mapa.size !== mapb.size) return false;
+  for (const [k, v] of mapa) {
+    if (mapb.get(k) !== v) {
+      return false;
+    }
+  }
+  return true;
+};
 endsnippet

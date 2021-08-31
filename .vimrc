@@ -518,6 +518,8 @@ call plug#end()
   nnoremap c<space> ct<space>
   nnoremap ~ ~h
 
+  nnoremap f9 f(l
+
   "yank line without return of carret
   nnoremap yl ^y$
   "yank whole buffer
