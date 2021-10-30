@@ -13,6 +13,11 @@ call plug#begin('~/.vim/plugged')
   Plug 'morhetz/gruvbox'
   set background=dark    " Setting dark mode
 
+  Plug 'glacambre/firenvim', { 'do': { _ -> firenvim#install(0) } }
+  if exists('g:started_by_firenvim')
+    set guifontwide=0
+  endif
+  Plug 'raghur/vim-ghost', {'do': ':GhostInstall'}
   Plug 'ianding1/leetcode.vim'
   let g:leetcode_browser = 'firefox'
   let g:leetcode_solution_filetype = 'javascript'
