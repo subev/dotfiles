@@ -113,6 +113,7 @@ EOF
     " You will have bad experience for diagnostic messages when it's default 4000.
     set updatetime=500
     autocmd CursorHold * silent call CocActionAsync('highlight')
+    autocmd User CocJumpPlaceholder call CocActionAsync('showSignatureHelp')
 
     " Use tab for trigger completion with characters ahead and navigate.
     " Use command ':verbose imap <tab>' to make sure tab is not mapped by other plugin.
@@ -221,6 +222,10 @@ EOF
     nnoremap <silent> <space>cc  :<C-u>CocList commands<cr>
     " Find symbol of current document
     nnoremap <silent> <space>o  :<C-u>CocList outline<cr>
+
+    "show all functions that are calling the one under the cursor
+    nnoremap <silent> <space>u :call CocAction('showIncomingCalls')<CR><C-w>H
+    nnoremap <silent> <space>U :call CocAction('showOutgoingCalls')<CR><C-w>H
     " Find symbol of current workspace
     nnoremap <silent> <space>O  :<C-u>CocList symbols<cr>
     " Search workspace symbols
@@ -829,8 +834,10 @@ call plug#end()
 
     au FileType fugitive nnoremap <buffer> 3 3
 
+    "use 'ours' when merge conflict
     au FileType fugitive nmap <buffer> g1 2X
 
+    "use 'theirs' when merge conflict
     au FileType fugitive nmap <buffer> g3 3X
 
     au FileType csv nnoremap <buffer> <Space><Space> :WhatColumn!<CR>
@@ -839,7 +846,7 @@ call plug#end()
     "disable continuous comments vim
     au FileType * setlocal formatoptions-=c formatoptions-=r formatoptions-=o
     " enable vim motions to work while writing in bulgarian
-    au BufEnter *.bg* setlocal keymap=bulgarian-phonetic
+    au BufEnter *.bg.* setlocal keymap=bulgarian-phonetic
     au FileType help setlocal number
     au FileType vim setlocal shiftwidth=2
     au FileType vim vnoremap <buffer> <Space>= :<C-u>@*<CR>

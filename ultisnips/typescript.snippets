@@ -68,9 +68,9 @@ const taplog = (f: Function, s: string) => (...args: unknown[]) => {
 };
 endsnippet
 
-snippet log "log"
-const log = <T>(message: string, x: T): T => {
-  console.log(message, x);
+snippet logg "log console and return"
+const logg = <T extends unknown>(x:T, ...rest) => {
+  console.log(x, ...rest);
   return x;
 };
 endsnippet
@@ -105,9 +105,9 @@ const times = <T extends unknown>(f: () => T, t: number) => {
 };
 endsnippet
 
-snippet objmap "get new object by mapping the values of an object"
+snippet mapObj "get new object by mapping the values of an object"
   const map = (obj, f) =>
-    Object.fromEntries(Object.entries(obj).map(([k, v]) => [k, f(v, k)]));
+    Object.fromEntries(Object.entries(obj).map(([k, v]) => f(k, v)));
 endsnippet
 
 snippet sortNums "pure sort numbers"
@@ -139,6 +139,11 @@ endsnippet
 snippet clamp "limits a number in between two others"
 const clamp = (num: number, min: number, max: number) =>
   Math.min(Math.max(num, min), max);
+endsnippet
+
+snippet isBetween "check if a number is between two others"
+export const isBetween = (min: number, max: number, x: number) =>
+  min <= x && x < max;
 endsnippet
 
 snippet shiftRotate "rotates an array x times"

@@ -28,6 +28,8 @@
   cc = commit --all -m
   ca = commit --amend
   caa = commit --all --amend
+  cp = cherry-pick
+  f = fetch
   dic = diff --cached -w
   p = pull
   pl = pull --rebase
