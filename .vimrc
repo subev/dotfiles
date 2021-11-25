@@ -16,6 +16,7 @@ call plug#begin('~/.vim/plugged')
   Plug 'glacambre/firenvim', { 'do': { _ -> firenvim#install(0) } }
   if exists('g:started_by_firenvim')
     set guifontwide=0
+    set guifont=monospace:h10
   endif
   Plug 'raghur/vim-ghost', {'do': ':GhostInstall'}
   Plug 'ianding1/leetcode.vim'
@@ -24,11 +25,15 @@ call plug#begin('~/.vim/plugged')
   nnoremap <space>4 :LeetCodeTest<cr>
 
   set conceallevel=0
+  " hidden characters
+  let g:vim_json_conceal = 0
   let g:vim_markdown_conceal = 0
   let g:vim_markdown_folding_disabled = 1
   map <Plug> <Plug>Markdown_MoveToCurHeader
 
   Plug 'sbdchd/neoformat'
+
+  Plug 'github/copilot.vim'
 
   ""match tags and navigate through %
   Plug 'tmhedberg/matchit'
@@ -106,6 +111,7 @@ EOF
   " CoC Config {{{
 
     Plug 'neoclide/coc.nvim', {'branch': 'release'}"
+    let g:coc_node_path = '~/.nvm/versions/node/v16.3.0/bin/node'
     let g:coc_global_extensions = [ 'coc-emmet', 'coc-git', 'coc-vimlsp',
       \ 'coc-lists', 'coc-snippets', 'coc-html', 'coc-tsserver', 'coc-jest', 'coc-eslint',
       \ 'coc-css', 'coc-json', 'coc-java', 'coc-pyright', 'coc-yank', 'coc-prettier', 'coc-omnisharp' ]
@@ -519,6 +525,7 @@ call plug#end()
 
   nmap c' ciq
   nmap d' diq
+  nmap da' daq
   nmap y' yiq
   nmap v' viq
 
@@ -528,7 +535,19 @@ call plug#end()
   nnoremap c<space> ct<space>
   nnoremap ~ ~h
 
-  nnoremap f9 f(l
+  nnoremap t9 t(
+  nnoremap t0 t)
+
+  nnoremap dt9 dt(
+  nnoremap dt0 dt)
+  nnoremap ct9 ct(
+  nnoremap ct0 ct)
+
+  nnoremap f9 f(
+  nnoremap f0 f)
+
+  nnoremap dC vf(%d
+  nnoremap cC vf(%c
 
   "yank line without return of carret
   nnoremap yl ^y$
@@ -829,6 +848,8 @@ call plug#end()
     au FileType ctrlsf nnoremap <silent><buffer> <space>` :BLines<cr>
 
     au FileType ctrlsf vnoremap <silent><buffer> <space>` y:BLines <c-r>"<cr>
+
+    au FileType ctrlsf nnoremap <silent><buffer> gn n
 
     au FileType fugitive nnoremap <buffer> 2 2
 

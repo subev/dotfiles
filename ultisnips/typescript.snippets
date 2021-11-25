@@ -292,3 +292,84 @@ const isAnagram = (a: string, b: string) => {
   return true;
 };
 endsnippet
+
+snippet treeToArray "converts a { val, left, right } object like tree to array"
+const treeToArray = (root) => {
+  if (!root) return [];
+  let res = [];
+  const dfs = (node) => {
+    if (!node) return;
+    res.push(node.val);
+    dfs(node.left);
+    dfs(node.right);
+  };
+  dfs(root);
+  return res;
+};
+endsnippet
+
+snippet arrayToTree "converts an array to a { val, left, right  } object-like tree "
+const arrayToTree = (arr) => {
+  if (!arr || !arr.length) return null;
+  const root = { val: arr[0] };
+  const dfs = (node, i) => {
+    if (!node) return;
+    const leftIndex = 2 * i + 1;
+    const rightIndex = 2 * i + 2;
+    if (leftIndex < arr.length) node.left = { val: arr[leftIndex] };
+    if (rightIndex < arr.length) node.right = { val: arr[rightIndex] };
+    dfs(node.left, leftIndex);
+    dfs(node.right, rightIndex);
+  };
+  dfs(root, 0);
+  return root;
+};
+endsnippet
+
+snippet updatePath "updates or sets a path" b
+const updatePath = (obj, path: Array<stirng | number>, value: any) => {
+  if (!obj || !path) return obj;
+  const dfs = (node, path) => {
+    if (!node) return;
+    const key = path.shift();
+    if (path.length === 0) {
+      node[key] = value;
+      return;
+    } else if (node[key] === undefined) {
+      node[key] = {};
+    }
+    dfs(node[key], path);
+  };
+  // avoid mutating the original path
+  dfs(obj, path.slice(0));
+  return obj;
+};
+endsnippet
+
+snippet setRandomInterval "setInterval-like function that uses various timeout amount fixed between a range" b
+const setRandomInterval = (
+  intervalFunction: Function,
+  minDelay: number,
+  maxDelay: number
+) => {
+  let timeout: number;
+
+  const runInterval = () => {
+    const timeoutFunction = () => {
+      intervalFunction();
+      runInterval();
+    };
+
+    const delay =
+      Math.floor(Math.random() * (maxDelay - minDelay + 1)) + minDelay;
+
+    timeout = setTimeout(timeoutFunction, delay);
+  };
+
+  runInterval();
+
+  return () => {
+    clearTimeout(timeout);
+  };
+};
+endsnippet
