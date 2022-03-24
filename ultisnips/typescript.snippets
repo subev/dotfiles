@@ -117,6 +117,11 @@ const sortNums = (
 ) => arr.slice(0).sort(f);
 endsnippet
 
+snippet sortBy "Sorts an array by selector fn" b
+const sortBy = <T>(fn: (item: T) => any, array: T[]): T[] =>
+  array.slice(0).sort((a, b) => (fn(a) > fn(b) ? 1 : -1));
+endsnippet
+
 snippet longestSeq "longest sequence of x in array/string"
 const longestSeq = <T extends unknown>(x: T, arr: Array<T> | string) => {
   let count = 0;
@@ -372,4 +377,24 @@ const setRandomInterval = (
     clearTimeout(timeout);
   };
 };
+endsnippet
+
+snippet groupBy "groupBy that returns an array of tuples and sorts them naturally" b
+const groupBy = (fn, list) =>
+  [
+    ...list.reduce((m, x) => {
+      const key = fn(x);
+      if (m.has(key)) {
+        m.get(key).push(x);
+      } else {
+        m.set(key, [x]);
+      }
+      return m;
+    }, new Map()),
+  ].sort(([a], [b]) =>
+    String(a).localeCompare(String(b), undefined, {
+      numeric: true,
+      sensitivity: 'base',
+    })
+  );
 endsnippet

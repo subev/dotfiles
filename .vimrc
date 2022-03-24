@@ -275,8 +275,7 @@ EOF
   let g:EasyMotion_keys = 'asdghklqwertyuiopzxcvbnmfj'
 
   " move to single character
-  nmap f <Plug>(easymotion-overwin-f2)
-  nmap F <Plug>(easymotion-overwin-line)
+  nmap F <Plug>(easymotion-overwin-f2)
 
   " This addon does the oposite of 'J' in vim
   Plug 'AndrewRadev/switch.vim'
@@ -597,7 +596,7 @@ call plug#end()
   vnoremap K y:Ack! "<C-R>""<CR>
   vnoremap <leader>s y:Ack! "<C-R>""<space>
   "search for the visually selected text
-  vnoremap // y/<C-R>"<CR>
+  vnoremap // y/<C-R>"<CR>N
 
   vnoremap < c<<space>/><Esc>hhP
   vnoremap > c<><Esc>Pf>a</><Esc>P
