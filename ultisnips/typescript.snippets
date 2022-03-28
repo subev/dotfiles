@@ -380,7 +380,7 @@ const setRandomInterval = (
 endsnippet
 
 snippet groupBy "groupBy that returns an array of tuples and sorts them naturally" b
-const groupBy = (fn, list) =>
+const groupBy = <T,>(fn: (a: T) => unknown, list: T[]) =>
   [
     ...list.reduce((m, x) => {
       const key = fn(x);
@@ -397,4 +397,26 @@ const groupBy = (fn, list) =>
       sensitivity: 'base',
     })
   );
+endsnippet
+
+snippet averageBy "returns the average value from a projection of a list" b
+const averageBy = <T,>(fn: (a: T) => number, list: T[]) => {
+  const filtered = list.filter(x => typeof fn(x) === 'number').map(fn);
+  return filtered.reduce((a, b) => a + b, 0) / filtered.length;
+};
+endsnippet
+
+snippet weightedAverage "returns the weighted average value from a projection of a list" b
+const weightedAverage = <T,>(
+  fn: (a: T) => number,
+  weightFn: (a: T) => number,
+  list: T[]
+) => {
+  const filtered = list.filter(x => typeof fn(x) === 'number');
+  const weights = filtered.map(weightFn);
+  const values = filtered.map(fn);
+  const sum = weights.reduce((a, b) => a + b, 0);
+  const weightedValues = values.map((v, i) => v * weights[i]);
+  return weightedValues.reduce((a, b) => a + b, 0) / sum;
+};
 endsnippet
