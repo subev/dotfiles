@@ -65,6 +65,8 @@ call plug#begin('~/.vim/plugged')
   nmap <space>v <Plug>(GitGutterStageHunk)
 
   Plug 'honza/vim-snippets'
+  "treesitter throwing exceptions so use the alternative
+  Plug 'elixir-editors/vim-elixir'
 
   Plug 'nvim-treesitter/nvim-treesitter', {'do': ':TSUpdate'}  " We recommend updating the parsers on update
   Plug 'RRethy/nvim-treesitter-textsubjects'
@@ -73,7 +75,7 @@ lua <<EOF
 require'nvim-treesitter.configs'.setup {
   highlight = {
     enable = true,              -- false will disable the whole extension
-    -- disable = { "c", "rust" },  -- list of language that will be disabled
+    disable = { "python", "elixir" },  -- list of language that will be disabled
     -- Setting this to true will run `:h syntax` and tree-sitter at the same time.
     -- Set this to `true` if you depend on 'syntax' being enabled (like for indentation).
     -- Using this option may slow down your editor, and you may see some duplicate highlights.
@@ -114,7 +116,7 @@ EOF
     let g:coc_node_path = '~/.nvm/versions/node/v16.3.0/bin/node'
     let g:coc_global_extensions = [ 'coc-emmet', 'coc-git', 'coc-vimlsp',
       \ 'coc-lists', 'coc-snippets', 'coc-html', 'coc-tsserver', 'coc-jest', 'coc-eslint',
-      \ 'coc-css', 'coc-json', 'coc-java', 'coc-pyright', 'coc-yank', 'coc-prettier', 'coc-omnisharp' ]
+      \ 'coc-css', 'coc-json', 'coc-java', 'coc-pyright', 'coc-yank', 'coc-prettier', 'coc-omnisharp', 'coc-elixir' ]
 
     " You will have bad experience for diagnostic messages when it's default 4000.
     set updatetime=500
@@ -575,7 +577,6 @@ call plug#end()
   nnoremap <space>g y:silent ! open -a 'Google Chrome' 'http://google.com/search?q='<left>
   vnoremap <space>g y:silent ! open -a 'Google Chrome' 'http://google.com/search?q=<c-r>"'<CR>
   "execute current buffer or current selection in via ts-node (ignoring erros)
-  noremap <space>= :w !ts-node-transpile-only<cr>
 
   "sudo overwrite protect file
   cmap w!! w !sudo tee > /dev/null %
@@ -870,6 +871,8 @@ call plug#end()
     au FileType help setlocal number
     au FileType vim setlocal shiftwidth=2
     au FileType vim vnoremap <buffer> <Space>= :<C-u>@*<CR>
+    au FileType elixir nnoremap <buffer> <Space>= :let $currentFP=expand('%:p')<CR>:terminal iex $currentFP<CR>
+    au FileType typescript,javascript nnoremap <space>= :w !ts-node-transpile-only<cr>
   augroup end
 " }}}
 

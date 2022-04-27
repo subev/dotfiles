@@ -6,7 +6,7 @@
   whitespace = cr-at-eol
   editor = nvim
   excludesfile = /Users/petur/.gitignore_global
-  pager = delta --plus-color="#014000" --minus-color="#580001" --theme='gruvbox'
+  pager = delta
 [interactive]
   diffFilter = delta --color-only
 [http]
