@@ -420,3 +420,16 @@ const weightedAverage = <T,>(
   return weightedValues.reduce((a, b) => a + b, 0) / sum;
 };
 endsnippet
+snippet uniqBy "Keeps only the items that have unique result of the provided function" b
+const uniqBy = <T extends unknown>(fn: (x: T) => string, arr: T[]) => {
+  const seen = new Set();
+  return arr.filter(x => {
+    const key = fn(x);
+    if (seen.has(key)) {
+      return false;
+    }
+    seen.add(key);
+    return true;
+  });
+};
+endsnippet
