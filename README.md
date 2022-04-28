@@ -38,7 +38,7 @@ mkdir -p ~/.config/nvim/
 
 ln -s "$HOME/dotfiles/.vimrc" "$HOME/.config/nvim/init.vim"
 
-ln -s "$HOME/dotfiles/coc-settings.json" "$HOME/config/.nvim/coc-settings.json"
+ln -s "$HOME/dotfiles/coc-settings.json" "$HOME/.config/nvim/coc-settings.json"
 
 ln -s "$HOME/dotfiles/karabiner.json" "$HOME/.config/karabiner/karabiner.json"
 
