@@ -10,6 +10,8 @@ brew install nvim --head
 
 pip3 install --user neovim
 
+npm i -g neovim
+
 ln -s "$HOME/dotfiles/.bashrc" "$HOME/.bashrc"
 
 ln -s "$HOME/dotfiles/.zshrc" "$HOME/.zshrc"
