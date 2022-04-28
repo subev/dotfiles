@@ -34,7 +34,7 @@ ln -s "$HOME/dotfiles/.agignore" "$HOME/.agignore"
 
 ln -s "$HOME/dotfiles/.agignore" "$HOME/.rgignore"
 
-mkdir -p ~/.config/nvim/
+mkdir -p ~/.config/.nvim/
 
 ln -s "$HOME/dotfiles/.vimrc" "$HOME/config/.nvim/init.vim"
 
