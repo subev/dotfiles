@@ -6,14 +6,17 @@
   "git.removedSign.hlGroup": "GitGutterDelete",
   "git.topRemovedSign.hlGroup": "GitGutterDelete",
   "git.changeRemovedSign.hlGroup": "GitGutterChangeDelete",
-  "git.conflict.enabled": false,
+  "git.conflict.enabled": true,
   "yank.highlight.enable": true,
   "yank.highlight.duration": 100,
   "explorer.width": 70,
+  "explorer.previewAction.content.maxHeight": 99,
+  "explorer.previewAction.onHover": "content",
   "explorer.quitOnOpen": true,
-  "typescript.preferences.importModuleSpecifier": "relative",
+  "typescript.preferences.importModuleSpecifier": "non-relative",
   "typescript.format.insertSpaceAfterOpeningAndBeforeClosingNonemptyBraces": true,
   "snippets.priority": 110,
+  "eslint.format.enable": true,
   "snippets.extends": {
     "typescriptreact": ["typescript"]
   },
@@ -78,5 +81,7 @@
   "list.maxPreviewHeight": 30,
   "suggest.timeout": 10000,
   "coc.preferences.extensionUpdateCheck": "never",
-  "prettier.singleQuote": true
+  "prettier.singleQuote": true,
+  "diagnostic.virtualText": false,
+  "diagnostic.virtualTextCurrentLineOnly": true
 }

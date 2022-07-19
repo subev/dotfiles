@@ -433,3 +433,24 @@ const uniqBy = <T extends unknown>(fn: (x: T) => string, arr: T[]) => {
   });
 };
 endsnippet
+snippet deb "debugger with eslint ignore"
+// eslint-disable-next-line no-debugger
+debugger
+endsnippet
+snippet cons "console log with eslint ignore"
+// eslint-disable-next-line no-console
+console.log(${0})
+endsnippet
+snippet updateOrPushToArray "updates or pushes to an array and returns the array" b
+const updateOrPushToArray = <T extends {
+  id: number | string
+}>(array: T[], item: T, fn?: (a:T) => boolean): T[] => {
+  const index = array.findIndex(fn || ((i): boolean => i.id === item.id))
+  if (index === -1) {
+    array.push(item)
+  } else {
+    array[index] = item
+  }
+  return array
+}
+endsnippet

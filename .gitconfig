@@ -53,9 +53,10 @@
   clean = git-lfs clean -- %f
   smudge = git-lfs smudge -- %f
   required = true
+	process = git-lfs filter-process
 [merge]
   tool = gvim
-  conflictstyle = diff3
+  ;conflictstyle = zdiff3
   prompt = false
 [rerere]
   enabled = true

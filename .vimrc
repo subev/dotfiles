@@ -1,5 +1,5 @@
 packadd nvim-treesitter
-let g:python3_host_prog = '/usr/local/bin/python3'
+"let g:python3_host_prog = '/usr/local/bin/python3'
 
 " Load vim-plug
 if empty(glob('~/.vim/autoload/plug.vim'))
@@ -7,11 +7,15 @@ if empty(glob('~/.vim/autoload/plug.vim'))
     \ https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim
 endif
 
+lua require('plugins')
+nnoremap gp <cmd>lua require('goto-preview').goto_preview_definition()<CR>
+
 " Plugins followed by their mappings and/or custom settings {{{
 call plug#begin('~/.vim/plugged')
   " themes
   Plug 'morhetz/gruvbox'
   set background=dark    " Setting dark mode
+  " Plug 'posva/vim-vue'
 
   Plug 'glacambre/firenvim', { 'do': { _ -> firenvim#install(0) } }
   if exists('g:started_by_firenvim')
@@ -34,6 +38,8 @@ call plug#begin('~/.vim/plugged')
   Plug 'sbdchd/neoformat'
 
   Plug 'github/copilot.vim'
+  imap <C-n> <Plug>(copilot-next)
+  imap <C-p> <Plug>(copilot-previous)
 
   ""match tags and navigate through %
   Plug 'tmhedberg/matchit'
@@ -43,6 +49,27 @@ call plug#begin('~/.vim/plugged')
 
   Plug 'scrooloose/nerdcommenter'
   let g:NERDCustomDelimiters = { 'typescript': { 'left': '// '} }
+  let g:ft = ''
+  " does not seem to work
+  function! NERDCommenter_before()
+    if &ft == 'vue'
+      let g:ft = 'vue'
+      let stack = synstack(line('.'), col('.'))
+      if len(stack) > 0
+        let syn = synIDattr((stack)[0], 'name')
+        if len(syn) > 0
+          exe 'setf ' . substitute(tolower(syn), '^vue_', '', '')
+        endif
+      endif
+    endif
+  endfunction
+  function! NERDCommenter_after()
+    if g:ft == 'vue'
+      setf vue
+      let g:ft = ''
+    endif
+  endfunction
+
   Plug 'scrooloose/nerdtree'
   Plug 'Xuyuanp/nerdtree-git-plugin'
   let g:NERDTreeQuitOnOpen = 1
@@ -71,11 +98,12 @@ call plug#begin('~/.vim/plugged')
   Plug 'nvim-treesitter/nvim-treesitter', {'do': ':TSUpdate'}  " We recommend updating the parsers on update
   Plug 'RRethy/nvim-treesitter-textsubjects'
   Plug 'nvim-treesitter/playground'
+
 lua <<EOF
 require'nvim-treesitter.configs'.setup {
   highlight = {
     enable = true,              -- false will disable the whole extension
-    disable = { "python", "elixir" },  -- list of language that will be disabled
+    -- disable = { "elixir" },  -- list of language that will be disabled
     -- Setting this to true will run `:h syntax` and tree-sitter at the same time.
     -- Set this to `true` if you depend on 'syntax' being enabled (like for indentation).
     -- Using this option may slow down your editor, and you may see some duplicate highlights.
@@ -108,6 +136,9 @@ require'nvim-treesitter.configs'.setup {
     },
   }
 }
+-- require'lspconfig'.pyright.setup{}
+-- require'lspconfig'.vuels.setup{}
+-- require'lspconfig'.eslint.setup{}
 EOF
 
   " CoC Config {{{
@@ -115,8 +146,9 @@ EOF
     Plug 'neoclide/coc.nvim', {'branch': 'release'}"
     let g:coc_node_path = '~/.nvm/versions/node/v16.3.0/bin/node'
     let g:coc_global_extensions = [ 'coc-emmet', 'coc-git', 'coc-vimlsp',
-      \ 'coc-lists', 'coc-snippets', 'coc-html', 'coc-tsserver', 'coc-jest', 'coc-eslint',
-      \ 'coc-css', 'coc-json', 'coc-java', 'coc-pyright', 'coc-yank', 'coc-prettier', 'coc-omnisharp', 'coc-elixir' ]
+      \ 'coc-lists', 'coc-snippets', 'coc-html', 'coc-tsserver', 'coc-jest', 'coc-eslint', 'coc-marketplace',
+      \ 'coc-css', 'coc-json', 'coc-java', 'coc-pyright', 'coc-yank', 'coc-prettier', 'coc-omnisharp', 'coc-elixir', 'coc-explorer',
+      \ 'coc-vetur', '@yaegassy/coc-volar'] "vue specific
 
     " You will have bad experience for diagnostic messages when it's default 4000.
     set updatetime=500
@@ -151,10 +183,6 @@ EOF
     nmap <silent> <space><left> <Plug>(coc-diagnostic-prev)
     nmap <silent> <space><right> <Plug>(coc-diagnostic-next)
 
-    " Use space-t to use list plugin
-    nnoremap <silent> <space>ta :call CocAction('runCommand', 'jest.projectTest')<CR>
-    nnoremap <silent> <space>tc :call CocAction('runCommand', 'jest.fileTest', ['%'])<CR>
-    nnoremap <silent> <space>tt :call CocAction('runCommand', 'jest.singleTest')<CR>
     nnoremap <silent> <space>1 :call CocAction('runCommand', 'eslint.executeAutofix')<CR>
 
     " Remap keys for gotos
@@ -328,10 +356,12 @@ EOF
   " search with sublime-alternative
   noremap <leader>r :CtrlSF<space>
   noremap <Space>r :CtrlSFOpen<CR><space>
-  vnoremap <leader>r y:CtrlSF \b<C-R>"\b -R
+  vnoremap <leader>r y:CtrlSF \b<C-R>"\b -R -G !*.test.ts
   " bind R to search and replace word under the cursor or visual selection
   nnoremap R :CtrlSF <C-R><C-W> -R -W<CR>
   vnoremap R y:CtrlSF "<C-R>""<CR>
+  "same as above but ignore test files
+  vnoremap T y:CtrlSF "<C-R>"" -G !*.test.ts<CR>
 
 
   "git tools blame, log, view files in other branches
@@ -347,6 +377,7 @@ EOF
   noremap ,gp :G pull
   noremap ,gs :G push
   noremap ,gf :G fetch
+
   " restore mappings
   " use 2X to call `checkout --ours` or 3X to call `checkout --theirs`
 
@@ -617,6 +648,7 @@ call plug#end()
   nnoremap g1 :<C-U>call MergeKeepLeft()<CR>
   nnoremap g2 :<C-U>call MergeKeepBoth()<CR>
   nnoremap g3 :<C-U>call MergeKeepRight()<CR>
+  nnoremap gi :<C-U>call FindImport()<CR>
 
 
   ""replace word under cursor
@@ -651,7 +683,9 @@ call plug#end()
   nnoremap vv <C-w>
 
   "yank current full file path to clipboard
-  nnoremap yp :let @+=expand('%:p')<CR>
+  nnoremap yfp :let @+ = expand('%:p')<CR>
+  "yank current relative path from cwd to clipboard
+  nnoremap yp :let @+ = expand('%')<CR>
 
   "go to sibling style file
   nnoremap gts :e <C-R>=expand('%:r') . '.scss'<CR><CR>
@@ -739,6 +773,13 @@ call plug#end()
     let @/ = '>>>>>>>'
     execute "normal! /\<cr>dd"
 
+    let @/ = lastsearch
+  endfunction
+
+  function! FindImport()
+    let lastsearch = @/
+    let @/ = 'import '
+    execute "normal! G?\<cr>"
     let @/ = lastsearch
   endfunction
 
@@ -872,7 +913,13 @@ call plug#end()
     au FileType vim setlocal shiftwidth=2
     au FileType vim vnoremap <buffer> <Space>= :<C-u>@*<CR>
     au FileType elixir nnoremap <buffer> <Space>= :let $currentFP=expand('%:p')<CR>:terminal iex $currentFP<CR>
-    au FileType typescript,javascript nnoremap <space>= :w !ts-node-transpile-only<cr>
+    "execute current buffer or current selection in via ts-node (ignoring erros)
+    au FileType typescript,javascript,vue noremap <space>= :w !ts-node-transpile-only<cr>
+    "use space-t to use list plugin
+    au FileType typescript,javascript nnoremap <silent> <space>ta :call CocAction('runCommand', 'jest.projectTest')<CR>
+    au FileType typescript,javascript nnoremap <silent> <space>tc :call CocAction('runCommand', 'jest.fileTest', ['%'])<CR>
+    au FileType typescript,javascript nnoremap <silent> <space>tt :call CocAction('runCommand', 'jest.singleTest')<CR>
+    au FileType elixir nnoremap <silent> <space>tc :!mix test %:p<CR>
   augroup end
 " }}}
 
