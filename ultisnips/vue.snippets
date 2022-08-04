@@ -25,17 +25,15 @@
 # Online reference: https://github.com/SirVer/ultisnips/blob/master/doc/UltiSnips.txt
 snippet defineComponent "Basic snippet for a component using composition api" b
 <template>
-  <div
-    class="foo"
-    :title="title"
-  />
+  <div class="foo">
+    {{ foo } }
+  </div>
 </template>
 
 <script lang="ts">
 import {
   defineComponent,
-  computed
-} from '@vue/composition-api'
+} from 'vue'
 
 /**
  * @Component Foo
@@ -45,18 +43,12 @@ export default defineComponent({
   props: {
     foo: {
       type: String,
-      required: true
+      required: false,
+      default: 'Foo',
     }
   },
-  setup ({ foo }: { foo: string }) {
-    const title = computed(() => {
-      return {
-        content: foo + 'bar'
-      }
-    })
-
+  setup () {
     return {
-      title
     }
   }
 })
@@ -64,11 +56,14 @@ export default defineComponent({
 
 <style lang="scss" scoped>
 .foo {
-  width: 100%;
 
-  &--selected {
-    background-color: #f00;
-  }
+}
+</style>
+</script>
+
+<style lang="scss" scoped>
+.foo {
+
 }
 </style>
 endsnippet

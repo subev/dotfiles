@@ -38,6 +38,8 @@ call plug#begin('~/.vim/plugged')
   Plug 'sbdchd/neoformat'
 
   Plug 'github/copilot.vim'
+  imap <silent><script><expr> <c-cr> copilot#Accept("")
+  let g:copilot_no_tab_map = v:true
   imap <C-n> <Plug>(copilot-next)
   imap <C-p> <Plug>(copilot-previous)
 
@@ -103,7 +105,7 @@ lua <<EOF
 require'nvim-treesitter.configs'.setup {
   highlight = {
     enable = true,              -- false will disable the whole extension
-    -- disable = { "elixir" },  -- list of language that will be disabled
+    disable = { "elixir" },  -- list of language that will be disabled
     -- Setting this to true will run `:h syntax` and tree-sitter at the same time.
     -- Set this to `true` if you depend on 'syntax' being enabled (like for indentation).
     -- Using this option may slow down your editor, and you may see some duplicate highlights.
@@ -158,13 +160,19 @@ EOF
     " Use tab for trigger completion with characters ahead and navigate.
     " Use command ':verbose imap <tab>' to make sure tab is not mapped by other plugin.
     "Make <tab> used for trigger completion, completion confirm, snippet expand and jump like VSCode.
-    inoremap <silent><expr> <TAB>
-      \ pumvisible() ? "\<C-n>" :
-      \ <SID>check_back_space() ? "\<TAB>" :
-      \ coc#refresh()
-    inoremap <expr><S-TAB> pumvisible() ? "\<C-p>" : "\<C-h>"
+    inoremap <silent><expr> <tab>
+          \ coc#pum#visible() ? coc#pum#next(1):
+          \ CheckBackspace() ? "\<Tab>" :
+          \ coc#refresh()
+    inoremap <expr><S-TAB> coc#pum#visible() ? coc#pum#prev(1) : "\<C-h>"
+    "old mapping
+    "inoremap <silent><expr> <TAB>
+      "\ pumvisible() ? "\<C-n>" :
+      "\ <SID>check_back_space() ? "\<TAB>" :
+      "\ coc#refresh()
+    "inoremap <expr><S-TAB> pumvisible() ? "\<C-p>" : "\<C-h>"
 
-    function! s:check_back_space() abort
+    function! CheckBackspace() abort
       let col = col('.') - 1
       return !col || getline('.')[col - 1]  =~# '\s'
     endfunction
@@ -177,13 +185,16 @@ EOF
 
     " Use <cr> to confirm completion, `<C-g>u` means break undo chain at current position.
     " Coc only does snippet and additional edit on confirm.
-    inoremap <expr> <cr> pumvisible() ? "\<C-y>" : "\<C-g>u\<CR>"
+    inoremap <silent><expr> <CR> coc#pum#visible() ? coc#pum#confirm()
+                              \: "\<C-g>u\<CR>\<c-r>=coc#on_enter()\<CR>"
+    "inoremap <expr> <cr> pumvisible() ? "\<C-y>" : "\<C-g>u\<CR>"
 
     " Use `[c` and `]c` to navigate diagnostics
     nmap <silent> <space><left> <Plug>(coc-diagnostic-prev)
     nmap <silent> <space><right> <Plug>(coc-diagnostic-next)
 
     nnoremap <silent> <space>1 :call CocAction('runCommand', 'eslint.executeAutofix')<CR>
+    nnoremap <silent> <space>! :!npx eslint $(git diff --name-only HEAD \| xargs) --fix --ext .js,.ts,.tsx,.vue<CR>
 
     " Remap keys for gotos
     nmap <silent> ,d <Plug>(coc-definition)
@@ -305,7 +316,7 @@ EOF
   let g:EasyMotion_keys = 'asdghklqwertyuiopzxcvbnmfj'
 
   " move to single character
-  nmap F <Plug>(easymotion-overwin-f2)
+  nmap f <Plug>(easymotion-overwin-f2)
 
   " This addon does the oposite of 'J' in vim
   Plug 'AndrewRadev/switch.vim'

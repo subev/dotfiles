@@ -77,11 +77,11 @@
   "list.insertMappings": {
     "<C-d>": "do:switch"
   },
-  "suggest.enablePreview": true,
   "list.maxPreviewHeight": 30,
   "suggest.timeout": 10000,
   "coc.preferences.extensionUpdateCheck": "never",
   "prettier.singleQuote": true,
   "diagnostic.virtualText": false,
-  "diagnostic.virtualTextCurrentLineOnly": true
+  "diagnostic.virtualTextCurrentLineOnly": true,
+  "suggest.noselect": true
 }

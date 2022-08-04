@@ -42,12 +42,17 @@
   out = log origin..HEAD
   qpl = log --pretty=\"%Cred%h%Creset %Cgreen[%cr]%Creset %s\" origin/production..origin/master
   ls = log --graph --pretty=format:'%Cred%h%Creset -%C(yellow)%d%Creset %s %Cgreen(%cr)%Creset %Cred%an%Creset' --abbrev-commit --date=relative
-  l = log --all --graph --pretty=format:'%Cred%h%Creset -%C(yellow)%d%Creset %s %Cgreen(%cr)%Creset %Cred%an%Creset' --abbrev-commit --date=relative
-  ll = log --branches --graph --pretty=format:'%Cred%h%Creset -%C(yellow)%d%Creset %s %Cgreen(%cr)%Creset %Cred%an%Creset' --abbrev-commit --date=relative
+  la = log --all --graph --pretty=format:'%Cred%h%Creset -%C(yellow)%d%Creset %s %Cgreen(%cr)%Creset %Cred%an%Creset' --abbrev-commit --date=relative
+  ;ll = log --branches --graph --pretty=format:'%Cred%h%Creset -%C(yellow)%d%Creset %s %Cgreen(%cr)%Creset %Cred%an%Creset' --abbrev-commit --date=relative
+  ll = !git ls origin/$(git rev-parse --abbrev-ref HEAD) HEAD
+  l = !git ls origin/$(git rev-parse --abbrev-ref HEAD) HEAD
   lp = log --all --abbrev-commit --date=relative -p
   lsp = log --abbrev-commit --date=relative -p
   lastchanges =  log --all --graph --pretty=format:'%Cred%h%Creset -%C(yellow)%d%Creset %s %Cgreen(%cr)%Creset %Cred%an%Creset' --abbrev-commit --date="relative" --stat
   d = diff -w
+  drop = reset --hard HEAD^
+  rom = !git fetch && git rebase origin/master
+  puf = push -f
 
 [filter "lfs"]
   clean = git-lfs clean -- %f
