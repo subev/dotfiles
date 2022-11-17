@@ -22,7 +22,7 @@ call plug#begin('~/.vim/plugged')
     set guifontwide=0
     set guifont=monospace:h10
   endif
-  Plug 'raghur/vim-ghost', {'do': ':GhostInstall'}
+  Plug 'subnut/nvim-ghost.nvim', {'do': ':call nvim_ghost#installer#install()'}
   Plug 'ianding1/leetcode.vim'
   let g:leetcode_browser = 'firefox'
   let g:leetcode_solution_filetype = 'javascript'
@@ -95,7 +95,7 @@ call plug#begin('~/.vim/plugged')
 
   Plug 'honza/vim-snippets'
   "treesitter throwing exceptions so use the alternative
-  Plug 'elixir-editors/vim-elixir'
+  "Plug 'elixir-editors/vim-elixir'
 
   Plug 'nvim-treesitter/nvim-treesitter', {'do': ':TSUpdate'}  " We recommend updating the parsers on update
   Plug 'RRethy/nvim-treesitter-textsubjects'
@@ -105,7 +105,7 @@ lua <<EOF
 require'nvim-treesitter.configs'.setup {
   highlight = {
     enable = true,              -- false will disable the whole extension
-    disable = { "elixir" },  -- list of language that will be disabled
+    -- disable = { "elixir" },  -- list of language that will be disabled
     -- Setting this to true will run `:h syntax` and tree-sitter at the same time.
     -- Set this to `true` if you depend on 'syntax' being enabled (like for indentation).
     -- Using this option may slow down your editor, and you may see some duplicate highlights.
@@ -454,7 +454,8 @@ EOF
   let g:ctrlp_working_path_mode = 'rw'
   let g:ctrlp_by_filename = 1
   let g:ctrlp_mruf_exclude = '/tmp/.*\|/temp/.*\|/private/.*\|.*/node_modules/.*\|.*/.pyenv/.*' " MacOSX/Linux
-  nnoremap ,v :CtrlPMRU<CR>
+  nnoremap ,v :History<CR>
+  nnoremap ,V :CtrlPMRU<CR>
 
   Plug 'junegunn/vim-easy-align'
 
@@ -618,6 +619,11 @@ call plug#end()
   nnoremap <space>7 :silent ! open -a 'Google Chrome' %:p<cr>
   nnoremap <space>g y:silent ! open -a 'Google Chrome' 'http://google.com/search?q='<left>
   vnoremap <space>g y:silent ! open -a 'Google Chrome' 'http://google.com/search?q=<c-r>"'<CR>
+  " add a breakpoint above the current line and test just current file with node
+  nnoremap <space>td Odebugger<esc>:w<cr>:! open -a 'Google Chrome' 'chrome://inspect/'<CR>:!node --inspect-brk node_modules/.bin/jest --runInBand --no-cache --config jest.config.js -- %<CR>
+  " update snapshot of current file
+  nnoremap <space>tu :!npm run test:unit -- -u %<CR>
+
   "execute current buffer or current selection in via ts-node (ignoring erros)
 
   "sudo overwrite protect file
@@ -633,6 +639,7 @@ call plug#end()
 
   " quick-paste last yanked text
   noremap ; "0p
+  vmap gp <c-n>\\CP<esc>
 
   " bind K to search grep word under the cursor
   nnoremap K :Ack! <cword><CR>
@@ -721,7 +728,7 @@ call plug#end()
     colorscheme darkBlue
   endif
   if has("patch-8.1.0360")
-    set diffopt+=internal,algorithm:patience,iwhteall
+    "set diffopt+=internal,algorithm:patience,iwhteall
   endif
 " }}}
 
@@ -913,6 +920,10 @@ call plug#end()
     "use 'theirs' when merge conflict
     au FileType fugitive nmap <buffer> g3 3X
 
+    au FileType fugitive nmap <buffer> f<space> :G fetch<CR>
+
+    au FileType fzf imap <buffer> <esc> <c-c>
+
     au FileType csv nnoremap <buffer> <Space><Space> :WhatColumn!<CR>
 
     au FileType gitcommit setlocal spell
@@ -923,7 +934,8 @@ call plug#end()
     au FileType help setlocal number
     au FileType vim setlocal shiftwidth=2
     au FileType vim vnoremap <buffer> <Space>= :<C-u>@*<CR>
-    au FileType elixir nnoremap <buffer> <Space>= :let $currentFP=expand('%:p')<CR>:terminal iex $currentFP<CR>
+    "au FileType elixir nnoremap <buffer> <Space>= :let $currentFP=expand('%:p')<CR>:terminal iex $currentFP<CR>
+    au FileType elixir nnoremap <buffer> <Space>= :terminal elixir %:p<cr>i
     "execute current buffer or current selection in via ts-node (ignoring erros)
     au FileType typescript,javascript,vue noremap <space>= :w !ts-node-transpile-only<cr>
     "use space-t to use list plugin

@@ -56,4 +56,9 @@ ln -s "$HOME/dotfiles/ultisnips/" "$HOME/.config/coc/"
 mkdir -p ~/.local/share/nvim/site/pack/nvim-treesitter/start
 cd ~/.local/share/nvim/site/pack/nvim-treesitter/start
 git clone https://github.com/nvim-treesitter/nvim-treesitter.git
+
+git clone --depth 1 https://github.com/wbthomason/packer.nvim\
+ ~/.local/share/nvim/site/pack/packer/start/packer.nvim
+
+:PackerInstall
 ```

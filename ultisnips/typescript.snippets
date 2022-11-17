@@ -29,6 +29,46 @@ it('should render', () => {
 });
 endsnippet
 
+snippet testTemplate "Sample whole file template"
+import { createLocalVue, shallowMount } from '@vue/test-utils'
+import Vuex from 'vuex'
+
+import createTestStore from 'test/unit/createTestStore'
+
+import FOO from './FOO.vue'
+
+const localVue = createLocalVue()
+localVue.use(Vuex)
+
+let store: ReturnType<typeof createTestStore>
+
+let propsData: {
+
+}
+
+beforeEach(() => {
+  store = createTestStore()
+  propsData = {}
+})
+
+it('matches snapshot', () => {
+  const wrapper = shallowMount(FOO, { localVue, propsData, store })
+  expect(wrapper).toMatchSnapshot()
+})
+
+it('matches snapshot when primary button', () => {
+  propsData.bar = 'baz'
+  const wrapper = shallowMount(FOO, { localVue, propsData, store })
+  expect(wrapper).toMatchSnapshot()
+})
+
+it('opens the dialog when the button is pressed', () => {
+  const wrapper = shallowMount(FOO, { localVue, propsData, store })
+  wrapper.find('darwinbutton-stub').vm.$emit('click')
+  expect()
+})
+endsnippet
+
 snippet fc "function component"
 export const ${1:foo}: React.FC<${3}> = ({ ${2} }) => {
   return <div>${4}</div>;

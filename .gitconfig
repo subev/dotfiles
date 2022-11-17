@@ -61,7 +61,8 @@
 	process = git-lfs filter-process
 [merge]
   tool = gvim
-  ;conflictstyle = zdiff3
+  ; toggle this to see parent change
+  conflictstyle = zdiff3
   prompt = false
 [rerere]
   enabled = true
