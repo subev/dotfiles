@@ -308,7 +308,9 @@ EOF
   map <F3> \\C
 
   Plug 'haya14busa/incsearch.vim'
-  map / <Plug>(incsearch-forward)
+  map /  <Plug>(incsearch-forward)
+  map ?  <Plug>(incsearch-backward)
+  map g/ <Plug>(incsearch-stay)
 
   Plug 'easymotion/vim-easymotion'
   let g:EasyMotion_smartcase = 1
@@ -436,8 +438,8 @@ EOF
   nmap <F1> :Helptags<cr>
 
   nnoremap ,f :Files<cr>
-  nnoremap <space>` :CustomBLines<cr>
-  nnoremap ,s :BLines<cr>
+  nnoremap <space>` :CustomBLines<cr>'
+  nnoremap ,s :BLines<cr>'
   vnoremap ,s y:BLines <c-r>"<cr>
   "vnoremap ,s y:Telescope current_buffer_fuzzy_find<cr>i<c-r>"<backspace><backspace>
   nnoremap <space>§ :Rg<cr>
@@ -449,7 +451,7 @@ EOF
   command! -bang -nargs=* CustomBLines
   \ call fzf#vim#grep(
   \   'rg --with-filename --column --line-number --no-heading --smart-case . '.fnameescape(expand('%:p')), 1,
-  \   fzf#vim#with_preview({'options': '--layout reverse --query '.shellescape(<q-args>).' --with-nth=4.. --delimiter=":"'}, 'right:50%'))
+  \   fzf#vim#with_preview({'options': '--no-sort --layout reverse --query '.shellescape(<q-args>).' --with-nth=4.. --delimiter=":"'}, 'right:50%'))
   " \   fzf#vim#with_preview({'options': '--layout reverse  --with-nth=-1.. --delimiter="/"'}, 'right:50%'))
 
   Plug 'kien/ctrlp.vim'
