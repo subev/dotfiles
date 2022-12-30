@@ -367,6 +367,7 @@ EOF
   noremap <leader>r :CtrlSF<space>
   noremap <Space>r :CtrlSFOpen<CR><space>
   vnoremap <leader>r y:CtrlSF \b<C-R>"\b -R -G !*.test.ts
+  vnoremap <Space>r y:CtrlSF <C-R>" <C-R>=expand('%:p')<cr><cr>
   " bind R to search and replace word under the cursor or visual selection
   nnoremap R :CtrlSF <C-R><C-W> -R -W<CR>
   vnoremap R y:CtrlSF "<C-R>""<CR>
@@ -437,6 +438,8 @@ EOF
   nnoremap ,f :Files<cr>
   nnoremap <space>` :CustomBLines<cr>
   nnoremap ,s :BLines<cr>
+  vnoremap ,s y:BLines <c-r>"<cr>
+  "vnoremap ,s y:Telescope current_buffer_fuzzy_find<cr>i<c-r>"<backspace><backspace>
   nnoremap <space>§ :Rg<cr>
   vnoremap <space>§ y:Rg <c-r>"<cr>
   vnoremap <space>` y:CustomBLines <c-r>"<cr>
@@ -460,6 +463,7 @@ EOF
 
   Plug 'nvim-lua/plenary.nvim'
   Plug 'nvim-telescope/telescope.nvim'
+  nnoremap <space>d <cmd>Telescope<cr>
   nnoremap <space>dd <cmd>Telescope find_files<cr>
   nnoremap <space>df <cmd>Telescope history<cr>
   nnoremap <space>dg <cmd>Telescope live_grep<cr>
