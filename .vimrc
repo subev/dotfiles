@@ -308,7 +308,7 @@ EOF
   map <F3> \\C
 
   Plug 'haya14busa/incsearch.vim'
-  map / :set hlsearch<cr><Plug>(incsearch-forward)
+  map / <Plug>(incsearch-forward)
 
   Plug 'easymotion/vim-easymotion'
   let g:EasyMotion_smartcase = 1
@@ -460,7 +460,8 @@ EOF
 
   Plug 'nvim-lua/plenary.nvim'
   Plug 'nvim-telescope/telescope.nvim'
-  nnoremap <space>df <cmd>Telescope find_files<cr>
+  nnoremap <space>dd <cmd>Telescope find_files<cr>
+  nnoremap <space>df <cmd>Telescope history<cr>
   nnoremap <space>dg <cmd>Telescope live_grep<cr>
   nnoremap <space>db <cmd>Telescope buffers<cr>
   nnoremap <space>dh <cmd>Telescope help_tags<cr>
@@ -525,14 +526,14 @@ call plug#end()
 
   "provide alternative to use COUNT
   nnoremap 2 :w<CR>
-  nnoremap <silent> 8 :set hlsearch<cr>:let @/='\C\<' . expand('<cword>') . '\>'<CR>:let v:searchforward=1<CR>n
-  nnoremap <silent> 3 :set hlsearch<cr>:let @/='\C\<' . expand('<cword>') . '\>'<CR>:let v:searchforward=0<CR>n
+  nnoremap <silent> 3 :let @/='\C\<' . expand('<cword>') . '\>'<CR>:let v:searchforward=0<CR>n
   nnoremap 4 $
   vnoremap 4 $h
   nnoremap 5 %
   vnoremap 5 %
   nnoremap 6 ^
   vnoremap 6 ^
+  nnoremap <silent> 8 :let @/='\C\<' . expand('<cword>') . '\>'<CR>:let v:searchforward=1<CR>n
   nnoremap 9 <C-o>
   nnoremap 0 <C-i>
 
@@ -617,9 +618,11 @@ call plug#end()
   nnoremap <s-up> <C-w>k
   nnoremap <s-down> <C-w>j
 
-  " disable the highlight search
-  " nnoremap <CR> :noh<CR>
-  nnoremap <silent> <cr> :<C-U>call SearchWordUnderCursorOrNohighlight()<cr>
+  " disable the highlight search or search for the word under the cursor
+  nnoremap <expr> <cr> (v:hlsearch == 1) ? ':noh<cr>' : ":let @/ = '\\C\\<'.expand('<cword>').'\\>'<cr>:set hlsearch<cr>"
+  "search for the visually selected text
+  vnoremap <cr> y:let @/='<C-R>"'<CR>:let v:searchforward=1<CR>:set hlsearch<CR>
+
   nnoremap <f5> :e!<CR>
   nnoremap <f6> :q<CR>
   " preview current file with Google Chrome
@@ -652,8 +655,6 @@ call plug#end()
   nnoremap K :Ack! <cword><CR>
   vnoremap K y:Ack! "<C-R>""<CR>
   vnoremap <leader>s y:Ack! "<C-R>""<space>
-  "search for the visually selected text
-  vnoremap // y:set hlsearch<cr>:let @/='<C-R>"'<CR>:let v:searchforward=1<CR>
 
   vnoremap < c<<space>/><Esc>hhP
   vnoremap > c<><Esc>Pf>a</><Esc>P
@@ -806,15 +807,6 @@ call plug#end()
     let @/ = 'import '
     execute "normal! G?\<cr>"
     let @/ = lastsearch
-  endfunction
-
-  function! SearchWordUnderCursorOrNohighlight()
-    if v:hlsearch
-      set nohlsearch
-    else
-      set hlsearch
-      let @/ = expand("<cword>")
-    endif
   endfunction
 
   " redirect the output of a Vim or external command into a scratch buffer
