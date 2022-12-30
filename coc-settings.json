@@ -69,6 +69,7 @@
       }
     }
   },
+  "elixir.pathToElixirLS": "~/repos/elixir-ls/release/language_server.sh",
   "list.height": 34,
   "list.normalMappings": {
     "s": "action:vsplit",

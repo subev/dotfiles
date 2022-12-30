@@ -6,7 +6,6 @@ if empty(glob('~/.vim/autoload/plug.vim'))
   silent !curl -fLo ~/.vim/autoload/plug.vim --create-dirs
     \ https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim
 endif
-
 lua require('plugins')
 nnoremap gp <cmd>lua require('goto-preview').goto_preview_definition()<CR>
 
@@ -309,7 +308,7 @@ EOF
   map <F3> \\C
 
   Plug 'haya14busa/incsearch.vim'
-  map /  <Plug>(incsearch-forward)
+  map / :set hlsearch<cr><Plug>(incsearch-forward)
 
   Plug 'easymotion/vim-easymotion'
   let g:EasyMotion_smartcase = 1
@@ -385,6 +384,8 @@ EOF
   noremap ,g :G<CR>
   noremap ,g<space> :G<space>
   noremap ,gg :G<CR><c-w>H
+  noremap ,gc :GV?<cr><c-w>H
+  noremap ,gh :G log --oneline -p -U0 --abbrev-commit --date=relative -- %<cr><c-w>H
   noremap ,gp :G pull
   noremap ,gs :G push
   noremap ,gf :G fetch
@@ -435,7 +436,7 @@ EOF
 
   nnoremap ,f :Files<cr>
   nnoremap <space>` :CustomBLines<cr>
-  nnoremap <space>~ :BLines<cr>
+  nnoremap ,s :BLines<cr>
   nnoremap <space>§ :Rg<cr>
   vnoremap <space>§ y:Rg <c-r>"<cr>
   vnoremap <space>` y:CustomBLines <c-r>"<cr>
@@ -456,6 +457,13 @@ EOF
   let g:ctrlp_mruf_exclude = '/tmp/.*\|/temp/.*\|/private/.*\|.*/node_modules/.*\|.*/.pyenv/.*' " MacOSX/Linux
   nnoremap ,v :History<CR>
   nnoremap ,V :CtrlPMRU<CR>
+
+  Plug 'nvim-lua/plenary.nvim'
+  Plug 'nvim-telescope/telescope.nvim'
+  nnoremap <space>df <cmd>Telescope find_files<cr>
+  nnoremap <space>dg <cmd>Telescope live_grep<cr>
+  nnoremap <space>db <cmd>Telescope buffers<cr>
+  nnoremap <space>dh <cmd>Telescope help_tags<cr>
 
   Plug 'junegunn/vim-easy-align'
 
@@ -517,16 +525,14 @@ call plug#end()
 
   "provide alternative to use COUNT
   nnoremap 2 :w<CR>
-  nnoremap 3 #
-  vnoremap 3 #
+  nnoremap <silent> 8 :set hlsearch<cr>:let @/='\C\<' . expand('<cword>') . '\>'<CR>:let v:searchforward=1<CR>n
+  nnoremap <silent> 3 :set hlsearch<cr>:let @/='\C\<' . expand('<cword>') . '\>'<CR>:let v:searchforward=0<CR>n
   nnoremap 4 $
   vnoremap 4 $h
   nnoremap 5 %
   vnoremap 5 %
   nnoremap 6 ^
   vnoremap 6 ^
-  nnoremap 8 *
-  vnoremap 8 *
   nnoremap 9 <C-o>
   nnoremap 0 <C-i>
 
@@ -612,12 +618,13 @@ call plug#end()
   nnoremap <s-down> <C-w>j
 
   " disable the highlight search
-  nnoremap <CR> :noh<CR>
+  " nnoremap <CR> :noh<CR>
+  nnoremap <silent> <cr> :<C-U>call SearchWordUnderCursorOrNohighlight()<cr>
   nnoremap <f5> :e!<CR>
   nnoremap <f6> :q<CR>
   " preview current file with Google Chrome
   nnoremap <space>7 :silent ! open -a 'Google Chrome' %:p<cr>
-  nnoremap <space>g y:silent ! open -a 'Google Chrome' 'http://google.com/search?q='<left>
+  "nnoremap <space>g y:silent ! open -a 'Google Chrome' 'http://google.com/search?q='<left>
   vnoremap <space>g y:silent ! open -a 'Google Chrome' 'http://google.com/search?q=<c-r>"'<CR>
   " add a breakpoint above the current line and test just current file with node
   nnoremap <space>td Odebugger<esc>:w<cr>:! open -a 'Google Chrome' 'chrome://inspect/'<CR>:!node --inspect-brk node_modules/.bin/jest --runInBand --no-cache --config jest.config.js -- %<CR>
@@ -646,7 +653,7 @@ call plug#end()
   vnoremap K y:Ack! "<C-R>""<CR>
   vnoremap <leader>s y:Ack! "<C-R>""<space>
   "search for the visually selected text
-  vnoremap // y/<C-R>"<CR>N
+  vnoremap // y:set hlsearch<cr>:let @/='<C-R>"'<CR>:let v:searchforward=1<CR>
 
   vnoremap < c<<space>/><Esc>hhP
   vnoremap > c<><Esc>Pf>a</><Esc>P
@@ -801,6 +808,15 @@ call plug#end()
     let @/ = lastsearch
   endfunction
 
+  function! SearchWordUnderCursorOrNohighlight()
+    if v:hlsearch
+      set nohlsearch
+    else
+      set hlsearch
+      let @/ = expand("<cword>")
+    endif
+  endfunction
+
   " redirect the output of a Vim or external command into a scratch buffer
   " similar to :r!ls -a
   function! Redir(cmd)
@@ -943,6 +959,7 @@ call plug#end()
     au FileType typescript,javascript nnoremap <silent> <space>tc :call CocAction('runCommand', 'jest.fileTest', ['%'])<CR>
     au FileType typescript,javascript nnoremap <silent> <space>tt :call CocAction('runCommand', 'jest.singleTest')<CR>
     au FileType elixir nnoremap <silent> <space>tc :!mix test %:p<CR>
+    au FileType git nmap <buffer> o gO
   augroup end
 " }}}
 
