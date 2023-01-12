@@ -27,6 +27,7 @@ call plug#begin('~/.vim/plugged')
   let g:leetcode_solution_filetype = 'javascript'
   nnoremap <space>4 :LeetCodeTest<cr>
 
+  " hides formatting symbols, might be overriden
   set conceallevel=0
   " hidden characters
   let g:vim_json_conceal = 0
@@ -301,6 +302,7 @@ EOF
   map <silent> W <Plug>CamelCaseMotion_w
   map <silent> B <Plug>CamelCaseMotion_b
   nmap <silent> E gE
+  vmap <silent> E <Plug>CamelCaseMotion_e
 
   Plug 'mg979/vim-visual-multi'
   let g:VM_mouse_mappings = 1
@@ -371,7 +373,7 @@ EOF
   vnoremap <leader>r y:CtrlSF \b<C-R>"\b -R -G !*.test.ts
   vnoremap <Space>r y:CtrlSF <C-R>" <C-R>=expand('%:p')<cr><cr>
   " bind R to search and replace word under the cursor or visual selection
-  nnoremap R :CtrlSF <C-R><C-W> -R -W<CR>
+  nnoremap R :CtrlSF <C-R><C-W> -W<CR>
   vnoremap R y:CtrlSF "<C-R>""<CR>
   "same as above but ignore test files
   vnoremap T y:CtrlSF "<C-R>"" -G !*.test.ts<CR>
@@ -388,7 +390,7 @@ EOF
   noremap ,g<space> :G<space>
   noremap ,gg :G<CR><c-w>H
   noremap ,gc :GV?<cr><c-w>H
-  noremap ,gh :G log --oneline -p -U0 --abbrev-commit --date=relative -- %<cr><c-w>H
+  noremap ,gh :G log --stat -p -U0 --abbrev-commit --date=relative -- %<cr><c-w>H
   noremap ,gp :G pull
   noremap ,gs :G push
   noremap ,gf :G fetch
@@ -438,6 +440,11 @@ EOF
   nmap <F1> :Helptags<cr>
 
   nnoremap ,f :Files<cr>
+  " the below is used as a work around to be able to copy and paste into FZF search input,
+  " does not work :(
+  tnoremap <expr> <M-r> '<C-\><C-N>"'.nr2char(getchar()).'pi'
+  vmap ,f "hy:Files<Enter><M-r>h
+
   nnoremap <space>` :CustomBLines<cr>'
   nnoremap ,s :BLines<cr>'
   vnoremap ,s y:BLines <c-r>"<cr>
@@ -452,7 +459,6 @@ EOF
   \ call fzf#vim#grep(
   \   'rg --with-filename --column --line-number --no-heading --smart-case . '.fnameescape(expand('%:p')), 1,
   \   fzf#vim#with_preview({'options': '--no-sort --layout reverse --query '.shellescape(<q-args>).' --with-nth=4.. --delimiter=":"'}, 'right:50%'))
-  " \   fzf#vim#with_preview({'options': '--layout reverse  --with-nth=-1.. --delimiter="/"'}, 'right:50%'))
 
   Plug 'kien/ctrlp.vim'
   let g:ctrlp_max_files = 0
@@ -832,6 +838,18 @@ call plug#end()
     put = '----'
   endfunction
 
+  function! DiffFoldLevel()
+    let l:line=getline(v:lnum)
+
+    if l:line =~# '^diff'
+      return '>1'
+    elseif l:line =~# '^commit'
+      return '0'
+    else
+      return '='
+    endif
+  endfunction
+
   command! -nargs=1 Redir silent call Redir(<f-args>)
 
 " }}}
@@ -839,6 +857,10 @@ call plug#end()
 " General variables set {{{
   set termguicolors
   colorscheme gruvbox
+
+  " this way you can use gf to open a file at a specific line
+  set isfname-=:
+  set iskeyword+=-,\$
 
   set scrolloff=20
   " hide the toolbar and the menu of GVIM
@@ -934,6 +956,8 @@ call plug#end()
     "use 'theirs' when merge conflict
     au FileType fugitive nmap <buffer> g3 3X
 
+    au FileType fugitive nmap <buffer> o gO<right>q<left>
+
     au FileType fugitive nmap <buffer> f<space> :G fetch<CR>
 
     au FileType fzf imap <buffer> <esc> <c-c>
@@ -957,7 +981,10 @@ call plug#end()
     au FileType typescript,javascript nnoremap <silent> <space>tc :call CocAction('runCommand', 'jest.fileTest', ['%'])<CR>
     au FileType typescript,javascript nnoremap <silent> <space>tt :call CocAction('runCommand', 'jest.singleTest')<CR>
     au FileType elixir nnoremap <silent> <space>tc :!mix test %:p<CR>
+    au FileType elixir nnoremap <silent> <space>f :silent !mix format %:p<CR>
     au FileType git nmap <buffer> o gO
+    au FileType git setlocal foldmethod=expr foldexpr=DiffFoldLevel() foldlevel=0 foldenable
+    au FileType git nmap <buffer> <expr> - (foldclosed(line(".")) == -1) ? 'za':'zA'
   augroup end
 " }}}
 
