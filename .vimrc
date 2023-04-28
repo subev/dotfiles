@@ -21,7 +21,6 @@ call plug#begin('~/.vim/plugged')
     set guifontwide=0
     set guifont=monospace:h10
   endif
-  Plug 'subnut/nvim-ghost.nvim', {'do': ':call nvim_ghost#installer#install()'}
   Plug 'ianding1/leetcode.vim'
   let g:leetcode_browser = 'firefox'
   let g:leetcode_solution_filetype = 'javascript'
@@ -450,6 +449,8 @@ EOF
   vnoremap ,s y:BLines <c-r>"<cr>
   "vnoremap ,s y:Telescope current_buffer_fuzzy_find<cr>i<c-r>"<backspace><backspace>
   nnoremap <space>§ :Rg<cr>
+  nnoremap <space><F1> :Rg<cr>
+  vnoremap <space><F1> y:Rg <c-r>"<cr>
   vnoremap <space>§ y:Rg <c-r>"<cr>
   vnoremap <space>` y:CustomBLines <c-r>"<cr>
 
@@ -466,7 +467,7 @@ EOF
   let g:ctrlp_working_path_mode = 'rw'
   let g:ctrlp_by_filename = 1
   let g:ctrlp_mruf_exclude = '/tmp/.*\|/temp/.*\|/private/.*\|.*/node_modules/.*\|.*/.pyenv/.*' " MacOSX/Linux
-  nnoremap ,v :History<CR>
+  nnoremap ,v :Buffers<CR>
   nnoremap ,V :CtrlPMRU<CR>
 
   Plug 'nvim-lua/plenary.nvim'
@@ -615,9 +616,12 @@ call plug#end()
   "yank line without return of carret
   nnoremap yl ^y$
   "yank whole buffer
-  nnoremap Y ggVGy<C-o>zz
-  " duplicate
-  vnoremap Y yO<Esc>P
+  nnoremap Y :%y+<CR>
+
+  " duplicate visual selection and move the cursor to the pasted text bellow
+  vnoremap Y ygv']<esc>p
+  " visually select the whole file and replace it with the content of the default register
+  nnoremap vap ggVGp
   nnoremap dl ^d$"_dd
 
   nnoremap <up> 8<C-y>
@@ -720,10 +724,12 @@ call plug#end()
   noremap <D-k> 8<C-y>
   nnoremap vv <C-w>
 
-  "yank current full file path to clipboard
-  nnoremap yfp :let @+ = expand('%:p')<CR>
   "yank current relative path from cwd to clipboard
   nnoremap yp :let @+ = expand('%')<CR>
+  "yank just the file name to clipboard
+  nnoremap yF :let @+ = expand('%:t')<CR>
+  "yank just the file name without extension to clipboard
+  nnoremap yf :let @+ = expand('%:t:r')<CR>
 
   "go to sibling style file
   nnoremap gts :e <C-R>=expand('%:r') . '.scss'<CR><CR>
@@ -739,6 +745,7 @@ call plug#end()
   noremap <leader>vu :source %<CR>
 
   tnoremap <ESC><ESC> <C-\><C-N>
+  nnoremap gf :vsplit<CR>gF
 
   " Settings for VimDiff as MergeTool
   if &diff
@@ -841,10 +848,10 @@ call plug#end()
   function! DiffFoldLevel()
     let l:line=getline(v:lnum)
 
-    if l:line =~# '^diff'
+    if l:line =~# '^diff --git'
       return '>1'
     elseif l:line =~# '^commit'
-      return '0'
+      return '<1'
     else
       return '='
     endif
@@ -947,18 +954,15 @@ call plug#end()
     au FileType ctrlsf nnoremap <silent><buffer> gn n
 
     au FileType fugitive nnoremap <buffer> 2 2
-
     au FileType fugitive nnoremap <buffer> 3 3
-
     "use 'ours' when merge conflict
     au FileType fugitive nmap <buffer> g1 2X
-
     "use 'theirs' when merge conflict
     au FileType fugitive nmap <buffer> g3 3X
-
     au FileType fugitive nmap <buffer> o gO<right>q<left>
-
-    au FileType fugitive nmap <buffer> f<space> :G fetch<CR>
+    au FileType fugitive nmap <buffer> f<space> :G fetch<cr>
+    au FileType fugitive nmap <buffer> g<space> :G<space>
+    au FileType fugitive nmap <buffer> sm<space> :G switch master<cr>
 
     au FileType fzf imap <buffer> <esc> <c-c>
 
