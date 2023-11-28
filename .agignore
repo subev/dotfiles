@@ -1,5 +1,4 @@
 package-lock.json
 **/*.snap
 patches/
-public/
-**/*.svg
+

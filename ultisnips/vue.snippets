@@ -23,49 +23,18 @@
 #		endsnippet
 #
 # Online reference: https://github.com/SirVer/ultisnips/blob/master/doc/UltiSnips.txt
-snippet defineComponent "Basic snippet for a component using composition api" b
-<template>
-  <div class="foo">
-    {{ foo } }
-  </div>
-</template>
+snippet setup "Basic snippet for a component using composition api" b
+<template></template>
 
 <script lang="ts">
-import {
-  defineComponent,
-} from 'vue'
-
-/**
- * @Component Foo
- */
-export default defineComponent({
-  name: 'Foo',
-  props: {
-    foo: {
-      type: String,
-      required: false,
-      default: 'Foo',
-    }
-  },
-  setup () {
-    return {
-    }
-  }
-})
+export default {
+  name: '`!p snip.rv = snip.basename`'
+}
 </script>
 
-<style lang="scss" scoped>
-.foo {
+<script setup lang="ts"></script>
 
-}
-</style>
-</script>
-
-<style lang="scss" scoped>
-.foo {
-
-}
-</style>
+<style lang="scss" scoped></style>
 endsnippet
 snippet deb "debugger with eslint ignore"
 // eslint-disable-next-line no-debugger
@@ -74,4 +43,25 @@ endsnippet
 snippet cons "console log with eslint ignore"
 // eslint-disable-next-line no-console
 console.log(${1})
+endsnippet
+
+snippet setupp "Vue 3 syntax" b
+<script setup lang="ts">
+	${1}
+</script>
+<template>
+
+</template>
+endsnippet
+
+snippet prop "define props" b
+defineProps<{
+	${1}
+}>()
+endsnippet
+
+snippet emit "define emit" b
+defineEmits<{
+  (e: '${1}', ${2}: ${3}): void
+}>()
 endsnippet

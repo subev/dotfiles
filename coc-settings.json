@@ -13,8 +13,15 @@
   "explorer.previewAction.content.maxHeight": 99,
   "explorer.previewAction.onHover": "content",
   "explorer.quitOnOpen": true,
+  "explorer.openAction.strategy": "previousBuffer",
   "typescript.preferences.importModuleSpecifier": "non-relative",
   "typescript.format.insertSpaceAfterOpeningAndBeforeClosingNonemptyBraces": true,
+  "codeLens.enable": true,
+  "typescript.implementationsCodeLens.enabled": true,
+  "typescript.referencesCodeLens.showOnAllFunctions": true,
+  "vue.codeLens.enabled": true,
+  "javascript.referencesCodeLens.enabled": true,
+  "javascript.implementationsCodeLens.enabled": true,
   "snippets.priority": 110,
   "eslint.format.enable": true,
   "snippets.extends": {
@@ -84,5 +91,8 @@
   "prettier.singleQuote": true,
   "diagnostic.virtualText": false,
   "diagnostic.virtualTextCurrentLineOnly": true,
-  "suggest.noselect": true
+  "suggest.noselect": true,
+  "snippets.ultisnips.pythonPrompt": false,
+  "vitest.watch": true,
+  "vitest.terminal.enableSplitRight": true
 }

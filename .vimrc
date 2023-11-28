@@ -7,7 +7,13 @@ if empty(glob('~/.vim/autoload/plug.vim'))
     \ https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim
 endif
 lua require('plugins')
-nnoremap gp <cmd>lua require('goto-preview').goto_preview_definition()<CR>
+nnoremap gpp <cmd>lua require('goto-preview').goto_preview_definition()<CR>
+nnoremap gpt <cmd>lua require('goto-preview').goto_preview_type_definition()<CR>
+nnoremap gpi <cmd>lua require('goto-preview').goto_preview_implementation()<CR>
+nnoremap gp <cmd>lua require('goto-preview').close_all_win()<CR>
+nnoremap gpr <cmd>lua require('goto-preview').goto_preview_references()<CR>
+" not working tbh
+nnoremap gpd <cmd>lua require('goto-preview').goto_preview_declaration()<CR>
 
 " Plugins followed by their mappings and/or custom settings {{{
 call plug#begin('~/.vim/plugged')
@@ -24,7 +30,7 @@ call plug#begin('~/.vim/plugged')
   Plug 'ianding1/leetcode.vim'
   let g:leetcode_browser = 'firefox'
   let g:leetcode_solution_filetype = 'javascript'
-  nnoremap <space>4 :LeetCodeTest<cr>
+  "nnoremap <space>4 :LeetCodeTest<cr>
 
   " hides formatting symbols, might be overriden
   set conceallevel=0
@@ -35,6 +41,11 @@ call plug#begin('~/.vim/plugged')
   map <Plug> <Plug>Markdown_MoveToCurHeader
 
   Plug 'sbdchd/neoformat'
+
+  Plug 'aaronhallaert/advanced-git-search.nvim'
+  noremap ,ga :AdvancedGitSearch<CR>
+  " dependency to the one above
+  Plug 'ibhagwan/fzf-lua', {'branch': 'main'}
 
   Plug 'github/copilot.vim'
   imap <silent><script><expr> <c-cr> copilot#Accept("")
@@ -48,28 +59,7 @@ call plug#begin('~/.vim/plugged')
   Plug 'iamcco/markdown-preview.nvim', { 'do': { -> mkdp#util#install() }, 'for': ['markdown', 'vim-plug']}
   let g:mkdp_auto_close = 0
 
-  Plug 'scrooloose/nerdcommenter'
-  let g:NERDCustomDelimiters = { 'typescript': { 'left': '// '} }
-  let g:ft = ''
-  " does not seem to work
-  function! NERDCommenter_before()
-    if &ft == 'vue'
-      let g:ft = 'vue'
-      let stack = synstack(line('.'), col('.'))
-      if len(stack) > 0
-        let syn = synIDattr((stack)[0], 'name')
-        if len(syn) > 0
-          exe 'setf ' . substitute(tolower(syn), '^vue_', '', '')
-        endif
-      endif
-    endif
-  endfunction
-  function! NERDCommenter_after()
-    if g:ft == 'vue'
-      setf vue
-      let g:ft = ''
-    endif
-  endfunction
+  Plug 'numToStr/Comment.nvim'
 
   Plug 'scrooloose/nerdtree'
   Plug 'Xuyuanp/nerdtree-git-plugin'
@@ -90,7 +80,6 @@ call plug#begin('~/.vim/plugged')
   Plug 'airblade/vim-gitgutter'
   nmap <space>h <Plug>(GitGutterPreviewHunk)
   nmap <space>x <Plug>(GitGutterUndoHunk)
-  nmap <space>v <Plug>(GitGutterStageHunk)
 
   Plug 'honza/vim-snippets'
   "treesitter throwing exceptions so use the alternative
@@ -100,56 +89,15 @@ call plug#begin('~/.vim/plugged')
   Plug 'RRethy/nvim-treesitter-textsubjects'
   Plug 'nvim-treesitter/playground'
 
-lua <<EOF
-require'nvim-treesitter.configs'.setup {
-  highlight = {
-    enable = true,              -- false will disable the whole extension
-    -- disable = { "elixir" },  -- list of language that will be disabled
-    -- Setting this to true will run `:h syntax` and tree-sitter at the same time.
-    -- Set this to `true` if you depend on 'syntax' being enabled (like for indentation).
-    -- Using this option may slow down your editor, and you may see some duplicate highlights.
-    -- Instead of true it can also be a list of languages
-    -- additional_vim_regex_highlighting = false,
-  },
-  textsubjects = {
-      enable = true,
-      keymaps = {
-          ['.'] = 'textsubjects-smart',
-          ['+'] = 'textsubjects-container-outer',
-      }
-  },
-  playground = {
-    enable = true,
-    disable = {},
-    updatetime = 25, -- Debounced time for highlighting nodes in the playground from source code
-    persist_queries = false, -- Whether the query persists across vim sessions
-    keybindings = {
-      toggle_query_editor = 'o',
-      toggle_hl_groups = 'i',
-      toggle_injected_languages = 't',
-      toggle_anonymous_nodes = 'a',
-      toggle_language_display = 'I',
-      focus_language = 'f',
-      unfocus_language = 'F',
-      update = 'R',
-      goto_node = '<cr>',
-      show_help = '?',
-    },
-  }
-}
--- require'lspconfig'.pyright.setup{}
--- require'lspconfig'.vuels.setup{}
--- require'lspconfig'.eslint.setup{}
-EOF
 
   " CoC Config {{{
 
     Plug 'neoclide/coc.nvim', {'branch': 'release'}"
-    let g:coc_node_path = '~/.nvm/versions/node/v16.3.0/bin/node'
+    "let g:coc_node_path = '~/.nvm/versions/node/v16.3.0/bin/node'
     let g:coc_global_extensions = [ 'coc-emmet', 'coc-git', 'coc-vimlsp',
       \ 'coc-lists', 'coc-snippets', 'coc-html', 'coc-tsserver', 'coc-jest', 'coc-eslint', 'coc-marketplace',
       \ 'coc-css', 'coc-json', 'coc-java', 'coc-pyright', 'coc-yank', 'coc-prettier', 'coc-omnisharp', 'coc-elixir', 'coc-explorer',
-      \ 'coc-vetur', '@yaegassy/coc-volar'] "vue specific
+      \ 'coc-vetur', '@yaegassy/coc-volar', '@yaegassy/coc-typescript-vue-plugin'] "vue specific
 
     " You will have bad experience for diagnostic messages when it's default 4000.
     set updatetime=500
@@ -196,14 +144,19 @@ EOF
     nnoremap <silent> <space>! :!npx eslint $(git diff --name-only HEAD \| xargs) --fix --ext .js,.ts,.tsx,.vue<CR>
 
     " Remap keys for gotos
-    nmap <silent> ,d <Plug>(coc-definition)
-    nmap <silent> gd <Plug>(coc-type-definition)
+    nmap <silent> gd <Plug>(coc-definition)
+    "nmap <silent> ,d <cmd>lua vim.lsp.buf.definition({reuse_win = true})<CR>
+    nmap <silent> ,D <Plug>(coc-type-definition)
     nmap <silent> ,i <Plug>(coc-implementation)
     nmap <silent> ,6 <Plug>(coc-references)
     nmap <silent> ,w <Plug>(coc-codelens-action)
 
     nnoremap <silent> <space><space> :call <SID>show_documentation()<CR>:call CocAction('highlight')<CR>
-    nmap <silent> <space><backspace> <Plug>(coc-references)
+    " nnoremap <silent> <space><space> <cmd>lua vim.lsp.buf.hover()<CR>
+
+    " those does not seem to work
+    "nnoremap <silent> <space><right> <cmd>lua vim.lsp.diagnostic.goto_next()<CR>
+    "nnoremap <silent> <space><left> <cmd>lua vim.lsp.diagnostic.goto_prev()<CR>
 
     function! s:show_documentation()
       if CocAction('doHover')
@@ -287,10 +240,20 @@ EOF
 
   " end of coc config }}}}
 
+  Plug 'dnlhc/glance.nvim'
+
+  nmap ,d :Glance definitions<cr>
+  nmap gti :Glance implementations<cr>
+  nmap gr :Glance references<cr>
+  nmap gT :Glance type_definitions<cr>
+  nmap <space><backspace> :Glance references<cr>
+
   Plug 'm-pilia/vim-ccls'
 
   Plug 'tpope/vim-repeat'
   Plug 'tpope/vim-unimpaired'
+  nmap ]t :tabnext<cr>
+  nmap [t :tabprevious<cr>
 
   Plug 'kana/vim-smartword'
   nmap w  <Plug>(smartword-w)
@@ -380,8 +343,6 @@ EOF
 
   "git tools blame, log, view files in other branches
   Plug 'tpope/vim-fugitive'
-  nnoremap gM :Gvsplit origin/master:%<cr>
-  nnoremap gm :Gvdiffsplit origin/master:%<cr>
   nnoremap gD :Gvdiffsplit<cr>
   nnoremap gb :G blame<cr>
   vnoremap gb :GBrowse<cr>
@@ -389,10 +350,22 @@ EOF
   noremap ,g<space> :G<space>
   noremap ,gg :G<CR><c-w>H
   noremap ,gc :GV?<cr><c-w>H
-  noremap ,gh :G log --stat -p -U0 --abbrev-commit --date=relative -- %<cr><c-w>H
+  noremap ,gH :G log --stat -p -U0 --abbrev-commit --date=relative -- %<cr><c-w>H
   noremap ,gp :G pull
   noremap ,gs :G push
   noremap ,gf :G fetch
+  noremap ,gx :G merge origin/master
+  noremap ,gz :G merge --continue
+  nnoremap gM :Gvsplit origin/<C-r>=GetMasterBranchName()<CR>:%<cr>
+  nnoremap gm :Gvdiffsplit origin/<C-r>=GetMasterBranchName()<CR>:%<cr>
+  noremap ,gM :G diff origin/<C-r>=GetMasterBranchName()<CR>... <cr><c-w>H
+
+  Plug 'sindrets/diffview.nvim'
+  noremap ,gd :CocDisable<cr>:DiffviewOpen<CR>
+  noremap ,gh :DiffviewFileHistory %<cr>
+  noremap ,gm :DiffviewOpen origin/<C-r>=GetMasterBranchName()<CR>...HEAD<cr>
+
+  Plug 'folke/trouble.nvim'
 
   " restore mappings
   " use 2X to call `checkout --ours` or 3X to call `checkout --theirs`
@@ -436,7 +409,8 @@ EOF
   Plug 'junegunn/fzf.vim'
   Plug 'pbogut/fzf-mru.vim'
   let $FZF_DEFAULT_OPTS = '--layout=reverse'
-  nmap <F1> :Helptags<cr>
+  nnoremap <space>: :History:<cr>
+  nmap <F1> :Telescope help_tags<cr>
 
   nnoremap ,f :Files<cr>
   " the below is used as a work around to be able to copy and paste into FZF search input,
@@ -445,12 +419,12 @@ EOF
   vmap ,f "hy:Files<Enter><M-r>h
 
   nnoremap <space>` :CustomBLines<cr>'
-  nnoremap ,s :BLines<cr>'
+  nnoremap ,s :BLines<cr>
   vnoremap ,s y:BLines <c-r>"<cr>
   "vnoremap ,s y:Telescope current_buffer_fuzzy_find<cr>i<c-r>"<backspace><backspace>
   nnoremap <space>§ :Rg<cr>
-  nnoremap <space><F1> :Rg<cr>
-  vnoremap <space><F1> y:Rg <c-r>"<cr>
+  nnoremap <space>s :Rg<cr>
+  vnoremap <space>s y:Rg <c-r>"<cr>
   vnoremap <space>§ y:Rg <c-r>"<cr>
   vnoremap <space>` y:CustomBLines <c-r>"<cr>
 
@@ -467,17 +441,28 @@ EOF
   let g:ctrlp_working_path_mode = 'rw'
   let g:ctrlp_by_filename = 1
   let g:ctrlp_mruf_exclude = '/tmp/.*\|/temp/.*\|/private/.*\|.*/node_modules/.*\|.*/.pyenv/.*' " MacOSX/Linux
-  nnoremap ,v :Buffers<CR>
-  nnoremap ,V :CtrlPMRU<CR>
+  "nnoremap ,v :Buffers<CR>
+  nnoremap ,v <cmd>Telescope oldfiles<cr>
 
   Plug 'nvim-lua/plenary.nvim'
   Plug 'nvim-telescope/telescope.nvim'
   nnoremap <space>d <cmd>Telescope<cr>
   nnoremap <space>dd <cmd>Telescope find_files<cr>
-  nnoremap <space>df <cmd>Telescope history<cr>
+  nnoremap <space>df <cmd>Telescope oldfiles<cr>
   nnoremap <space>dg <cmd>Telescope live_grep<cr>
   nnoremap <space>db <cmd>Telescope buffers<cr>
   nnoremap <space>dh <cmd>Telescope help_tags<cr>
+  nnoremap <space>de <cmd>Telescope builtin<cr>
+
+
+  "THE BEST FONT IS 1) Meslo 2) Hack
+  Plug 'nvim-tree/nvim-web-devicons'
+  " octo is a github pr review plugin
+  Plug 'pwntester/octo.nvim'
+  nnoremap <space>v :Octo<CR>
+  nnoremap <space>vv :Octo<CR>
+  nnoremap <leader>pro :Octo pr checkout 
+  nnoremap <leader>prr :Octo review start<cr>
 
   Plug 'junegunn/vim-easy-align'
 
@@ -526,6 +511,164 @@ EOF
 
 call plug#end()
 " }}}
+
+" LUA-SETUPS
+lua <<EOF
+require'advanced_git_search.fzf'.setup {
+  diff_plugin = "fugitive",
+}
+
+require('Comment').setup{
+  opleader = {
+    block = 'gB',
+  }
+}
+
+require'glance'.setup {
+  hooks = {
+    before_open = function(results, open, jump, method)
+      local uri = vim.uri_from_bufnr(0)
+      if #results == 1 then
+        local target_uri = results[1].uri or results[1].targetUri
+        if target_uri == uri then
+          jump(results[1])
+        else
+          open(results)
+        end
+      else
+        open(results)
+      end
+    end,
+  },
+  detached = function(winid)
+    return vim.api.nvim_win_get_width(winid) < 150
+  end,
+}
+
+require('goto-preview').setup {
+  width = 150,
+  height = 20,
+  references = {
+    width = 250,
+  }
+}
+
+require('diffview').setup {
+  keymaps = {
+    view = { q = "<Cmd>CocEnable<CR><Cmd>DiffviewClose<CR>" },
+    file_panel = { q = "<Cmd>CocEnable<CR><Cmd>DiffviewClose<CR>" },
+    file_history_panel = { q = "<Cmd>CocEnable<CR><Cmd>DiffviewClose<CR>" },
+  },
+  file_panel = {
+    win_config = {
+      width = 50,
+    }
+  },
+  view = {
+    merge_tool = {
+      layout = "diff4_mixed",
+      disable_diagnostics = true,
+    }
+  }
+}
+
+require('trouble').setup {
+}
+
+require'nvim-treesitter.configs'.setup {
+  highlight = {
+    enable = true,              -- false will disable the whole extension
+    -- disable = { "elixir" },  -- list of language that will be disabled
+    -- Setting this to true will run `:h syntax` and tree-sitter at the same time.
+    -- Set this to `true` if you depend on 'syntax' being enabled (like for indentation).
+    -- Using this option may slow down your editor, and you may see some duplicate highlights.
+    -- Instead of true it can also be a list of languages
+    -- additional_vim_regex_highlighting = false,
+  },
+  textsubjects = {
+      enable = true,
+      keymaps = {
+          ['.'] = 'textsubjects-smart',
+          ['+'] = 'textsubjects-container-outer',
+      }
+  },
+  playground = {
+    enable = true,
+    disable = {},
+    updatetime = 25, -- Debounced time for highlighting nodes in the playground from source code
+    persist_queries = false, -- Whether the query persists across vim sessions
+    keybindings = {
+      toggle_query_editor = 'o',
+      toggle_hl_groups = 'i',
+      toggle_injected_languages = 't',
+      toggle_anonymous_nodes = 'a',
+      toggle_language_display = 'I',
+      focus_language = 'f',
+      unfocus_language = 'F',
+      update = 'R',
+      goto_node = '<cr>',
+      show_help = '?',
+    },
+  }
+}
+
+require"octo".setup{
+  enable_builtin = true
+}
+
+require'nvim-web-devicons'.setup {
+ -- your personnal icons can go here (to override)
+ -- you can specify color or cterm_color instead of specifying both of them
+ -- DevIcon will be appended to `name`
+ override = {
+  zsh = {
+    icon = "",
+    color = "#428850",
+    cterm_color = "65",
+    name = "Zsh"
+  }
+ };
+ -- globally enable different highlight colors per icon (default to true)
+ -- if set to false all icons will have the default icon's color
+ color_icons = true;
+ -- globally enable default icons (default to false)
+ -- will get overriden by `get_icons` option
+ default = true;
+ -- globally enable "strict" selection of icons - icon will be looked up in
+ -- different tables, first by filename, and if not found by extension; this
+ -- prevents cases when file doesn't have any extension but still gets some icon
+ -- because its name happened to match some extension (default to false)
+ strict = true;
+ -- same as `override` but specifically for overrides by filename
+ -- takes effect when `strict` is true
+ override_by_filename = {
+  [".gitignore"] = {
+    icon = "",
+    color = "#f1502f",
+    name = "Gitignore"
+  }
+ };
+ -- same as `override` but specifically for overrides by extension
+ -- takes effect when `strict` is true
+ override_by_extension = {
+  ["log"] = {
+    icon = "",
+    color = "#81e043",
+    name = "Log"
+  }
+ };
+}
+
+require'lspconfig'.elixirls.setup{
+    -- sadly the below path cannot be expanded
+    cmd = { "/Users/petur/nvim-lsp/elixir/elixir-ls-v0.16.0/language_server.sh" };
+}
+require'lspconfig'.tsserver.setup {}
+require'lspconfig'.volar.setup {}
+-- require'lspconfig'.pyright.setup{}
+-- require'lspconfig'.vuels.setup{}
+-- require'lspconfig'.eslint.setup{}
+EOF
 
 " General Keybindings ---{{{
   noremap <C-S> :w<CR>
@@ -619,7 +762,7 @@ call plug#end()
   nnoremap Y :%y+<CR>
 
   " duplicate visual selection and move the cursor to the pasted text bellow
-  vnoremap Y ygv']<esc>p
+  vnoremap Y ygv']<esc>o<esc>p
   " visually select the whole file and replace it with the content of the default register
   nnoremap vap ggVGp
   nnoremap dl ^d$"_dd
@@ -640,7 +783,7 @@ call plug#end()
   vnoremap <cr> y:let @/='<C-R>"'<CR>:let v:searchforward=1<CR>:set hlsearch<CR>
 
   nnoremap <f5> :e!<CR>
-  nnoremap <f6> :q<CR>
+  nnoremap <f6> :Trouble<CR>
   " preview current file with Google Chrome
   nnoremap <space>7 :silent ! open -a 'Google Chrome' %:p<cr>
   "nnoremap <space>g y:silent ! open -a 'Google Chrome' 'http://google.com/search?q='<left>
@@ -666,6 +809,7 @@ call plug#end()
   " quick-paste last yanked text
   noremap ; "0p
   vmap gp <c-n>\\CP<esc>
+  vmap gm <c-n>\\C
 
   " bind K to search grep word under the cursor
   nnoremap K :Ack! <cword><CR>
@@ -692,7 +836,6 @@ call plug#end()
   nnoremap g3 :<C-U>call MergeKeepRight()<CR>
   nnoremap gi :<C-U>call FindImport()<CR>
 
-
   ""replace word under cursor
   "nnoremap ,r :%s/\<<C-r><C-w>\>//g<Left><Left>
   "close window
@@ -700,9 +843,12 @@ call plug#end()
   noremap q <C-w>c
   "create new vertical split
   noremap ,n :vnew<CR>
+  nnoremap <space>4 <c-6>
 
   nnoremap ,o <c-w>\|
   nnoremap ,O <c-w>o
+  nnoremap ,t <c-w>v:term<cr>i
+  nnoremap ,gl <c-w>v:term<cr>igit ls<cr>
 
   " add space after
   noremap <Space>a a<Space><Esc>h
@@ -823,8 +969,9 @@ call plug#end()
 
   function! FindImport()
     let lastsearch = @/
-    let @/ = 'import '
-    execute "normal! G?\<cr>"
+    let @/ = '^import '
+    normal! gg
+    call search(@/, 'c')
     let @/ = lastsearch
   endfunction
 
@@ -857,7 +1004,26 @@ call plug#end()
     endif
   endfunction
 
+  function! GetMasterBranchName()
+   let l:main_exists = system('git branch --list main')
+   if l:main_exists =~ 'main'
+    return 'main'
+   else
+    return 'master'
+   endif
+  endfunction
+
   command! -nargs=1 Redir silent call Redir(<f-args>)
+
+  function! UpdateMappingBasedOnFile(filename)
+      if filereadable(a:filename)
+        nnoremap <buffer> <Space>tt :call CocAction('runCommand', 'vitest.singleTest')<CR>
+        nnoremap <buffer> <Space>tc :call CocAction('runCommand', 'vitest.fileTest')<CR>
+        nnoremap <buffer> <Space>ta :call CocAction('runCommand', 'vitest.projectTest')<CR>
+      endif
+  endfunction
+
+  autocmd BufEnter,BufWinEnter * call UpdateMappingBasedOnFile('vitest.config.ts')
 
 " }}}
 

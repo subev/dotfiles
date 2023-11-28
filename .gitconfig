@@ -20,7 +20,7 @@
   signingkey = 7FEF56E6
 [push]
   default = tracking
-	autoSetupRemote = true
+  autoSetupRemote = true
 [alias]
   spush = push --recurse-submodules=on-demand
   supdate = submodule update --remote --rebase
@@ -61,8 +61,9 @@
   clean = git-lfs clean -- %f
   smudge = git-lfs smudge -- %f
   required = true
-	process = git-lfs filter-process
+  process = git-lfs filter-process
 [merge]
+  autostash = true
   tool = gvim
   ; toggle this to see parent change
   conflictstyle = zdiff3
@@ -80,3 +81,6 @@
   cmd = mvim -d \"$LOCAL\" \"$BASE\" \"$REMOTE\"
 [pull]
   rebase = true
+  autostash = true
+[rebase]
+  autostash = true
