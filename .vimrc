@@ -174,6 +174,7 @@ call plug#begin('~/.vim/plugged')
     " Remap for format selected region
     xmap <space>f  <Plug>(coc-format-selected)
     nmap <space>f  <Plug>(coc-format)
+    nnoremap <silent> <F7> :CocRestart<CR>:LspRestart<CR>
 
     " select inside function and all function
     xmap if <Plug>(coc-funcobj-i)
@@ -333,6 +334,7 @@ call plug#begin('~/.vim/plugged')
   noremap <leader>r :CtrlSF<space>
   noremap <Space>r :CtrlSFOpen<CR><space>
   vnoremap <leader>r y:CtrlSF \b<C-R>"\b -R -G !*.test.ts
+  " search within the current file
   vnoremap <Space>r y:CtrlSF <C-R>" <C-R>=expand('%:p')<cr><cr>
   " bind R to search and replace word under the cursor or visual selection
   nnoremap R :CtrlSF <C-R><C-W> -W<CR>
@@ -410,22 +412,20 @@ call plug#begin('~/.vim/plugged')
   Plug 'pbogut/fzf-mru.vim'
   let $FZF_DEFAULT_OPTS = '--layout=reverse'
   nnoremap <space>: :History:<cr>
-  nmap <F1> :Telescope help_tags<cr>
 
-  nnoremap ,f :Files<cr>
-  " the below is used as a work around to be able to copy and paste into FZF search input,
-  " does not work :(
-  tnoremap <expr> <M-r> '<C-\><C-N>"'.nr2char(getchar()).'pi'
-  vmap ,f "hy:Files<Enter><M-r>h
+  " migrate to telescope instead of fzf
+  nnoremap <space>dd :Files<cr>
+  " nnoremap ,F :FZF -q <c-r><c-w><cr>
+  " vnoremap ,f y:FZF -q <c-r>"<cr>
 
   nnoremap <space>` :CustomBLines<cr>'
   nnoremap ,s :BLines<cr>
   vnoremap ,s y:BLines <c-r>"<cr>
   "vnoremap ,s y:Telescope current_buffer_fuzzy_find<cr>i<c-r>"<backspace><backspace>
-  nnoremap <space>§ :Rg<cr>
   nnoremap <space>s :Rg<cr>
+  nnoremap <space>6 :Rg <<c-r>=expand('%:t:r')<CR>\b<CR>
+  nnoremap <space>^ :Rg \b<c-r>=expand('%:t:r')<CR>\b<CR>
   vnoremap <space>s y:Rg <c-r>"<cr>
-  vnoremap <space>§ y:Rg <c-r>"<cr>
   vnoremap <space>` y:CustomBLines <c-r>"<cr>
 
   "more useful commands https://github.com/junegunn/fzf.vim#commands
@@ -446,8 +446,11 @@ call plug#begin('~/.vim/plugged')
 
   Plug 'nvim-lua/plenary.nvim'
   Plug 'nvim-telescope/telescope.nvim'
-  nnoremap <space>d <cmd>Telescope<cr>
-  nnoremap <space>dd <cmd>Telescope find_files<cr>
+  nmap <F1> :Telescope help_tags<cr>
+  " nnoremap <space>d <cmd>Telescope<cr>
+  nnoremap ,f :Telescope find_files<cr>
+  nnoremap ,F :Telescope find_files default_text=<c-r><c-w><cr>
+  nmap gF :Telescope find_files search_file=<c-r><c-w><cr>
   nnoremap <space>df <cmd>Telescope oldfiles<cr>
   nnoremap <space>dg <cmd>Telescope live_grep<cr>
   nnoremap <space>db <cmd>Telescope buffers<cr>

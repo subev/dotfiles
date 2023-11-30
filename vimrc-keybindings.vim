@@ -68,6 +68,8 @@
   nmap y4 y$
   nnoremap c6 c^
   nnoremap c<space> ct<space>
+  nnoremap ci<space> T ct<space>
+
   nnoremap ~ ~h
 
   nnoremap t9 t(

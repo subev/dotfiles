@@ -69,6 +69,23 @@ it('opens the dialog when the button is pressed', () => {
 })
 endsnippet
 
+snippet testt "vitest test" b
+import { shallowMount } from '@vue/test-utils'
+import { expect, it } from 'vitest'
+import `!p snip.rv = re.sub(r'\.spec\.ts$', '', snip.fn)` from './`!p snip.rv = re.sub(r'\.spec\.ts$', '', snip.fn)`.vue'
+
+it('emits change and input', () => {
+  const wrapper = shallowMount(`!p snip.rv = re.sub(r'\.spec\.ts$', '', snip.fn)`, {
+		props: {
+			value: 'foo',
+		},
+	})
+  wrapper.find('textarea').setValue('bar')
+  expect(wrapper.emitted('change')).toEqual([['bar']])
+  expect(wrapper.emitted('input')).toEqual([['bar']])
+})
+endsnippet
+
 snippet fc "function component"
 export const ${1:foo}: React.FC<${3}> = ({ ${2} }) => {
   return <div>${4}</div>;
