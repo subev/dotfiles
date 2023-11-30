@@ -1,12 +1,95 @@
-packadd nvim-treesitter
+
+" installs lazy.nvim if not exist
+lua <<EOF
+local lazypath = vim.fn.stdpath("data") .. "/lazy/lazy.nvim"
+if not vim.loop.fs_stat(lazypath) then
+  vim.fn.system({
+    "git",
+    "clone",
+    "--filter=blob:none",
+    "https://github.com/folke/lazy.nvim.git",
+    "--branch=stable", -- latest stable release
+    lazypath,
+  })
+end
+vim.opt.rtp:prepend(lazypath)
+
+require("lazy").setup({
+  "rmagatti/goto-preview",
+  "neovim/nvim-lspconfig",
+  "nvim-treesitter/nvim-treesitter",
+  "RRethy/nvim-treesitter-textsubjects",
+  "nvim-treesitter/playground",
+  'morhetz/gruvbox',
+  'posva/vim-vue',
+  'ianding1/leetcode.vim',
+  'sbdchd/neoformat',
+  { 'aaronhallaert/advanced-git-search.nvim', dependencies = "ibhagwan/fzf-lua" },
+  { "junegunn/fzf", build = "./install --bin" },
+  'github/copilot.vim',
+  'tmhedberg/matchit',
+  {
+    "iamcco/markdown-preview.nvim",
+    cmd = { "MarkdownPreviewToggle", "MarkdownPreview", "MarkdownPreviewStop" },
+    build = "cd app && yarn install",
+    init = function()
+      vim.g.mkdp_filetypes = { "markdown" }
+    end,
+    ft = { "markdown" }
+  },
+  'numToStr/Comment.nvim',
+  'scrooloose/nerdtree',
+  'Xuyuanp/nerdtree-git-plugin',
+  'mhinz/vim-startify',
+  'skanehira/gh.vim',
+  'airblade/vim-gitgutter',
+  'honza/vim-snippets',
+  'elixir-editors/vim-elixir',
+  { 'neoclide/coc.nvim', build = "npm ci" },
+  'dnlhc/glance.nvim',
+  'm-pilia/vim-ccls',
+  'tpope/vim-repeat',
+  'tpope/vim-unimpaired',
+  'kana/vim-smartword',
+  'bkad/camelcasemotion',
+  'mg979/vim-visual-multi',
+  'haya14busa/incsearch.vim',
+  'easymotion/vim-easymotion',
+  'AndrewRadev/switch.vim',
+  'AndrewRadev/splitjoin.vim',
+  'AndrewRadev/sideways.vim',
+  'jiangmiao/auto-pairs',
+  'mbbill/undotree',
+  'matze/vim-move',
+  'dyng/ctrlsf.vim',
+  'tpope/vim-fugitive',
+  'sindrets/diffview.nvim',
+  'folke/trouble.nvim',
+  'junegunn/gv.vim',
+  'tpope/vim-rhubarb',
+  'tpope/vim-surround',
+  'itchyny/lightline.vim',
+  'jlanzarotta/bufexplorer',
+  'junegunn/fzf.vim',
+  'pbogut/fzf-mru.vim',
+  'kien/ctrlp.vim',
+  'nvim-lua/plenary.nvim',
+  'nvim-telescope/telescope.nvim',
+  'nvim-tree/nvim-web-devicons',
+  'pwntester/octo.nvim',
+  'junegunn/vim-easy-align',
+  'Yggdroot/indentLine',
+  'bronson/vim-visual-star-search',
+  'terryma/vim-expand-region',
+  'wellle/targets.vim',
+  'haya14busa/vim-textobj-function-syntax',
+  'chrisbra/csv.vim',
+  'editorconfig/editorconfig-vim'
+})
+EOF
+
 "let g:python3_host_prog = '/usr/local/bin/python3'
 
-" Load vim-plug
-if empty(glob('~/.vim/autoload/plug.vim'))
-  silent !curl -fLo ~/.vim/autoload/plug.vim --create-dirs
-    \ https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim
-endif
-lua require('plugins')
 nnoremap gpp <cmd>lua require('goto-preview').goto_preview_definition()<CR>
 nnoremap gpt <cmd>lua require('goto-preview').goto_preview_type_definition()<CR>
 nnoremap gpi <cmd>lua require('goto-preview').goto_preview_implementation()<CR>
@@ -16,18 +99,18 @@ nnoremap gpr <cmd>lua require('goto-preview').goto_preview_references()<CR>
 nnoremap gpd <cmd>lua require('goto-preview').goto_preview_declaration()<CR>
 
 " Plugins followed by their mappings and/or custom settings {{{
-call plug#begin('~/.vim/plugged')
+" plugin mappings and settings
   " themes
-  Plug 'morhetz/gruvbox'
+  "settings for 'morhetz/gruvbox'
   set background=dark    " Setting dark mode
   " Plug 'posva/vim-vue'
 
-  Plug 'glacambre/firenvim', { 'do': { _ -> firenvim#install(0) } }
+  "settings for 'glacambre/firenvim', { 'do': { _ -> firenvim#install(0) } }
   if exists('g:started_by_firenvim')
     set guifontwide=0
     set guifont=monospace:h10
   endif
-  Plug 'ianding1/leetcode.vim'
+  "settings for 'ianding1/leetcode.vim'
   let g:leetcode_browser = 'firefox'
   let g:leetcode_solution_filetype = 'javascript'
   "nnoremap <space>4 :LeetCodeTest<cr>
@@ -40,29 +123,29 @@ call plug#begin('~/.vim/plugged')
   let g:vim_markdown_folding_disabled = 1
   map <Plug> <Plug>Markdown_MoveToCurHeader
 
-  Plug 'sbdchd/neoformat'
+  "settings for 'sbdchd/neoformat'
 
-  Plug 'aaronhallaert/advanced-git-search.nvim'
+  "settings for 'aaronhallaert/advanced-git-search.nvim'
   noremap ,ga :AdvancedGitSearch<CR>
   " dependency to the one above
-  Plug 'ibhagwan/fzf-lua', {'branch': 'main'}
+  "settings for 'ibhagwan/fzf-lua', {'branch': 'main'}
 
-  Plug 'github/copilot.vim'
+  "settings for 'github/copilot.vim'
   imap <silent><script><expr> <c-cr> copilot#Accept("")
   let g:copilot_no_tab_map = v:true
   imap <C-n> <Plug>(copilot-next)
   imap <C-p> <Plug>(copilot-previous)
 
   ""match tags and navigate through %
-  Plug 'tmhedberg/matchit'
+  "settings for 'tmhedberg/matchit'
 
-  Plug 'iamcco/markdown-preview.nvim', { 'do': { -> mkdp#util#install() }, 'for': ['markdown', 'vim-plug']}
+  "settings for 'iamcco/markdown-preview.nvim', { 'do': { -> mkdp#util#install() }, 'for': ['markdown', 'vim-plug']}
   let g:mkdp_auto_close = 0
 
-  Plug 'numToStr/Comment.nvim'
+  "settings for 'numToStr/Comment.nvim'
 
-  Plug 'scrooloose/nerdtree'
-  Plug 'Xuyuanp/nerdtree-git-plugin'
+  "settings for 'scrooloose/nerdtree'
+  "settings for 'Xuyuanp/nerdtree-git-plugin'
   let g:NERDTreeQuitOnOpen = 1
   let g:NERDTreeChDirMode  = 2
   let NERDTreeShowHidden = 1
@@ -70,29 +153,29 @@ call plug#begin('~/.vim/plugged')
   noremap <space>p :NERDTreeFind<CR>zz
   noremap <silent> <F4> :NERDTreeToggle<CR>
 
-  Plug 'mhinz/vim-startify'
+  "settings for 'mhinz/vim-startify'
   let g:startify_change_to_dir = 0
   let g:startify_change_to_vcs_root = 1
   let g:startify_session_persistence = 1
 
-  Plug 'skanehira/gh.vim'
+  "settings for 'skanehira/gh.vim'
 
-  Plug 'airblade/vim-gitgutter'
+  "settings for 'airblade/vim-gitgutter'
   nmap <space>h <Plug>(GitGutterPreviewHunk)
   nmap <space>x <Plug>(GitGutterUndoHunk)
 
-  Plug 'honza/vim-snippets'
+  "settings for 'honza/vim-snippets'
   "treesitter throwing exceptions so use the alternative
   "Plug 'elixir-editors/vim-elixir'
 
-  Plug 'nvim-treesitter/nvim-treesitter', {'do': ':TSUpdate'}  " We recommend updating the parsers on update
-  Plug 'RRethy/nvim-treesitter-textsubjects'
-  Plug 'nvim-treesitter/playground'
+  "settings for 'nvim-treesitter/nvim-treesitter', {'do': ':TSUpdate'}  " We recommend updating the parsers on update
+  "settings for 'RRethy/nvim-treesitter-textsubjects'
+  "settings for 'nvim-treesitter/playground'
 
 
   " CoC Config {{{
 
-    Plug 'neoclide/coc.nvim', {'branch': 'release'}"
+    "settings for 'neoclide/coc.nvim', {'branch': 'release'}"
     "let g:coc_node_path = '~/.nvm/versions/node/v16.3.0/bin/node'
     let g:coc_global_extensions = [ 'coc-emmet', 'coc-git', 'coc-vimlsp',
       \ 'coc-lists', 'coc-snippets', 'coc-html', 'coc-tsserver', 'coc-jest', 'coc-eslint', 'coc-marketplace',
@@ -241,7 +324,7 @@ call plug#begin('~/.vim/plugged')
 
   " end of coc config }}}}
 
-  Plug 'dnlhc/glance.nvim'
+  "settings for 'dnlhc/glance.nvim'
 
   nmap ,d :Glance definitions<cr>
   nmap gti :Glance implementations<cr>
@@ -249,35 +332,35 @@ call plug#begin('~/.vim/plugged')
   nmap gT :Glance type_definitions<cr>
   nmap <space><backspace> :Glance references<cr>
 
-  Plug 'm-pilia/vim-ccls'
+  "settings for 'm-pilia/vim-ccls'
 
-  Plug 'tpope/vim-repeat'
-  Plug 'tpope/vim-unimpaired'
+  "settings for 'tpope/vim-repeat'
+  "settings for 'tpope/vim-unimpaired'
   nmap ]t :tabnext<cr>
   nmap [t :tabprevious<cr>
 
-  Plug 'kana/vim-smartword'
+  "settings for 'kana/vim-smartword'
   nmap w  <Plug>(smartword-w)
   nmap b  <Plug>(smartword-b)
   nmap e  <Plug>(smartword-e)
 
-  Plug 'bkad/camelcasemotion'
+  "settings for 'bkad/camelcasemotion'
   map <silent> W <Plug>CamelCaseMotion_w
   map <silent> B <Plug>CamelCaseMotion_b
   nmap <silent> E gE
   vmap <silent> E <Plug>CamelCaseMotion_e
 
-  Plug 'mg979/vim-visual-multi'
+  "settings for 'mg979/vim-visual-multi'
   let g:VM_mouse_mappings = 1
   map <F2> \\A
   map <F3> \\C
 
-  Plug 'haya14busa/incsearch.vim'
+  "settings for 'haya14busa/incsearch.vim'
   map /  <Plug>(incsearch-forward)
   map ?  <Plug>(incsearch-backward)
   map g/ <Plug>(incsearch-stay)
 
-  Plug 'easymotion/vim-easymotion'
+  "settings for 'easymotion/vim-easymotion'
   let g:EasyMotion_smartcase = 1
   let g:EasyMotion_keys = 'asdghklqwertyuiopzxcvbnmfj'
 
@@ -285,7 +368,7 @@ call plug#begin('~/.vim/plugged')
   nmap f <Plug>(easymotion-overwin-f2)
 
   " This addon does the oposite of 'J' in vim
-  Plug 'AndrewRadev/switch.vim'
+  "settings for 'AndrewRadev/switch.vim'
   let g:switch_mapping = "7"
   let g:switch_custom_definitions =
   \ [
@@ -293,32 +376,32 @@ call plug#begin('~/.vim/plugged')
   \   ['!=', '==']
   \ ]
 
-  Plug 'AndrewRadev/splitjoin.vim'
+  "settings for 'AndrewRadev/splitjoin.vim'
   " changing the default gS and gJ
   let g:splitjoin_split_mapping = 'gs'
   let g:splitjoin_join_mapping = 'gj'
 
-  Plug 'AndrewRadev/sideways.vim'
+  "settings for 'AndrewRadev/sideways.vim'
   nnoremap gh :SidewaysLeft<cr>
   nnoremap gl :SidewaysRight<cr>
 
   "addon for auto closing brackets
-  Plug 'jiangmiao/auto-pairs'
+  "settings for 'jiangmiao/auto-pairs'
   let g:AutoPairsShortcutBackInsert = '<C-b>'
   let g:AutoPairsShortcutFastWrap = '<C-e>'
 
-  Plug 'mbbill/undotree'
+  "settings for 'mbbill/undotree'
   nnoremap <leader>u :UndotreeToggle<cr>
 
   "this one should be used instead of the keybindings near the end of the file'
-  Plug 'matze/vim-move'
+  "settings for 'matze/vim-move'
   let g:move_map_keys = 0
   vmap H <Plug>MoveBlockUp
   vmap L <Plug>MoveBlockDown
   nmap H <Plug>MoveLineUp
   nmap L <Plug>MoveLineDown
 
-  Plug 'dyng/ctrlsf.vim'
+  "settings for 'dyng/ctrlsf.vim'
   let g:ctrlsf_ackprg = 'rg'
   let g:ctrlsf_mapping = {
     \ "next": "n",
@@ -344,7 +427,7 @@ call plug#begin('~/.vim/plugged')
 
 
   "git tools blame, log, view files in other branches
-  Plug 'tpope/vim-fugitive'
+  "settings for 'tpope/vim-fugitive'
   nnoremap gD :Gvdiffsplit<cr>
   nnoremap gb :G blame<cr>
   vnoremap gb :GBrowse<cr>
@@ -362,23 +445,23 @@ call plug#begin('~/.vim/plugged')
   nnoremap gm :Gvdiffsplit origin/<C-r>=GetMasterBranchName()<CR>:%<cr>
   noremap ,gM :G diff origin/<C-r>=GetMasterBranchName()<CR>... <cr><c-w>H
 
-  Plug 'sindrets/diffview.nvim'
+  "settings for 'sindrets/diffview.nvim'
   noremap ,gd :CocDisable<cr>:DiffviewOpen<CR>
   noremap ,gh :DiffviewFileHistory %<cr>
   noremap ,gm :DiffviewOpen origin/<C-r>=GetMasterBranchName()<CR>...HEAD<cr>
 
-  Plug 'folke/trouble.nvim'
+  "settings for 'folke/trouble.nvim'
 
   " restore mappings
   " use 2X to call `checkout --ours` or 3X to call `checkout --theirs`
 
-  Plug 'junegunn/gv.vim'
-  Plug 'tpope/vim-rhubarb'
+  "settings for 'junegunn/gv.vim'
+  "settings for 'tpope/vim-rhubarb'
   " change surrounding brancjes
-  Plug 'tpope/vim-surround'
+  "settings for 'tpope/vim-surround'
   vmap s S
 
-  Plug 'itchyny/lightline.vim'
+  "settings for 'itchyny/lightline.vim'
   let g:lightline = {
   \ 'active': {
   \   'left': [ [ 'mode', 'paste' ],
@@ -401,15 +484,15 @@ call plug#begin('~/.vim/plugged')
   " Use autocmd to force lightline update.
   autocmd User CocStatusChange,CocDiagnosticChange call lightline#update()
 
-  Plug 'jlanzarotta/bufexplorer'
+  "settings for 'jlanzarotta/bufexplorer'
   nnoremap ,b :BufExplorerVerticalSplit<CR>
   "BufExplorer show relative paths by default
   let g:bufExplorerShowNoName=1
   let g:bufExplorerShowRelativePath=1  " Show relative paths.
 
-  Plug 'junegunn/fzf', { 'dir': '~/.fzf', 'do': './install --all' }
-  Plug 'junegunn/fzf.vim'
-  Plug 'pbogut/fzf-mru.vim'
+  "settings for 'junegunn/fzf', { 'dir': '~/.fzf', 'do': './install --all' }
+  "settings for 'junegunn/fzf.vim'
+  "settings for 'pbogut/fzf-mru.vim'
   let $FZF_DEFAULT_OPTS = '--layout=reverse'
   nnoremap <space>: :History:<cr>
 
@@ -435,7 +518,7 @@ call plug#begin('~/.vim/plugged')
   \   'rg --with-filename --column --line-number --no-heading --smart-case . '.fnameescape(expand('%:p')), 1,
   \   fzf#vim#with_preview({'options': '--no-sort --layout reverse --query '.shellescape(<q-args>).' --with-nth=4.. --delimiter=":"'}, 'right:50%'))
 
-  Plug 'kien/ctrlp.vim'
+  "settings for 'kien/ctrlp.vim'
   let g:ctrlp_max_files = 0
   let g:ctrlp_show_hidden = 1
   let g:ctrlp_working_path_mode = 'rw'
@@ -444,13 +527,15 @@ call plug#begin('~/.vim/plugged')
   "nnoremap ,v :Buffers<CR>
   nnoremap ,v <cmd>Telescope oldfiles<cr>
 
-  Plug 'nvim-lua/plenary.nvim'
-  Plug 'nvim-telescope/telescope.nvim'
+  "settings for 'nvim-lua/plenary.nvim'
+  "settings for 'nvim-telescope/telescope.nvim'
+
   nmap <F1> :Telescope help_tags<cr>
   " nnoremap <space>d <cmd>Telescope<cr>
   nnoremap ,f :Telescope find_files<cr>
   nnoremap ,F :Telescope find_files default_text=<c-r><c-w><cr>
   nmap gF :Telescope find_files search_file=<c-r><c-w><cr>
+
   nnoremap <space>df <cmd>Telescope oldfiles<cr>
   nnoremap <space>dg <cmd>Telescope live_grep<cr>
   nnoremap <space>db <cmd>Telescope buffers<cr>
@@ -459,29 +544,29 @@ call plug#begin('~/.vim/plugged')
 
 
   "THE BEST FONT IS 1) Meslo 2) Hack
-  Plug 'nvim-tree/nvim-web-devicons'
+  "settings for 'nvim-tree/nvim-web-devicons'
   " octo is a github pr review plugin
-  Plug 'pwntester/octo.nvim'
+  "settings for 'pwntester/octo.nvim'
   nnoremap <space>v :Octo<CR>
   nnoremap <space>vv :Octo<CR>
   nnoremap <leader>pro :Octo pr checkout 
   nnoremap <leader>prr :Octo review start<cr>
 
-  Plug 'junegunn/vim-easy-align'
+  "settings for 'junegunn/vim-easy-align'
 
   " vertical guides
-  Plug 'Yggdroot/indentLine'
+  "settings for 'Yggdroot/indentLine'
   let g:indent_guides_enable_on_vim_startup = 1
 
-  Plug 'bronson/vim-visual-star-search'
+  "settings for 'bronson/vim-visual-star-search'
 
   "" use + and _ to incrementally visually select
   "Plug 'terryma/vim-expand-region'
 
   " adds text objects for pairs such as brackets and quiotes, commas etc.
-  Plug 'wellle/targets.vim'
+  "settings for 'wellle/targets.vim'
 
-  Plug 'haya14busa/vim-textobj-function-syntax'
+  "settings for 'haya14busa/vim-textobj-function-syntax'
 
   nmap <expr> - (foldclosed(line(".")) == -1) ? 'za':'zA'
   nmap zf :setlocal foldmethod=syntax<cr>:setlocal foldlevel=1<cr>zN
@@ -489,10 +574,10 @@ call plug#begin('~/.vim/plugged')
   nmap _ zc
   set nofoldenable
 
-  Plug 'chrisbra/csv.vim'
+  "settings for 'chrisbra/csv.vim'
 
   " use workspace properties if project uses editorconfig
-  Plug 'editorconfig/editorconfig-vim'
+  "settings for 'editorconfig/editorconfig-vim'
 
   " The Silver Searcher
   if executable('ag')
@@ -512,7 +597,6 @@ call plug#begin('~/.vim/plugged')
     let g:ctrlp_user_command = 'rg %s --files --color=never --glob ""'
   endif
 
-call plug#end()
 " }}}
 
 " LUA-SETUPS
