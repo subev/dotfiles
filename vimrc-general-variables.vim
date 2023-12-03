@@ -1,6 +1,8 @@
 " General variables set {{{
   set termguicolors
-  colorscheme gruvbox
+
+  let g:sonokai_style = 'shusia'
+  colorscheme sonokai
 
   " this way you can use gf to open a file at a specific line
   set isfname-=:

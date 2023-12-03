@@ -20,7 +20,8 @@ require("lazy").setup({
   "nvim-treesitter/nvim-treesitter",
   "RRethy/nvim-treesitter-textsubjects",
   "nvim-treesitter/playground",
-  'morhetz/gruvbox',
+  -- 'sainnhe/gruvbox-material',
+  'sainnhe/sonokai',
   'posva/vim-vue',
   'ianding1/leetcode.vim',
   'sbdchd/neoformat',
@@ -59,6 +60,9 @@ require("lazy").setup({
   'AndrewRadev/splitjoin.vim',
   'AndrewRadev/sideways.vim',
   'jiangmiao/auto-pairs',
+  'NvChad/nvim-colorizer.lua',
+  'nvim-treesitter/nvim-treesitter-context',
+  'HiPhish/rainbow-delimiters.nvim',
   'mbbill/undotree',
   'matze/vim-move',
   'dyng/ctrlsf.vim',
@@ -473,6 +477,7 @@ nnoremap gpd <cmd>lua require('goto-preview').goto_preview_declaration()<CR>
   \   'cocstatus': 'coc#status',
   \   'lightfilepath': 'LightlineFilepath',
   \ },
+  \ 'colorscheme': 'sonokai',
   \ 'component': {
   \   'lineinfo': "%{line('.') . ':' . col('.') . '/' . line('$')}",
   \ }}
@@ -661,6 +666,13 @@ require('diffview').setup {
 
 require('trouble').setup {
 }
+
+require 'colorizer'.setup({
+  user_default_options = {
+    hsl_fn = true,
+    tailwind = true,
+  }
+})
 
 require'nvim-treesitter.configs'.setup {
   highlight = {

@@ -217,7 +217,6 @@
   nmap gtf :!flow-to-ts %:p -o tsx<cr>:e <C-R>=expand('%:r') . '.tsx'<CR><CR>
 
   nnoremap <Space>te <c-w>v:terminal npm run test:e2e<CR>
-  nmap <Space>6 yf
 
   noremap <leader>ve :e $MYVIMRC<CR>
   noremap <leader>vE :vsplit $MYVIMRC<CR>
