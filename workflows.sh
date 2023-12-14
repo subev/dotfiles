@@ -1,4 +1,5 @@
 #!/bin/zsh
+# delete a branch locally and remotely
 function gitbrdel() {
   local branches remote main_or_master
 
@@ -34,6 +35,7 @@ function gitbrdel() {
   echo "done"
 }
 
+# checkout a branch
 function gitco() {
   local main_or_master
   local flag_r=""
@@ -93,4 +95,12 @@ function gitpr() {
   if [ -n "$pr_number" ]; then
     gh pr checkout "$pr_number"
   fi
+}
+
+# checkout a previous commit in the current branch
+function gitgoto() {
+  git log --pretty='%C(yellow)%h %C(cyan)%cd %Cblue%aN%C(auto)%d %Creset%s' --abbrev-commit --reverse --date='relative' |
+    fzf --tac --no-sort --preview="git show {1} --stat" |
+    cut -d' ' -f1 |
+    xargs -r git checkout
 }

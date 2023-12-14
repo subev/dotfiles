@@ -13,8 +13,8 @@
   nnoremap <silent> 3 :let @/='\C\<' . expand('<cword>') . '\>'<CR>:let v:searchforward=0<CR>n
   nnoremap 4 $
   vnoremap 4 $h
-  nnoremap 5 %
-  vnoremap 5 %
+  nmap 5 %
+  vmap 5 %
   nnoremap 6 ^
   vnoremap 6 ^
   nnoremap <silent> 8 :let @/='\C\<' . expand('<cword>') . '\>'<CR>:let v:searchforward=1<CR>n

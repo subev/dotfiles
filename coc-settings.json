@@ -1,11 +1,7 @@
 {
   "python.formatting.provider": "black",
   "python.linting.pylintEnabled": true,
-  "git.addedSign.hlGroup": "GitGutterAdd",
-  "git.changedSign.hlGroup": "GitGutterChange",
-  "git.removedSign.hlGroup": "GitGutterDelete",
-  "git.topRemovedSign.hlGroup": "GitGutterDelete",
-  "git.changeRemovedSign.hlGroup": "GitGutterChangeDelete",
+  "git.enableGutters": false,
   "git.conflict.enabled": true,
   "yank.highlight.enable": true,
   "yank.highlight.duration": 100,
