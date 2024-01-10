@@ -67,8 +67,13 @@
   nmap d4 d$
   nmap y4 y$
   nnoremap c6 c^
-  nnoremap c<space> ct<space>
-  nnoremap ci<space> T ct<space>
+
+  onoremap <space> iW
+  onoremap a<space> aW
+
+  nnoremap v<space> viW
+  nnoremap c<space> ciW
+  nnoremap d<space> daW
 
   nnoremap ~ ~h
 
@@ -94,7 +99,7 @@
   " duplicate visual selection and move the cursor to the pasted text bellow
   vnoremap Y ygv']<esc>o<esc>p
   " visually select the whole file and replace it with the content of the default register
-  nnoremap vap ggVGp
+  " nnoremap vap ggVGp
   nnoremap dl ^d$"_dd
 
   nnoremap <up> 8<C-y>
@@ -186,7 +191,7 @@
   noremap <Space>i i<Space><Esc>l
 
   "jump to the closest opening bracket of type {
-  nnoremap { [{
+  " nnoremap { [{
 
   nnoremap <Tab> >>
   nnoremap <S-Tab> <<

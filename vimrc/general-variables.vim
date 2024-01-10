@@ -1,7 +1,10 @@
 " General variables set {{{
   set termguicolors
 
+  " this is the default one, but there is also a plugin called auto-dark-mode
+  " that automatically changes it based on the system config
   let g:sonokai_style = 'shusia'
+  " let g:everforest_background = 'soft'
   colorscheme sonokai
 
   " this way you can use gf to open a file at a specific line
@@ -63,9 +66,9 @@
   set hlsearch
 
   " avoid swap, temp and backup files
-  set nobackup
-  set nowritebackup
-  set noswapfile
+  " set nobackup
+  " set nowritebackup
+  " set noswapfile
 
   if !has('nvim')
     set ttymouse=xterm2

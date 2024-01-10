@@ -147,6 +147,7 @@ eval "$(direnv hook zsh)"
 alias ll='gls -alFHh --group-directories-first --color=auto'
 #alias m=mvim
 alias n=nvim
+alias vide=/Applications/neovide.app/Contents/MacOS/neovide
 alias gbrsdelete="git for-each-ref --sort=committerdate refs/heads/ --format='%(refname:short)' | xargs git br -d"
 # This speeds up pasting w/ autosuggest
 # https://github.com/zsh-users/zsh-autosuggestions/issues/238
