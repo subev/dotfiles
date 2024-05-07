@@ -86,7 +86,7 @@
     let g:coc_global_extensions = [ 'coc-emmet', 'coc-git', 'coc-vimlsp',
       \ 'coc-lists', 'coc-snippets', 'coc-html', 'coc-tsserver', 'coc-jest', 'coc-eslint', 'coc-marketplace',
       \ 'coc-css', 'coc-json', 'coc-java', 'coc-pyright', 'coc-yank', 'coc-prettier', 'coc-omnisharp', 'coc-elixir', 'coc-explorer',
-      \ 'coc-vetur', '@yaegassy/coc-volar', '@yaegassy/coc-typescript-vue-plugin'] "vue specific
+      \ 'coc-vetur', '@yaegassy/coc-volar'] "vue specific
 
     " You will have bad experience for diagnostic messages when it's default 4000.
     set updatetime=500
@@ -311,6 +311,7 @@
     \ "next": "n",
     \ "prev": "N",
     \ "vsplit": "s",
+    \ "open": "<cr>",
     \ }
   let g:ctrlsf_auto_focus = {
       \ "at" : "start"
@@ -351,8 +352,8 @@
 
   "settings for 'sindrets/diffview.nvim'
   noremap ,gd :CocDisable<cr>:DiffviewOpen<CR>
-  noremap ,gh :DiffviewFileHistory %<cr>
-  noremap ,gm :DiffviewOpen origin/<C-r>=GetMasterBranchName()<CR>...HEAD<cr>
+  noremap ,gh :CocDisable<cr>:DiffviewFileHistory %<cr>
+  noremap ,gm :CocDisable<cr>:DiffviewOpen origin/<C-r>=GetMasterBranchName()<CR>...HEAD<cr>
 
   "settings for 'folke/trouble.nvim'
 
@@ -443,8 +444,9 @@
   let g:ctrlp_show_hidden = 1
   let g:ctrlp_working_path_mode = 'rw'
   let g:ctrlp_by_filename = 1
+  let g:ctrlp_mruf_max = 2500
   let g:ctrlp_mruf_exclude = '/tmp/.*\|/temp/.*\|/private/.*\|.*/node_modules/.*\|.*/.pyenv/.*' " MacOSX/Linux
-  "nnoremap ,v :Buffers<CR>
+  nnoremap ,x :CtrlPMRUFiles<CR>
   nnoremap ,v <cmd>Telescope oldfiles<cr>
 
   "settings for 'nvim-lua/plenary.nvim'
@@ -500,17 +502,7 @@
   " use workspace properties if project uses editorconfig
   "settings for 'editorconfig/editorconfig-vim'
 
-  " The Silver Searcher
-  if executable('ag')
-    " Use ag over grep
-    set grepprg=ag\ --nogroup\ --nocolor
-    let g:ackprg = 'ag --vimgrep'
-     " Use ag in CtrlP for listing files. Lightning fast and respects .gitignore
-    let g:ctrlp_user_command = 'ag %s -l --nocolor -g ""'
-    " ag is fast enough that CtrlP doesn't need to cache
-    let g:ctrlp_use_caching = 0
-  endif
-  " or ripgrep
+  " if ripgrep
   if executable ('rg')
     set grepprg=rg\ --color=never
     "set grepformat=%f:%l:%c:%m,%f:%l:%m

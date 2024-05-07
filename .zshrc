@@ -148,7 +148,9 @@ alias ll='gls -alFHh --group-directories-first --color=auto'
 #alias m=mvim
 alias n=nvim
 alias vide=/Applications/neovide.app/Contents/MacOS/neovide
+alias v=/Applications/neovide.app/Contents/MacOS/neovide
 alias gbrsdelete="git for-each-ref --sort=committerdate refs/heads/ --format='%(refname:short)' | xargs git br -d"
+alias heat="git log --pretty=format: --name-only | sort | uniq -c | sort -rg | head -10"
 # This speeds up pasting w/ autosuggest
 # https://github.com/zsh-users/zsh-autosuggestions/issues/238
 pasteinit() {
@@ -202,3 +204,10 @@ fi
 unset __conda_setup
 # <<< conda initialize <<<
 
+
+# bun completions
+[ -s "/Users/petur/.bun/_bun" ] && source "/Users/petur/.bun/_bun"
+
+# bun
+export BUN_INSTALL="$HOME/.bun"
+export PATH="$BUN_INSTALL/bin:$PATH"

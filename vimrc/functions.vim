@@ -97,6 +97,19 @@
     endif
   endfunction
 
+  function! MoveFile(newfile)
+    let oldfile = expand('%')
+    execute 'saveas ' . a:newfile
+    if filereadable(oldfile)
+      execute '!rm ' . shellescape(oldfile)
+      echo "Moved " . oldfile . " to " . a:newfile
+    else
+      echo "Error moving file!"
+    endif
+  endfunction
+
+  command! -nargs=1 MoveFile call MoveFile(<q-args>)
+
   function! GetMasterBranchName()
    let l:main_exists = system('git branch --list main')
    if l:main_exists =~ 'main'

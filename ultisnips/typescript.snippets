@@ -86,6 +86,27 @@ it('emits change and input', () => {
 })
 endsnippet
 
+snippet testt-utils "test utils test" b
+import { shallowMount } from '@vue/test-utils'
+import { expect, it } from 'vitest'
+import { cleanup, render, screen } from '@testing-library/vue'
+import 'vitest-dom/extend-expect'
+import `!p snip.rv = re.sub(r'\.spec\.ts$', '', snip.fn)` from './`!p snip.rv = re.sub(r'\.spec\.ts$', '', snip.fn)`.vue'
+
+afterEach(() => {
+  cleanup()
+})
+
+it('emits change and input', () => {
+  render(`!p snip.rv = re.sub(r'\.spec\.ts$', '', snip.fn)`, {
+		props: {
+			value: 'foo',
+		},
+	})
+  expect(screen.getByText('foo')).toBeInTheDocument()
+})
+endsnippet
+
 snippet fc "function component"
 export const ${1:foo}: React.FC<${3}> = ({ ${2} }) => {
   return <div>${4}</div>;

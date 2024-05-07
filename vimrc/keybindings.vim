@@ -147,9 +147,9 @@
   vmap gm <c-n>\\C
 
   " bind K to search grep word under the cursor
-  nnoremap K :Ack! <cword><CR>
-  vnoremap K y:Ack! "<C-R>""<CR>
-  vnoremap <leader>s y:Ack! "<C-R>""<space>
+  " nnoremap K :Ack! <cword><CR>
+  " vnoremap K y:Ack! "<C-R>""<CR>
+  " vnoremap <leader>s y:Ack! "<C-R>""<space>
 
   vnoremap < c<<space>/><Esc>hhP
   vnoremap > c<><Esc>Pf>a</><Esc>P
@@ -184,6 +184,13 @@
   nnoremap ,O <c-w>o
   nnoremap ,t <c-w>v:term<cr>i
   nnoremap ,gl <c-w>v:term<cr>igit ls<cr>
+  nnoremap ,gP :lua git_log_patches()<CR>()<CR>
+  nnoremap ,gL :lua git_log_file()<CR>()<CR>
+  " starts a terminal with with the command `gitco` which is located inside ~/dotfiles/workflows.sh
+  nnoremap ,G :vsplit<CR>:term<CR>igitco<CR>
+  " same as above but maximizes the window first
+  " nnoremap ,G :vsplit<CR>:term<CR><C-w>\|<CR>igitco<CR>
+  nnoremap ,gN :lua git_diff_main()<CR>()<CR>
 
   " add space after
   noremap <Space>a a<Space><Esc>h
@@ -228,7 +235,7 @@
   noremap <leader>vu :source %<CR>
 
   tnoremap <ESC><ESC> <C-\><C-N>
-  nnoremap gf :vsplit<CR>gF
+  nnoremap gf <C-w>F<C-W>H " if the file exists open it in a vertical split on the left most window
 
   " Settings for VimDiff as MergeTool
   if &diff

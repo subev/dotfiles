@@ -66,9 +66,9 @@
   set hlsearch
 
   " avoid swap, temp and backup files
-  " set nobackup
-  " set nowritebackup
-  " set noswapfile
+  set nobackup
+  set nowritebackup
+  set noswapfile
 
   if !has('nvim')
     set ttymouse=xterm2

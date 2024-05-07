@@ -16,7 +16,6 @@ vim.opt.rtp:prepend(lazypath)
 
 require("lazy").setup({
   'rmagatti/goto-preview',
-  'neovim/nvim-lspconfig',
   'nvim-treesitter/nvim-treesitter',
   'nvim-treesitter/playground',
   'nvim-treesitter/nvim-treesitter-context',
@@ -107,8 +106,16 @@ require("lazy").setup({
         }
     }
   },
+  -- order of the next 3 is important
   'williamboman/mason.nvim',
-  'dstein64/nvim-scrollview',
+  "williamboman/mason-lspconfig.nvim",
+  'neovim/nvim-lspconfig',
+
+  'mfussenegger/nvim-dap',
+  -- requird by nvim-dap-ui
+  'nvim-neotest/nvim-nio',
+  'rcarriga/nvim-dap-ui',
+  -- 'dstein64/nvim-scrollview',
   'kevinhwang91/nvim-hlslens',
   { 'kevinhwang91/nvim-ufo', dependencies = "kevinhwang91/promise-async" },
 })
@@ -117,7 +124,8 @@ EOF
 "let g:python3_host_prog = '/usr/local/bin/python3'
 
 " order is important here
-source ~/dotfiles/vimrc/plugin-configs.vim
+source ~/dotfiles/vimrc/custom-functions.lua
+source ~/dotfiles/vimrc/plugins-configs.vim
 source ~/dotfiles/vimrc/plugins-setup.lua
 source ~/dotfiles/vimrc/keybindings.vim
 source ~/dotfiles/vimrc/functions.vim
