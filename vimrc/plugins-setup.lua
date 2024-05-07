@@ -1,4 +1,5 @@
 -- ufo setup
+-- fixes the vim is undefined error
 vim.o.foldcolumn = '0' -- 1, '0' is not bad
 vim.o.foldlevel = 99   -- Using ufo provider need a large value, feel free to decrease the value
 vim.o.foldlevelstart = 99
@@ -300,8 +301,26 @@ require('auto-dark-mode').setup({
 require 'mason'.setup {}
 require("mason-lspconfig").setup()
 
+-- taken from https://github.com/vuejs/language-tools?tab=readme-ov-file#hybrid-mode-configuration-requires-vuelanguage-server-version-200
+local mason_registry = require('mason-registry')
+local vue_language_server_path = mason_registry.get_package('vue-language-server'):get_install_path() ..
+    '/node_modules/@vue/language-server'
+
+require 'lspconfig'.tsserver.setup {
+  init_options = {
+    plugins = {
+      {
+        -- this happneed to be installed, maybe it does not need to be added manually but if it does not work then try to install it
+        name = '@vue/typescript-plugin',
+        location = vue_language_server_path,
+        languages = { 'vue' },
+      },
+    },
+  },
+  filetypes = { 'typescript', 'javascript', 'javascriptreact', 'typescriptreact', 'vue' },
+}
 require 'lspconfig'.volar.setup {}
-require 'lspconfig'.tsserver.setup {}
+
 require 'lspconfig'.vimls.setup {}
 require 'lspconfig'.tailwindcss.setup {}
 require 'lspconfig'.lua_ls.setup {}
