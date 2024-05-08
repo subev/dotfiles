@@ -6,11 +6,27 @@
   whitespace = cr-at-eol
   editor = nvim
   excludesfile = /Users/petur/.gitignore_global
-  pager = delta
-[interactive]
-  diffFilter = delta --color-only
-[delta]
-  side-by-side = true
+
+;  pager = delta
+;[interactive]
+;  diffFilter = delta --color-only
+;[delta]
+;   side-by-side = true
+;[difftool "sourcetree"]
+;   cmd = opendiff \"$LOCAL\" \"$REMOTE\"
+;   path = 
+
+; difftastic setup
+[diff]
+  external = difft
+[difftool]
+  prompt = false
+[difftool "difftastic"]
+  cmd = difft "$LOCAL" "$REMOTE"
+[pager]
+  difftool = true
+; end of difftastic setup
+
 [http]
   sllverify = false
   sslverify = false
@@ -71,9 +87,6 @@
 [rerere]
   enabled = true
 [status]
-[difftool "sourcetree"]
-  cmd = opendiff \"$LOCAL\" \"$REMOTE\"
-  path = 
 [mergetool "sourcetree"]
   cmd = /Applications/Sourcetree.app/Contents/Resources/opendiff-w.sh \"$LOCAL\" \"$REMOTE\" -ancestor \"$BASE\" -merge \"$MERGED\"
   trustExitCode = true
