@@ -44,7 +44,6 @@ require("lazy").setup({
   'mhinz/vim-startify',
   'skanehira/gh.vim',
   'lewis6991/gitsigns.nvim',
-  'honza/vim-snippets',
   'elixir-editors/vim-elixir',
   { 'neoclide/coc.nvim', build = "npm ci" },
   'dnlhc/glance.nvim',
@@ -118,7 +117,17 @@ require("lazy").setup({
   -- 'dstein64/nvim-scrollview',
   'kevinhwang91/nvim-hlslens',
   { 'kevinhwang91/nvim-ufo', dependencies = "kevinhwang91/promise-async" },
+  'honza/vim-snippets',
+
+  'hrsh7th/cmp-nvim-lsp',
+  'hrsh7th/cmp-buffer',
+  'hrsh7th/cmp-path',
+  'hrsh7th/cmp-cmdline',
+  'hrsh7th/nvim-cmp',
+  'SirVer/ultisnips',
+  'quangnguyen30192/cmp-nvim-ultisnips'
 })
+
 EOF
 
 "let g:python3_host_prog = '/usr/local/bin/python3'
