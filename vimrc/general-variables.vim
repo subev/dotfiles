@@ -26,7 +26,7 @@
   "hi CursorLine guibg=NONE
 
   " show trailing whitespace
-  set list listchars=tab:>-,trail:.
+  set list listchars=tab:->,trail:.
 
   " ignore binaries and artifacts
   set wildignore=*.o,*.obj,*.bin,*.dll,*.zip

@@ -130,6 +130,7 @@
     nmap <silent> <space><right> <Plug>(coc-diagnostic-next)
 
     nnoremap <silent> <space>1 :call CocAction('runCommand', 'eslint.executeAutofix')<CR>
+    nnoremap <silent> <space>^ :call CocAction('runCommand', 'tsserver.findAllFileReferences')<CR>
     nnoremap <silent> <space>! :!npx eslint $(git diff --name-only HEAD \| xargs) --fix --ext .js,.ts,.tsx,.vue<CR>
 
     " Remap keys for gotos
@@ -189,9 +190,9 @@
     nmap <space>qf  <Plug>(coc-fix-current)
 
     " Use <tab> for select selections ranges, needs server support, like: coc-tsserver, coc-python
-    nmap <silent> <TAB> <Plug>(coc-range-select)
-    xmap <silent> <TAB> <Plug>(coc-range-select)
-    xmap <silent> <S-TAB> <Plug>(coc-range-select-backword)
+    nmap <silent> 1 <Plug>(coc-range-select)
+    xmap <silent> 1 <Plug>(coc-range-select)
+    "  <silent> <S-TAB> <Plug>(coc-range-select-backword)
 
     " Use `:Format` to format current buffer
     command! -nargs=0 Format :call CocAction('format')
@@ -475,12 +476,6 @@
   nnoremap <leader>prr :Octo review start<cr>
 
   "settings for 'junegunn/vim-easy-align'
-
-  " vertical guides
-  "settings for 'Yggdroot/indentLine'
-  let g:indent_guides_enable_on_vim_startup = 1
-  " does not render quotes in json https://github.com/Yggdroot/indentLine/issues/172
-  autocmd Filetype json :IndentLinesDisable
 
   "settings for 'bronson/vim-visual-star-search'
 

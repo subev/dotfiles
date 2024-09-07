@@ -87,23 +87,42 @@ it('emits change and input', () => {
 endsnippet
 
 snippet testt-utils "test utils test" b
-import { shallowMount } from '@vue/test-utils'
-import { expect, it } from 'vitest'
+import { createTestingPinia } from '@pinia/testing'
+import userEvent from '@testing-library/user-event'
 import { cleanup, render, screen } from '@testing-library/vue'
+import { setActivePinia } from 'pinia'
+import { afterEach, beforeEach, expect, it, vi } from 'vitest'
 import 'vitest-dom/extend-expect'
 import `!p snip.rv = re.sub(r'\.spec\.ts$', '', snip.fn)` from './`!p snip.rv = re.sub(r'\.spec\.ts$', '', snip.fn)`.vue'
 
+beforeEach(() => {
+  setActivePinia(createTestingPinia({ createSpy: vi.fn, stubActions: false }))
+})
 afterEach(() => {
   cleanup()
 })
 
+const global = {
+  stubs: {
+    Teleport: { template: '<div><slot /></div>' },
+    UseFocusTrap: { template: '<div><slot /></div>' },
+  },
+}
+
 it('emits change and input', () => {
+  const user = userEvent.setup()
   render(`!p snip.rv = re.sub(r'\.spec\.ts$', '', snip.fn)`, {
 		props: {
 			value: 'foo',
 		},
+		global,
 	})
-  expect(screen.getByText('foo')).toBeInTheDocument()
+
+  expect(screen.getByText('foo')).toBeVisible()
+
+  await user.click(screen.getByText('bar'))
+
+  expect(emitted('someevent')).toStrictEqual([['somevalue']])
 })
 endsnippet
 

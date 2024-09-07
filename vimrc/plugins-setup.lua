@@ -1,5 +1,6 @@
 -- ufo setup
 -- fixes the vim is undefined error
+local vim = vim or {}
 vim.o.foldcolumn = '0' -- 1, '0' is not bad
 vim.o.foldlevel = 99   -- Using ufo provider need a large value, feel free to decrease the value
 vim.o.foldlevelstart = 99
@@ -74,7 +75,7 @@ require('gitsigns').setup {
 
     map('n', '<leader>hs', gs.stage_hunk)
     map('v', '<leader>hs', function() gs.stage_hunk { vim.fn.line('.'), vim.fn.line('v') } end)
-    map('v', '<leader>hr', function() gs.reset_hunk { vim.fn.line('.'), vim.fn.line('v') } end)
+    map('v', '<space>x', function() gs.reset_hunk { vim.fn.line('.'), vim.fn.line('v') } end)
     map('n', '<leader>hS', gs.stage_buffer)
     map('n', '<leader>hu', gs.undo_stage_hunk)
     map('n', '<leader>hR', gs.reset_buffer)
@@ -282,24 +283,27 @@ require 'nvim-web-devicons'.setup {
   },
 }
 
-require('auto-dark-mode').setup({
-  update_interval = 3000,
-  set_dark_mode = function()
-    vim.api.nvim_set_option('background', 'dark')
-    vim.cmd('colorscheme sonokai')
-  end,
-  set_light_mode = function()
-    vim.api.nvim_set_option('background', 'light')
-    vim.cmd('colorscheme everforest')
-  end,
-})
+-- require('auto-dark-mode').setup({
+--   update_interval = 3000,
+--   set_dark_mode = function()
+--     vim.api.nvim_set_option('background', 'dark')
+--     vim.cmd('colorscheme sonokai')
+--   end,
+--   set_light_mode = function()
+--     vim.api.nvim_set_option('background', 'light')
+--     vim.cmd('colorscheme everforest')
+--   end,
+-- })
 
 -- require 'lspconfig'.elixirls.setup {
 --   -- sadly the below path cannot be expanded
 --   cmd = { "/Users/petur/nvim-lsp/elixir/elixir-ls-v0.16.0/language_server.sh" },
 -- }
 require 'mason'.setup {}
-require("mason-lspconfig").setup()
+require("mason-lspconfig").setup({
+  ensure_installed = { "tsserver" },
+})
+
 
 -- taken from https://github.com/vuejs/language-tools?tab=readme-ov-file#hybrid-mode-configuration-requires-vuelanguage-server-version-200
 local mason_registry = require('mason-registry')
@@ -307,27 +311,52 @@ local vue_language_server_path = mason_registry.get_package('vue-language-server
     '/node_modules/@vue/language-server'
 
 require 'lspconfig'.tsserver.setup {
-  init_options = {
-    plugins = {
-      {
-        -- this happneed to be installed, maybe it does not need to be added manually but if it does not work then try to install it
-        name = '@vue/typescript-plugin',
-        location = vue_language_server_path,
-        languages = { 'vue' },
-      },
-    },
-  },
-  filetypes = { 'typescript', 'javascript', 'javascriptreact', 'typescriptreact', 'vue' },
 }
-require 'lspconfig'.volar.setup {}
 
-require 'lspconfig'.vimls.setup {}
-require 'lspconfig'.tailwindcss.setup {}
-require 'lspconfig'.lua_ls.setup {}
-require 'lspconfig'.rust_analyzer.setup {}
+require("mason-lspconfig").setup_handlers {
+  -- The first entry (without a key) will be the default handler
+  -- and will be called for each installed server that doesn't have
+  -- a dedicated handler.
+  function(server_name) -- default handler (optional)
+    if server_name == "tsserver" then
+      server_name = "ts_ls"
+    end
+    require("lspconfig")[server_name].setup {}
+  end,
+  -- Next, you can provide a dedicated handler for specific servers.
+  ['tsserver'] = function()
+    require('lspconfig')['ts_ls'].setup {
+
+      init_options = {
+        plugins = {
+          {
+            -- this happneed to be installed, maybe it does not need to be added manually but if it does not work then try to install it
+            name = '@vue/typescript-plugin',
+            location = vue_language_server_path,
+            languages = { 'vue' },
+          },
+        },
+      },
+      filetypes = { 'typescript', 'javascript', 'javascriptreact', 'typescriptreact', 'vue' },
+    }
+  end,
+}
+
+
+-- this is no longer needed because of the above
+-- require 'lspconfig'.volar.setup {}
+-- require 'lspconfig'.vimls.setup {}
+-- require 'lspconfig'.tailwindcss.setup {}
+-- require 'lspconfig'.lua_ls.setup {}
+-- require 'lspconfig'.rust_analyzer.setup {}
+-- require 'lspconfig'.eslint.setup {}
 
 require 'dapui'.setup {}
 require 'formatter'.setup {}
+
+-- require('simpleIndentGuides').setup()
+require("ibl").setup()
+-- require('mini.indentscope').setup()
 
 -- require'lspconfig'.pyright.setup{}
 -- require'lspconfig'.eslint.setup{}
@@ -370,4 +399,17 @@ vim.api.nvim_create_autocmd('LspAttach', {
     end, opts)
   end,
 })
+
+local stf = require("syntax-tree-surfer")
+stf.setup()
+
+-- settings for 'ziontee113/syntax-tree-surfer',
+local opts = { noremap = true, silent = true }
+vim.keymap.set("x", "<c-j>", '<cmd>STSSelectNextSiblingNode<cr>', opts)
+vim.keymap.set("x", "<c-k>", '<cmd>STSSelectPrevSiblingNode<cr>', opts)
+vim.keymap.set("x", "<c-h>", '<cmd>STSSelectParentNode<cr>', opts)
+vim.keymap.set("x", "<c-l>", '<cmd>STSSelectChildNode<cr>', opts)
+
+vim.keymap.set("n", "<c-h>", 've<c-h>', { noremap = false, silent = true })
+
 -- ***************

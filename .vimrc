@@ -20,11 +20,12 @@ require("lazy").setup({
   'nvim-treesitter/playground',
   'nvim-treesitter/nvim-treesitter-context',
   'nvim-treesitter/nvim-treesitter-textobjects',
+  'ziontee113/syntax-tree-surfer',
   'RRethy/nvim-treesitter-textsubjects',
   'sainnhe/sonokai',
-  'f-person/auto-dark-mode.nvim',
+  -- 'f-person/auto-dark-mode.nvim',
   'sainnhe/everforest',
-  'posva/vim-vue',
+  -- 'posva/vim-vue', deprecated
   'ianding1/leetcode.vim',
   { 'aaronhallaert/advanced-git-search.nvim', dependencies = "ibhagwan/fzf-lua" },
   { "junegunn/fzf", build = "./install --bin" },
@@ -51,6 +52,8 @@ require("lazy").setup({
   'm-pilia/vim-ccls',
   'tpope/vim-repeat',
   'tpope/vim-unimpaired',
+  'tpope/vim-fireplace',
+  'clojure-vim/vim-cider',
   'kana/vim-smartword',
   'bkad/camelcasemotion',
   'mg979/vim-visual-multi',
@@ -80,7 +83,10 @@ require("lazy").setup({
   'nvim-tree/nvim-web-devicons',
   'pwntester/octo.nvim',
   'junegunn/vim-easy-align',
-  'Yggdroot/indentLine',
+  -- 'Yggdroot/indentLine',
+  -- 'lucastavaresa/simpleIndentGuides.nvim',
+  { "lukas-reineke/indent-blankline.nvim", main = "ibl", opts = {} },
+  -- { 'echasnovski/mini.indentscope', version = false },
   'bronson/vim-visual-star-search',
   'terryma/vim-expand-region',
   'wellle/targets.vim',
@@ -118,6 +124,30 @@ require("lazy").setup({
   -- 'dstein64/nvim-scrollview',
   'kevinhwang91/nvim-hlslens',
   { 'kevinhwang91/nvim-ufo', dependencies = "kevinhwang91/promise-async" },
+  'rmagatti/auto-session',
+
+  -- {
+  --   "yetone/avante.nvim",
+  --   event = "VeryLazy",
+  --   -- build = "make", -- This is Optional, only if you want to use tiktoken_core to calculate tokens count
+  --   opts = {
+  --     -- add any opts here
+  --   },
+  --   dependencies = {
+  --     -- "nvim-tree/nvim-web-devicons", -- already used above
+  --     "stevearc/dressing.nvim",
+  --     -- "nvim-lua/plenary.nvim", -- already used above
+  --     "MunifTanjim/nui.nvim",
+  --     --- The below is optional, make sure to setup it properly if you have lazy=true
+  --     {
+  --       'MeanderingProgrammer/render-markdown.nvim',
+  --       opts = {
+  --         file_types = { "markdown", "Avante" },
+  --       },
+  --       ft = { "markdown", "Avante" },
+  --     },
+  --   },
+  -- }
 })
 EOF
 
