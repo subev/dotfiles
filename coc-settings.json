@@ -21,6 +21,7 @@
   "javascript.implementationsCodeLens.enabled": true,
   "snippets.priority": 110,
   "eslint.format.enable": true,
+  "eslint.experimental.useFlatConfig": true,
   "snippets.extends": {
     "typescriptreact": ["typescript"]
   },

@@ -50,7 +50,7 @@
   "settings for 'scrooloose/nerdtree'
   "settings for 'Xuyuanp/nerdtree-git-plugin'
   let g:NERDTreeQuitOnOpen = 1
-  let g:NERDTreeChDirMode  = 2
+  let g:NERDTreeChDirMode  = 0
   let NERDTreeShowHidden = 1
   let NERDTreeWinSize = 70
   noremap <space>p :NERDTreeFind<CR>zz
@@ -58,8 +58,8 @@
 
   "settings for 'mhinz/vim-startify'
   let g:startify_change_to_dir = 0
-  let g:startify_change_to_vcs_root = 1
-  let g:startify_session_persistence = 1
+  let g:startify_change_to_vcs_root = 0
+  let g:startify_session_persistence = 0
 
   "settings for 'honza/vim-snippets'
   "treesitter throwing exceptions so use the alternative

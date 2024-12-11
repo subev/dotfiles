@@ -148,6 +148,24 @@ require("lazy").setup({
   --     },
   --   },
   -- }
+  {
+    'Bekaboo/dropbar.nvim',
+    -- optional, but required for fuzzy finder support
+    dependencies = {
+      'nvim-telescope/telescope-fzf-native.nvim'
+    },
+    opts = {
+      bar = {
+        sources = function() 
+          local sources = require('dropbar.sources')
+          return {
+            sources.path
+          }
+        end
+      }
+    },
+  },
+  { 'nvim-telescope/telescope-fzf-native.nvim', build = 'cmake -S. -Bbuild -DCMAKE_BUILD_TYPE=Release && cmake --build build --config Release' },
 })
 EOF
 

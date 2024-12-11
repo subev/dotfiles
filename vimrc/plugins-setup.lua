@@ -301,7 +301,7 @@ require 'nvim-web-devicons'.setup {
 -- }
 require 'mason'.setup {}
 require("mason-lspconfig").setup({
-  ensure_installed = { "tsserver" },
+  ensure_installed = { "ts_ls" },
 })
 
 
@@ -310,21 +310,19 @@ local mason_registry = require('mason-registry')
 local vue_language_server_path = mason_registry.get_package('vue-language-server'):get_install_path() ..
     '/node_modules/@vue/language-server'
 
-require 'lspconfig'.tsserver.setup {
-}
+-- this might not be needed anymore not sure why it was added prematurely
+-- require 'lspconfig'.ts_ls.setup {
+-- }
 
 require("mason-lspconfig").setup_handlers {
   -- The first entry (without a key) will be the default handler
   -- and will be called for each installed server that doesn't have
   -- a dedicated handler.
   function(server_name) -- default handler (optional)
-    if server_name == "tsserver" then
-      server_name = "ts_ls"
-    end
     require("lspconfig")[server_name].setup {}
   end,
   -- Next, you can provide a dedicated handler for specific servers.
-  ['tsserver'] = function()
+  ['ts_ls'] = function()
     require('lspconfig')['ts_ls'].setup {
 
       init_options = {
@@ -413,3 +411,5 @@ vim.keymap.set("x", "<c-l>", '<cmd>STSSelectChildNode<cr>', opts)
 vim.keymap.set("n", "<c-h>", 've<c-h>', { noremap = false, silent = true })
 
 -- ***************
+-- Bekaboo/dropbar.nvim
+vim.keymap.set('n', '<space>2', require('dropbar.api').pick)
