@@ -42,7 +42,10 @@
     "au FileType elixir nnoremap <buffer> <Space>= :let $currentFP=expand('%:p')<CR>:terminal iex $currentFP<CR>
     au FileType elixir nnoremap <buffer> <Space>= :terminal elixir %:p<cr>i
     "execute current buffer or current selection in via ts-node (ignoring erros)
-    au FileType typescript,javascript,vue noremap <space>= :w !ts-node-transpile-only<cr>
+    au FileType typescript,javascript,vue vnoremap <space>= :lua visual_selection_to_node()<CR>
+    " same as above but for normal mode, we first select the whole buffer
+    au FileType typescript,javascript,vue nnoremap <space>= ggVG:lua visual_selection_to_node()<CR>
+:
     "use space-t to use list plugin
     au FileType typescript,javascript nnoremap <silent> <space>ta :call CocAction('runCommand', 'jest.projectTest')<CR>
     au FileType typescript,javascript nnoremap <silent> <space>tc :call CocAction('runCommand', 'jest.fileTest', ['%'])<CR>

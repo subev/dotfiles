@@ -75,8 +75,33 @@ function Git_Show_Diff_Against_Main_Or_Master()
   ]])
 end
 
+function VisualSelectionToNode()
+  local start_pos = vim.fn.getpos("'<")
+  local end_pos = vim.fn.getpos("'>")
+  local start_line, start_col = start_pos[2], start_pos[3]
+  local end_line, end_col = end_pos[2], end_pos[3]
+
+  -- Retrieve lines in the visual selection
+  local lines = vim.fn.getline(start_line, end_line)
+
+  -- Adjust the first and last lines to respect column boundaries
+  if #lines > 0 then
+    lines[1] = lines[1]:sub(start_col)
+    lines[#lines] = lines[#lines]:sub(1, end_col)
+  end
+
+  -- Combine the lines into a single string
+  local selection = table.concat(lines, "\n")
+
+  -- Pass the selection to node with eval mode and discard stderr
+  local command = 'node --experimental-strip-types -e "' .. selection:gsub('"', '\\"') .. '"' .. ' 2>/dev/null'
+  local output = vim.fn.system(command)
+  print(output)
+end
+
 -- Add the function to the global namespace if you want to call it from command mode or a keybinding
 _G.unique_buffers = Unique_Buffers
 _G.git_log_file = GiT_Log_CurrentFile_With_External_Diff_Inside_New_Terminal
 _G.git_diff_main = Git_Show_Diff_Against_Main_Or_Master
 _G.git_log_patches = Git_Show_Log_Patches
+_G.visual_selection_to_node = VisualSelectionToNode
