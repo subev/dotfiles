@@ -141,8 +141,9 @@
     nmap <silent> ,6 <Plug>(coc-references)
     nmap <silent> ,w <Plug>(coc-codelens-action)
 
-    nnoremap <silent> <space><space> :call <SID>show_documentation()<CR>:call CocAction('highlight')<CR>
-    " nnoremap <silent> <space><space> <cmd>lua vim.lsp.buf.hover()<CR>
+    " keeping this here till fully believing the one below works
+    " nnoremap <silent> <space><space> :call <SID>show_documentation()<CR>:call CocAction('highlight')<CR>
+    nnoremap <silent> <space><space> <cmd>lua vim.lsp.buf.hover()<CR>
 
     function! s:show_documentation()
       if CocAction('doHover')

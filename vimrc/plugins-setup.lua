@@ -304,25 +304,30 @@ require("mason-lspconfig").setup({
   ensure_installed = {
     "ts_ls",
     "vue_ls",
+    "vtsls",
     "tailwindcss",
     "lua_ls",
   },
   automatic_enable = true
 })
 
--- Ensure 'vue-language-server' is installed via Mason (e.g. add "volar" above)
--- Then, manually locate the Volar plugin path:
 local vue_ls_path = vim.fn.expand("$MASON/packages/vue-language-server")
 local vue_plugin_path = vue_ls_path .. "/node_modules/@vue/language-server"
-
--- Now configure ts_ls (TypeScript) to load the Vue plugin
-require("lspconfig").ts_ls.setup({
-  init_options = {
-    plugins = {
-      {
-        name = "@vue/typescript-plugin",
-        location = vue_plugin_path,
-        languages = { "vue" },
+local vue_plugin = {
+  name = '@vue/typescript-plugin',
+  location = vue_plugin_path,
+  languages = { 'vue' },
+  configNamespace = 'typescript',
+}
+-- all of above and this taken from here:
+-- https://github.com/neovim/nvim-lspconfig/commit/85379d02d3bac8dc68129a4b81d7dbd00c8b0f77
+vim.lsp.config('vtsls', {
+  settings = {
+    vtsls = {
+      tsserver = {
+        globalPlugins = {
+          vue_plugin,
+        },
       },
     },
   },
@@ -331,16 +336,8 @@ require("lspconfig").ts_ls.setup({
 
 require 'dapui'.setup {}
 require 'formatter'.setup {}
-
--- require('simpleIndentGuides').setup()
 require("ibl").setup()
--- require('mini.indentscope').setup()
 
--- require'lspconfig'.pyright.setup{}
--- require'lspconfig'.eslint.setup{}
-
--- ****** settings for nvim-lspconfig *****
--- Global mappings.
 -- See `:help vim.diagnostic.*` for documentation on any of the below functions
 vim.keymap.set('n', '<space>we', vim.diagnostic.open_float)
 vim.keymap.set('n', '<space><left>', function()
