@@ -211,3 +211,16 @@ unset __conda_setup
 # bun
 export BUN_INSTALL="$HOME/.bun"
 export PATH="$BUN_INSTALL/bin:$PATH"
+
+# Added by LM Studio CLI (lms)
+export PATH="$PATH:/Users/petur/.cache/lm-studio/bin"
+
+source /Users/petur/.config/broot/launcher/bash/br
+
+# pnpm
+export PNPM_HOME="/Users/petur/Library/pnpm"
+case ":$PATH:" in
+  *":$PNPM_HOME:"*) ;;
+  *) export PATH="$PNPM_HOME:$PATH" ;;
+esac
+# pnpm end

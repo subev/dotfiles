@@ -29,7 +29,7 @@ require("lazy").setup({
   'ianding1/leetcode.vim',
   { 'aaronhallaert/advanced-git-search.nvim', dependencies = "ibhagwan/fzf-lua" },
   { "junegunn/fzf", build = "./install --bin" },
-  'github/copilot.vim',
+  -- 'github/copilot.vim',
   {
     "iamcco/markdown-preview.nvim",
     cmd = { "MarkdownPreviewToggle", "MarkdownPreview", "MarkdownPreviewStop" },
@@ -126,6 +126,7 @@ require("lazy").setup({
   { 'kevinhwang91/nvim-ufo', dependencies = "kevinhwang91/promise-async" },
   'rmagatti/auto-session',
 
+  -- not good said Petyo
   -- {
   --   "yetone/avante.nvim",
   --   event = "VeryLazy",
@@ -165,7 +166,39 @@ require("lazy").setup({
       }
     },
   },
-  { 'nvim-telescope/telescope-fzf-native.nvim', build = 'cmake -S. -Bbuild -DCMAKE_BUILD_TYPE=Release && cmake --build build --config Release' },
+  {
+    'nvim-telescope/telescope-fzf-native.nvim',
+    build = 'cmake -S. -Bbuild -DCMAKE_BUILD_TYPE=Release && cmake --build build --config Release'
+  },
+  "max397574/colortils.nvim",
+  {
+    "mhanberg/output-panel.nvim",
+    version = "*",
+    event = "VeryLazy",
+    config = function()
+      require("output_panel").setup({
+        max_buffer_size = 5000 -- default
+      })
+    end,
+    cmd = { "OutputPanel" },
+    keys = {
+      {
+        "<leader>o",
+        vim.cmd.OutputPanel,
+        mode = "n",
+        desc = "Toggle the output panel",
+      },
+    }
+  },
+  {'meznaric/key-analyzer.nvim', opts = {} },
+  {
+    "olimorris/codecompanion.nvim",
+    opts = {},
+    dependencies = {
+      "nvim-lua/plenary.nvim",
+      "nvim-treesitter/nvim-treesitter",
+    },
+  },
 })
 EOF
 

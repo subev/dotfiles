@@ -42,7 +42,7 @@
   set expandtab
 
   "switch paste behavior to avoid added tabs
-  set pastetoggle=<F10>
+  " set pastetoggle=<F10>
 
   set smartindent
 

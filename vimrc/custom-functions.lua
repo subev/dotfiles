@@ -95,6 +95,8 @@ function VisualSelectionToNode()
 
   -- Pass the selection to node with eval mode and discard stderr
   local command = 'node --experimental-strip-types -e "' .. selection:gsub('"', '\\"') .. '"' .. ' 2>/dev/null'
+  -- same without discarding stderr
+  local command = 'node --experimental-strip-types -e "' .. selection:gsub('"', '\\"') .. '"'
   local output = vim.fn.system(command)
   print(output)
 end

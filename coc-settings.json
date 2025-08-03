@@ -22,6 +22,9 @@
   "snippets.priority": 110,
   "eslint.format.enable": true,
   "eslint.experimental.useFlatConfig": true,
+  "tailwindCSS.includeLanguages": {
+    "vue": "html"
+  },
   "snippets.extends": {
     "typescriptreact": ["typescript"]
   },

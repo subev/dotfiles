@@ -183,7 +183,7 @@
   nnoremap ,o <c-w>\|
   nnoremap ,O <c-w>o
   nnoremap ,t <c-w>v:term<cr>i
-  nnoremap ,T <c-w>v:term<cr>inpm run type-check<cr>
+  nnoremap ,T <c-w>v:term<cr>inpm run typecheck<cr>
   nnoremap ,gl <c-w>v:term<cr>igit ls<cr>
   nnoremap ,gP :lua git_log_patches()<CR>()<CR>
   nnoremap ,gL :lua git_log_file()<CR>()<CR>

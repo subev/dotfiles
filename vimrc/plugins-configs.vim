@@ -126,8 +126,8 @@
     "inoremap <expr> <cr> pumvisible() ? "\<C-y>" : "\<C-g>u\<CR>"
 
     " Use `[c` and `]c` to navigate diagnostics
-    nmap <silent> <space><left> <Plug>(coc-diagnostic-prev)
-    nmap <silent> <space><right> <Plug>(coc-diagnostic-next)
+    " nmap <silent> <space><left> <Plug>(coc-diagnostic-prev)
+    " nmap <silent> <space><right> <Plug>(coc-diagnostic-next)
 
     nnoremap <silent> <space>1 :call CocAction('runCommand', 'eslint.executeAutofix')<CR>
     nnoremap <silent> <space>^ :call CocAction('runCommand', 'tsserver.findAllFileReferences')<CR>
@@ -143,10 +143,6 @@
 
     nnoremap <silent> <space><space> :call <SID>show_documentation()<CR>:call CocAction('highlight')<CR>
     " nnoremap <silent> <space><space> <cmd>lua vim.lsp.buf.hover()<CR>
-
-    " those does not seem to work
-    "nnoremap <silent> <space><right> <cmd>lua vim.lsp.diagnostic.goto_next()<CR>
-    "nnoremap <silent> <space><left> <cmd>lua vim.lsp.diagnostic.goto_prev()<CR>
 
     function! s:show_documentation()
       if CocAction('doHover')
@@ -408,7 +404,7 @@
   " nnoremap ,F :FZF -q <c-r><c-w><cr>
   " vnoremap ,f y:FZF -q <c-r>"<cr>
 
-  nnoremap <space>` :CustomBLines<cr>'
+  nnoremap <space>` :CustomBLines<cr>
   nnoremap ,s :BLines<cr>
   vnoremap ,s y:BLines <c-r>"<cr>
   "vnoremap ,s y:Telescope current_buffer_fuzzy_find<cr>i<c-r>"<backspace><backspace>

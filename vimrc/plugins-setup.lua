@@ -301,53 +301,33 @@ require 'nvim-web-devicons'.setup {
 -- }
 require 'mason'.setup {}
 require("mason-lspconfig").setup({
-  ensure_installed = { "ts_ls" },
+  ensure_installed = {
+    "ts_ls",
+    "vue_ls",
+    "tailwindcss",
+    "lua_ls",
+  },
+  automatic_enable = true
 })
 
+-- Ensure 'vue-language-server' is installed via Mason (e.g. add "volar" above)
+-- Then, manually locate the Volar plugin path:
+local vue_ls_path = vim.fn.expand("$MASON/packages/vue-language-server")
+local vue_plugin_path = vue_ls_path .. "/node_modules/@vue/language-server"
 
--- taken from https://github.com/vuejs/language-tools?tab=readme-ov-file#hybrid-mode-configuration-requires-vuelanguage-server-version-200
-local mason_registry = require('mason-registry')
-local vue_language_server_path = mason_registry.get_package('vue-language-server'):get_install_path() ..
-    '/node_modules/@vue/language-server'
-
--- this might not be needed anymore not sure why it was added prematurely
--- require 'lspconfig'.ts_ls.setup {
--- }
-
-require("mason-lspconfig").setup_handlers {
-  -- The first entry (without a key) will be the default handler
-  -- and will be called for each installed server that doesn't have
-  -- a dedicated handler.
-  function(server_name) -- default handler (optional)
-    require("lspconfig")[server_name].setup {}
-  end,
-  -- Next, you can provide a dedicated handler for specific servers.
-  ['ts_ls'] = function()
-    require('lspconfig')['ts_ls'].setup {
-
-      init_options = {
-        plugins = {
-          {
-            -- this happneed to be installed, maybe it does not need to be added manually but if it does not work then try to install it
-            name = '@vue/typescript-plugin',
-            location = vue_language_server_path,
-            languages = { 'vue' },
-          },
-        },
+-- Now configure ts_ls (TypeScript) to load the Vue plugin
+require("lspconfig").ts_ls.setup({
+  init_options = {
+    plugins = {
+      {
+        name = "@vue/typescript-plugin",
+        location = vue_plugin_path,
+        languages = { "vue" },
       },
-      filetypes = { 'typescript', 'javascript', 'javascriptreact', 'typescriptreact', 'vue' },
-    }
-  end,
-}
-
-
--- this is no longer needed because of the above
--- require 'lspconfig'.volar.setup {}
--- require 'lspconfig'.vimls.setup {}
--- require 'lspconfig'.tailwindcss.setup {}
--- require 'lspconfig'.lua_ls.setup {}
--- require 'lspconfig'.rust_analyzer.setup {}
--- require 'lspconfig'.eslint.setup {}
+    },
+  },
+  filetypes = { "typescript", "javascript", "vue" },
+})
 
 require 'dapui'.setup {}
 require 'formatter'.setup {}
@@ -363,8 +343,12 @@ require("ibl").setup()
 -- Global mappings.
 -- See `:help vim.diagnostic.*` for documentation on any of the below functions
 vim.keymap.set('n', '<space>we', vim.diagnostic.open_float)
--- vim.keymap.set('n', '[d', vim.diagnostic.goto_prev)
--- vim.keymap.set('n', ']d', vim.diagnostic.goto_next)
+vim.keymap.set('n', '<space><left>', function()
+  vim.diagnostic.jump({ count = -1 })
+end)
+vim.keymap.set('n', '<space><right>', function()
+  vim.diagnostic.jump({ count = 1 })
+end)
 -- vim.keymap.set('n', '<space>q', vim.diagnostic.setloclist)
 
 -- Use LspAttach autocommand to only map the following keys
@@ -413,3 +397,6 @@ vim.keymap.set("n", "<c-h>", 've<c-h>', { noremap = false, silent = true })
 -- ***************
 -- Bekaboo/dropbar.nvim
 vim.keymap.set('n', '<space>2', require('dropbar.api').pick)
+
+-- colorutils
+require("colortils").setup()
