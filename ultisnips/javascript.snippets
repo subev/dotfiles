@@ -23,6 +23,11 @@
 #		endsnippet
 #
 # Online reference: https://github.com/SirVer/ultisnips/blob/master/doc/UltiSnips.txt
+snippet cons "console log with eslint ignore"
+// eslint-disable-next-line no-console
+console.log(${1})
+endsnippet
+
 snippet rangejs "range sequance generator"
 const range = (start, stop, step = 1) =>
   Array.from(

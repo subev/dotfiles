@@ -192,6 +192,16 @@ require('diffview').setup {
 require('trouble').setup {
 }
 
+local null_ls = require("null-ls")
+
+null_ls.setup({
+  sources = {
+    null_ls.builtins.formatting.stylua,
+    null_ls.builtins.completion.spell,
+    require("none-ls.diagnostics.eslint"), -- requires none-ls-extras.nvim
+  },
+})
+
 require 'colorizer'.setup({
   user_default_options = {
     hsl_fn = true,
@@ -313,7 +323,7 @@ require("mason-lspconfig").setup({
 
 local vue_ls_path = vim.fn.expand("$MASON/packages/vue-language-server")
 local vue_plugin_path = vue_ls_path .. "/node_modules/@vue/language-server"
-local vue_plugin = {
+local vue_ts_plugin = {
   name = '@vue/typescript-plugin',
   location = vue_plugin_path,
   languages = { 'vue' },
@@ -326,7 +336,7 @@ vim.lsp.config('vtsls', {
     vtsls = {
       tsserver = {
         globalPlugins = {
-          vue_plugin,
+          vue_ts_plugin,
         },
       },
     },
@@ -397,3 +407,19 @@ vim.keymap.set('n', '<space>2', require('dropbar.api').pick)
 
 -- colorutils
 require("colortils").setup()
+
+vim.keymap.set("n", "<space>e", "<Cmd>Neotree reveal<CR>")
+require("neo-tree").setup({
+  event_handlers = {
+    {
+      event = "file_open_requested",
+      handler = function()
+        -- auto close
+        -- vim.cmd("Neotree close")
+        -- OR
+        require("neo-tree.command").execute({ action = "close" })
+      end
+    },
+
+  }
+})

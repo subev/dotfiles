@@ -90,6 +90,7 @@
   "suggest.timeout": 10000,
   "coc.preferences.extensionUpdateCheck": "never",
   "prettier.singleQuote": true,
+  "diagnostic.enable": false,
   "diagnostic.virtualText": false,
   "diagnostic.virtualTextCurrentLineOnly": true,
   "suggest.noselect": true,

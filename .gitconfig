@@ -97,3 +97,5 @@
   autostash = true
 [rebase]
   autostash = true
+[init]
+	defaultBranch = main

@@ -29,7 +29,7 @@ require("lazy").setup({
   'ianding1/leetcode.vim',
   { 'aaronhallaert/advanced-git-search.nvim', dependencies = "ibhagwan/fzf-lua" },
   { "junegunn/fzf", build = "./install --bin" },
-  -- 'github/copilot.vim',
+  'github/copilot.vim',
   {
     "iamcco/markdown-preview.nvim",
     cmd = { "MarkdownPreviewToggle", "MarkdownPreview", "MarkdownPreviewStop" },
@@ -69,7 +69,43 @@ require("lazy").setup({
   'dyng/ctrlsf.vim',
   'tpope/vim-fugitive',
   'sindrets/diffview.nvim',
-  'folke/trouble.nvim',
+  {
+    "folke/trouble.nvim",
+    opts = {}, -- for default options, refer to the configuration section for custom setup.
+    cmd = "Trouble",
+    keys = {
+      {
+        "<F6>",
+        "<cmd>Trouble diagnostics toggle<cr>",
+        desc = "Diagnostics (Trouble)",
+      },
+      -- {
+      --   "<leader>xX",
+      --   "<cmd>Trouble diagnostics toggle filter.buf=0<cr>",
+      --   desc = "Buffer Diagnostics (Trouble)",
+      -- },
+      {
+        "<space>o",
+        "<cmd>Trouble symbols toggle focus=true win.position=bottom auto_close=true<cr>",
+        desc = "Symbols (Trouble)",
+      },
+      -- {
+      --   "<leader>cl",
+      --   "<cmd>Trouble lsp toggle focus=false win.position=right<cr>",
+      --   desc = "LSP Definitions / references / ... (Trouble)",
+      -- },
+      -- {
+      --   "<leader>xL",
+      --   "<cmd>Trouble loclist toggle<cr>",
+      --   desc = "Location List (Trouble)",
+      -- },
+      -- {
+      --   "<leader>xQ",
+      --   "<cmd>Trouble qflist toggle<cr>",
+      --   desc = "Quickfix List (Trouble)",
+      -- },
+    },
+  },
   'junegunn/gv.vim',
   'tpope/vim-rhubarb',
   'tpope/vim-surround',
@@ -124,7 +160,25 @@ require("lazy").setup({
   -- 'dstein64/nvim-scrollview',
   'kevinhwang91/nvim-hlslens',
   { 'kevinhwang91/nvim-ufo', dependencies = "kevinhwang91/promise-async" },
-  'rmagatti/auto-session',
+  {
+    "rmagatti/auto-session",
+    lazy = false,
+
+    keys = {
+      -- Will use Telescope if installed or a vim.ui.select picker otherwise
+      { "<leader>s", "<cmd>SessionSearch<CR>", desc = "Session search" },
+      -- { "<leader>ws", "<cmd>SessionSave<CR>", desc = "Save session" },
+      -- { "<leader>wa", "<cmd>SessionToggleAutoSave<CR>", desc = "Toggle autosave" },
+    },
+
+    ---enables autocomplete for opts
+    ---@module "auto-session"
+    ---@type AutoSession.Config
+    opts = {
+      suppressed_dirs = { "~/", "~/Projects", "~/Downloads", "/" },
+      show_auto_restore_notif = false,
+    },
+  },
 
   -- not good said Petyo
   -- {
@@ -199,6 +253,39 @@ require("lazy").setup({
       "nvim-treesitter/nvim-treesitter",
     },
   },
+  {
+    "rachartier/tiny-inline-diagnostic.nvim",
+    event = "VeryLazy",
+    priority = 1000,
+    config = function()
+      require('tiny-inline-diagnostic').setup()
+      vim.diagnostic.config({ virtual_text = false }) -- Disable default virtual text
+    end
+  },
+  {
+    "nvim-neo-tree/neo-tree.nvim",
+    branch = "v3.x",
+    dependencies = {
+      "nvim-lua/plenary.nvim",
+      "MunifTanjim/nui.nvim",
+      "nvim-tree/nvim-web-devicons", -- optional, but recommended
+    },
+    lazy = false, -- neo-tree will lazily load itself
+  },
+
+  {
+    "nvimtools/none-ls.nvim",
+        dependencies = {
+      "nvimtools/none-ls-extras.nvim",
+    },
+  },
+  {
+    "zeioth/none-ls-autoload.nvim",
+    event = "BufEnter",
+    dependencies = { "williamboman/mason.nvim", "nvimtools/none-ls.nvim" },
+    opts = {},
+  },
+  
 })
 EOF
 

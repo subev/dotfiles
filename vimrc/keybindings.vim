@@ -9,7 +9,7 @@
   vnoremap U gU
 
   "provide alternative to use COUNT
-  nnoremap 2 :w<CR>
+  nnoremap <silent> 2 :w<CR>
   nnoremap <silent> 3 :let @/='\C\<' . expand('<cword>') . '\>'<CR>:let v:searchforward=0<CR>n
   nnoremap 4 $
   vnoremap 4 $h
@@ -113,12 +113,11 @@
   nnoremap <s-down> <C-w>j
 
   " disable the highlight search or search for the word under the cursor
-  nnoremap <expr> <cr> (v:hlsearch == 1) ? ':noh<cr>' : ":let @/ = '\\C\\<'.expand('<cword>').'\\>'<cr>:set hlsearch<cr>"
+  nnoremap <silent> <expr> <cr> (v:hlsearch == 1) ? ':noh<cr>' : ":let @/ = '\\C\\<'.expand('<cword>').'\\>'<cr>:set hlsearch<cr>"
   "search for the visually selected text
   vnoremap <cr> y:let @/='<C-R>"'<CR>:let v:searchforward=1<CR>:set hlsearch<CR>
 
   nnoremap <f5> :e!<CR>
-  nnoremap <f6> :Trouble<CR>
   " preview current file with Google Chrome
   nnoremap <space>7 :silent ! open -a 'Google Chrome' %:p<cr>
   "nnoremap <space>g y:silent ! open -a 'Google Chrome' 'http://google.com/search?q='<left>
@@ -138,18 +137,10 @@
   " delete trailing whitespace
   nnoremap <silent> <leader>q :let _s=@/<Bar>:%s/\s\+$//e<Bar>:let @/=_s<Bar>:nohl<CR>
 
-  " search with ag via the Ack frontend plugin
-  noremap <leader>s :Ack!<space>
-
   " quick-paste last yanked text
   noremap ; "0p
   vmap gp <c-n>\\CP<esc>
   vmap gm <c-n>\\C
-
-  " bind K to search grep word under the cursor
-  " nnoremap K :Ack! <cword><CR>
-  " vnoremap K y:Ack! "<C-R>""<CR>
-  " vnoremap <leader>s y:Ack! "<C-R>""<space>
 
   vnoremap < c<<space>/><Esc>hhP
   vnoremap > c<><Esc>Pf>a</><Esc>P
@@ -244,8 +235,5 @@
     noremap <leader>2 :diffget BASE<CR>
     noremap <leader>3 :diffget REMOTE<CR>
     colorscheme darkBlue
-  endif
-  if has("patch-8.1.0360")
-    "set diffopt+=internal,algorithm:patience,iwhteall
   endif
 " }}}

@@ -84,13 +84,14 @@
     "settings for 'neoclide/coc.nvim', {'branch': 'release'}"
     "let g:coc_node_path = '~/.nvm/versions/node/v16.3.0/bin/node'
     let g:coc_global_extensions = [ 'coc-emmet', 'coc-git', 'coc-vimlsp',
-      \ 'coc-lists', 'coc-snippets', 'coc-html', 'coc-tsserver', 'coc-jest', 'coc-eslint', 'coc-marketplace',
-      \ 'coc-css', 'coc-json', 'coc-java', 'coc-pyright', 'coc-yank', 'coc-prettier', 'coc-omnisharp', 'coc-elixir', 'coc-explorer',
-      \ 'coc-vetur', '@yaegassy/coc-volar'] "vue specific
+      \ 'coc-lists', 'coc-snippets', 'coc-html', 'coc-tsserver', 'coc-jest',
+      \ 'coc-eslint', 'coc-marketplace',
+      \ 'coc-css', 'coc-json', 'coc-yank', 'coc-prettier',
+      \ '@yaegassy/coc-volar'] "vue specific
 
     " You will have bad experience for diagnostic messages when it's default 4000.
     set updatetime=500
-    autocmd CursorHold * silent call CocActionAsync('highlight')
+    " autocmd CursorHold * silent call CocActionAsync('highlight')
     autocmd User CocJumpPlaceholder call CocActionAsync('showSignatureHelp')
 
     " Use tab for trigger completion with characters ahead and navigate.
@@ -152,7 +153,7 @@
       endif
     endfunction
 
-    :nmap <space>e :CocCommand explorer<CR>
+    " :nmap <space>e :CocCommand explorer<CR>
 
     " Remap for rename current word
     nmap ,r <Plug>(coc-rename)
@@ -208,13 +209,13 @@
     " Show commands
     nnoremap <silent> <space>cc  :<C-u>CocList commands<cr>
     " Find symbol of current document
-    nnoremap <silent> <space>o  :<C-u>CocList outline<cr>
+    nnoremap <silent> <space>O  :<C-u>CocList outline<cr>
+    " Find symbol of current workspace
+    " nnoremap <silent> <space>O  :<C-u>CocList symbols<cr>
 
     "show all functions that are calling the one under the cursor
     nnoremap <silent> <space>u :call CocAction('showIncomingCalls')<CR><C-w>H
     nnoremap <silent> <space>U :call CocAction('showOutgoingCalls')<CR><C-w>H
-    " Find symbol of current workspace
-    nnoremap <silent> <space>O  :<C-u>CocList symbols<cr>
     " Search workspace symbols
     nnoremap <silent> <space>cs  :<C-u>CocList -I symbols<cr>
     " Do default action for next item.
@@ -230,11 +231,11 @@
 
   "settings for 'dnlhc/glance.nvim'
 
-  nmap ,d :Glance definitions<cr>
-  nmap gti :Glance implementations<cr>
-  nmap gr :Glance references<cr>
-  nmap gT :Glance type_definitions<cr>
-  nmap <space><backspace> :Glance references<cr>
+  nmap <silent> ,d :Glance definitions<cr>
+  nmap <silent> gti :Glance implementations<cr>
+  nmap <silent> gr :Glance references<cr>
+  nmap <silent> gT :Glance type_definitions<cr>
+  nmap <silent> <space><backspace> :Glance references<cr>
 
   "settings for 'm-pilia/vim-ccls'
 
