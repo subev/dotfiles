@@ -29,7 +29,9 @@
   map <Plug> <Plug>Markdown_MoveToCurHeader
 
   "settings for 'mhartington/formatter.nvim'
-  nnoremap <silent> <space>F :Format<CR>
+  " nnoremap <silent> <space>F :Format<CR>
+  nnoremap <silent> <space>f <cmd>lua vim.lsp.buf.format()<CR>
+  nnoremap <silent> <space>l <cmd>lua vim.lsp.buf.code_action()<CR>
 
   "settings for 'aaronhallaert/advanced-git-search.nvim'
   noremap ,ga :AdvancedGitSearch<CR>
@@ -90,18 +92,18 @@
       \ '@yaegassy/coc-volar'] "vue specific
 
     " You will have bad experience for diagnostic messages when it's default 4000.
-    set updatetime=500
+    " set updatetime=500
     " autocmd CursorHold * silent call CocActionAsync('highlight')
-    autocmd User CocJumpPlaceholder call CocActionAsync('showSignatureHelp')
+    " autocmd User CocJumpPlaceholder call CocActionAsync('showSignatureHelp')
 
     " Use tab for trigger completion with characters ahead and navigate.
     " Use command ':verbose imap <tab>' to make sure tab is not mapped by other plugin.
     "Make <tab> used for trigger completion, completion confirm, snippet expand and jump like VSCode.
-    inoremap <silent><expr> <tab>
-          \ coc#pum#visible() ? coc#pum#next(1):
-          \ CheckBackspace() ? "\<Tab>" :
-          \ coc#refresh()
-    inoremap <expr><S-TAB> coc#pum#visible() ? coc#pum#prev(1) : "\<C-h>"
+    " inoremap <silent><expr> <tab>
+    "       \ coc#pum#visible() ? coc#pum#next(1):
+    "       \ CheckBackspace() ? "\<Tab>" :
+    "       \ coc#refresh()
+    " inoremap <expr><S-TAB> coc#pum#visible() ? coc#pum#prev(1) : "\<C-h>"
     "old mapping
     "inoremap <silent><expr> <TAB>
       "\ pumvisible() ? "\<C-n>" :
@@ -109,21 +111,21 @@
       "\ coc#refresh()
     "inoremap <expr><S-TAB> pumvisible() ? "\<C-p>" : "\<C-h>"
 
-    function! CheckBackspace() abort
-      let col = col('.') - 1
-      return !col || getline('.')[col - 1]  =~# '\s'
-    endfunction
+    " function! CheckBackspace() abort
+    "   let col = col('.') - 1
+    "   return !col || getline('.')[col - 1]  =~# '\s'
+    " endfunction
 
     " jump through predefined locations in current snippet
-    let g:coc_snippet_next = '<tab>'
+    " let g:coc_snippet_next = '<tab>'
 
     " Use <c-space> to trigger completion.
-    inoremap <silent><expr> <C-Space> coc#refresh()
+    " inoremap <silent><expr> <C-Space> coc#refresh()
 
     " Use <cr> to confirm completion, `<C-g>u` means break undo chain at current position.
     " Coc only does snippet and additional edit on confirm.
-    inoremap <silent><expr> <CR> coc#pum#visible() ? coc#pum#confirm()
-                              \: "\<C-g>u\<CR>\<c-r>=coc#on_enter()\<CR>"
+    " inoremap <silent><expr> <CR> coc#pum#visible() ? coc#pum#confirm()
+    "                           \: "\<C-g>u\<CR>\<c-r>=coc#on_enter()\<CR>"
     "inoremap <expr> <cr> pumvisible() ? "\<C-y>" : "\<C-g>u\<CR>"
 
     " Use `[c` and `]c` to navigate diagnostics
@@ -160,8 +162,8 @@
     nmap ,R <Plug>(coc-refactor)
 
     " Remap for format selected region
-    xmap <space>f  <Plug>(coc-format-selected)
-    nmap <space>f  <Plug>(coc-format)
+    " xmap <space>f  <Plug>(coc-format-selected)
+    " nmap <space>f  <Plug>(coc-format)
     nnoremap <silent> <F7> :CocRestart<CR>:LspRestart<CR>
 
     " select inside function and all function
@@ -179,13 +181,13 @@
     omap ac <Plug>(coc-classobj-a)
 
     " Remap for do codeAction of selected region, ex: `<leader>aap` for current paragraph
-    xmap <space>l  <Plug>(coc-codeaction-selected)
+    " xmap <space>l  <Plug>(coc-codeaction-selected)
     " Remap for do codeAction of current line
-    nmap <space>j  :CocListResume<cr>
-    nmap <space>l  <Plug>(coc-codeaction)
-    nmap <space>k  :CocList<cr>
+    " nmap <space>j  :CocListResume<cr>
+    " nmap <space>l  <Plug>(coc-codeaction)
+    " nmap <space>k  :CocList<cr>
     " Fix autofix problem of current line
-    nmap <space>qf  <Plug>(coc-fix-current)
+    " nmap <space>qf  <Plug>(coc-fix-current)
 
     " Use <tab> for select selections ranges, needs server support, like: coc-tsserver, coc-python
     nmap <silent> 1 <Plug>(coc-range-select)
@@ -350,9 +352,9 @@
   noremap ,gM :G diff origin/<C-r>=GetMasterBranchName()<CR>... <cr><c-w>H
 
   "settings for 'sindrets/diffview.nvim'
-  noremap ,gd :CocDisable<cr>:DiffviewOpen<CR>
-  noremap ,gh :CocDisable<cr>:DiffviewFileHistory %<cr>
-  noremap ,gm :CocDisable<cr>:DiffviewOpen origin/<C-r>=GetMasterBranchName()<CR>...HEAD<cr>
+  noremap ,gd :DiffviewOpen<CR>
+  noremap ,gh :DiffviewFileHistory %<cr>
+  noremap ,gm :DiffviewOpen origin/<C-r>=GetMasterBranchName()<CR>...HEAD<cr>
 
   "settings for 'folke/trouble.nvim'
 
