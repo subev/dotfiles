@@ -23,10 +23,20 @@ require("lazy").setup({
   'ziontee113/syntax-tree-surfer',
   'RRethy/nvim-treesitter-textsubjects',
   'sainnhe/sonokai',
-  -- 'f-person/auto-dark-mode.nvim',
   'sainnhe/everforest',
-  -- 'posva/vim-vue', deprecated
-  'ianding1/leetcode.vim',
+  {
+    "kawre/leetcode.nvim",
+    build = ":TSUpdate html", -- if you have `nvim-treesitter` installed
+    dependencies = {
+        -- include a picker of your choice, see picker section for more details
+        "nvim-lua/plenary.nvim",
+        "MunifTanjim/nui.nvim",
+    },
+    opts = {
+      arg = "leet",
+      lang = "typescript",
+    },
+  },
   { 'aaronhallaert/advanced-git-search.nvim', dependencies = "ibhagwan/fzf-lua" },
   { "junegunn/fzf", build = "./install --bin" },
   'github/copilot.vim',
@@ -45,11 +55,7 @@ require("lazy").setup({
   'mhinz/vim-startify',
   'skanehira/gh.vim',
   'lewis6991/gitsigns.nvim',
-  -- 'honza/vim-snippets',
-  'elixir-editors/vim-elixir',
-  -- { 'neoclide/coc.nvim', build = "npm ci" },
   'dnlhc/glance.nvim',
-  'm-pilia/vim-ccls',
   'tpope/vim-repeat',
   'tpope/vim-unimpaired',
   'tpope/vim-fireplace',
@@ -85,7 +91,7 @@ require("lazy").setup({
       --   desc = "Buffer Diagnostics (Trouble)",
       -- },
       {
-        "<space>o",
+        "<space>O",
         "<cmd>Trouble symbols toggle focus=true win.position=bottom auto_close=true<cr>",
         desc = "Symbols (Trouble)",
       },
@@ -119,17 +125,17 @@ require("lazy").setup({
   'nvim-tree/nvim-web-devicons',
   'pwntester/octo.nvim',
   'junegunn/vim-easy-align',
-  -- 'Yggdroot/indentLine',
-  -- 'lucastavaresa/simpleIndentGuides.nvim',
   { "lukas-reineke/indent-blankline.nvim", main = "ibl", opts = {} },
-  -- { 'echasnovski/mini.indentscope', version = false },
   'bronson/vim-visual-star-search',
   'terryma/vim-expand-region',
   'wellle/targets.vim',
   'michaeljsmith/vim-indent-object',
   'haya14busa/vim-textobj-function-syntax',
   'chrisbra/csv.vim',
-  'mhartington/formatter.nvim',
+
+  { 'stevearc/conform.nvim', opts = {}, },
+  -- 'mhartington/formatter.nvim',
+
   'editorconfig/editorconfig-vim',
   'jeetsukumaran/vim-indentwise',
   {
@@ -148,16 +154,17 @@ require("lazy").setup({
         }
     }
   },
-  -- order of the next 3 is important
-  'williamboman/mason.nvim',
-  "williamboman/mason-lspconfig.nvim",
+  {
+      "mason-org/mason-lspconfig.nvim",
+      opts = {},
+      dependencies = {
+          { "mason-org/mason.nvim", opts = {} },
+          "neovim/nvim-lspconfig",
+      },
+  },
+  'mason-org/mason.nvim',
   'neovim/nvim-lspconfig',
 
-  'mfussenegger/nvim-dap',
-  -- requird by nvim-dap-ui
-  'nvim-neotest/nvim-nio',
-  'rcarriga/nvim-dap-ui',
-  -- 'dstein64/nvim-scrollview',
   'kevinhwang91/nvim-hlslens',
   { 'kevinhwang91/nvim-ufo', dependencies = "kevinhwang91/promise-async" },
   {
@@ -180,29 +187,6 @@ require("lazy").setup({
     },
   },
 
-  -- not good said Petyo
-  -- {
-  --   "yetone/avante.nvim",
-  --   event = "VeryLazy",
-  --   -- build = "make", -- This is Optional, only if you want to use tiktoken_core to calculate tokens count
-  --   opts = {
-  --     -- add any opts here
-  --   },
-  --   dependencies = {
-  --     -- "nvim-tree/nvim-web-devicons", -- already used above
-  --     "stevearc/dressing.nvim",
-  --     -- "nvim-lua/plenary.nvim", -- already used above
-  --     "MunifTanjim/nui.nvim",
-  --     --- The below is optional, make sure to setup it properly if you have lazy=true
-  --     {
-  --       'MeanderingProgrammer/render-markdown.nvim',
-  --       opts = {
-  --         file_types = { "markdown", "Avante" },
-  --       },
-  --       ft = { "markdown", "Avante" },
-  --     },
-  --   },
-  -- }
   {
     'Bekaboo/dropbar.nvim',
     -- optional, but required for fuzzy finder support
@@ -253,15 +237,7 @@ require("lazy").setup({
       "nvim-treesitter/nvim-treesitter",
     },
   },
-  {
-    "rachartier/tiny-inline-diagnostic.nvim",
-    event = "VeryLazy",
-    priority = 1000,
-    config = function()
-      require('tiny-inline-diagnostic').setup()
-      vim.diagnostic.config({ virtual_text = false }) -- Disable default virtual text
-    end
-  },
+
   {
     "nvim-neo-tree/neo-tree.nvim",
     branch = "v3.x",
@@ -275,7 +251,7 @@ require("lazy").setup({
 
   {
     "nvimtools/none-ls.nvim",
-        dependencies = {
+    dependencies = {
       "nvimtools/none-ls-extras.nvim",
     },
   },
@@ -318,6 +294,26 @@ require("lazy").setup({
       signature = { enabled = true }
     },
     opts_extend = { "sources.default" }
+  },
+
+  'RRethy/vim-illuminate',
+
+  {
+    'nvimdev/lspsaga.nvim',
+    config = function()
+      require('lspsaga').setup({
+        lightbulb = {
+          enable = false,
+        },
+        symbol_in_winbar = {
+          enable = false,
+        },
+      })
+    end,
+    dependencies = {
+      'nvim-treesitter/nvim-treesitter', -- optional
+      'nvim-tree/nvim-web-devicons',     -- optional
+    }
   }
 })
 EOF

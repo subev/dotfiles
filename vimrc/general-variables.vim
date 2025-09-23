@@ -1,5 +1,10 @@
 " General variables set {{{
+
+  set background=dark    " Setting dark mode
   set termguicolors
+
+  " hides formatting symbols, might be overriden
+  set conceallevel=0
 
   " this is the default one, but there is also a plugin called auto-dark-mode
   " that automatically changes it based on the system config

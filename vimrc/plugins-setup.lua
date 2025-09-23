@@ -2,7 +2,7 @@
 -- fixes the vim is undefined error
 local vim = vim or {}
 vim.o.foldcolumn = "0" -- 1, '0' is not bad
-vim.o.foldlevel = 99   -- Using ufo provider need a large value, feel free to decrease the value
+vim.o.foldlevel = 99 -- Using ufo provider need a large value, feel free to decrease the value
 vim.o.foldlevelstart = 99
 vim.o.foldenable = true
 
@@ -107,7 +107,6 @@ require("gitsigns").setup({
     map({ "o", "x" }, "ah", ":<C-U>Gitsigns select_hunk<CR>")
   end,
 })
--- require('scrollview.contrib.gitsigns').setup()
 
 require("hlslens").setup({
   nearest_only = {
@@ -220,10 +219,16 @@ local null_ls = require("null-ls")
 null_ls.setup({
   sources = {
     null_ls.builtins.formatting.stylua,
-    null_ls.builtins.formatting.prettierd,
-    null_ls.builtins.formatting.eslint_d,
+    -- null_ls.builtins.formatting.prettierd,
+    null_ls.builtins.code_actions.refactoring,
     -- null_ls.builtins.completion.spell,
-    require("none-ls.diagnostics.eslint"), -- requires none-ls-extras.nvim
+    -- require("none-ls.diagnostics.eslint"),
+    require("none-ls.diagnostics.eslint_d"),
+    require("none-ls.code_actions.eslint_d"),
+    require("none-ls.formatting.eslint_d"),
+    -- require("none-ls.diagnostics.eslint"),
+    -- require("none-ls.code_actions.eslint"),
+    -- require("none-ls.formatting.eslint"),
   },
 })
 
@@ -254,7 +259,7 @@ require("nvim-treesitter.configs").setup({
   playground = {
     enable = true,
     disable = {},
-    updatetime = 25,       -- Debounced time for highlighting nodes in the playground from source code
+    updatetime = 25, -- Debounced time for highlighting nodes in the playground from source code
     persist_queries = false, -- Whether the query persists across vim sessions
     keybindings = {
       toggle_query_editor = "o",
@@ -318,69 +323,128 @@ require("nvim-web-devicons").setup({
   },
 })
 
--- require('auto-dark-mode').setup({
---   update_interval = 3000,
---   set_dark_mode = function()
---     vim.api.nvim_set_option('background', 'dark')
---     vim.cmd('colorscheme sonokai')
---   end,
---   set_light_mode = function()
---     vim.api.nvim_set_option('background', 'light')
---     vim.cmd('colorscheme everforest')
---   end,
--- })
-
--- require 'lspconfig'.elixirls.setup {
---   -- sadly the below path cannot be expanded
---   cmd = { "/Users/petur/nvim-lsp/elixir/elixir-ls-v0.16.0/language_server.sh" },
--- }
 require("mason").setup({})
 require("mason-lspconfig").setup({
   ensure_installed = {
     "ts_ls",
-    "vue_ls",
-    "vtsls",
+    -- "vue_ls",
+    -- "vtsls",
     "tailwindcss",
     "lua_ls",
   },
   automatic_enable = true,
 })
 
-local vue_ls_path = vim.fn.expand("$MASON/packages/vue-language-server")
-local vue_plugin_path = vue_ls_path .. "/node_modules/@vue/language-server"
-local vue_ts_plugin = {
-  name = "@vue/typescript-plugin",
-  location = vue_plugin_path,
-  languages = { "vue" },
-  configNamespace = "typescript",
-}
+-- local vue_ls_path = vim.fn.expand("$MASON/packages/vue-language-server")
+-- local vue_plugin_path = vue_ls_path .. "/node_modules/@vue/language-server"
+-- local vue_ts_plugin = {
+--   name = "@vue/typescript-plugin",
+--   location = vue_plugin_path,
+--   languages = { "vue" },
+--   configNamespace = "typescript",
+-- }
 -- all of above and this taken from here:
 -- https://github.com/neovim/nvim-lspconfig/commit/85379d02d3bac8dc68129a4b81d7dbd00c8b0f77
-vim.lsp.config("vtsls", {
-  settings = {
-    vtsls = {
-      tsserver = {
-        globalPlugins = {
-          vue_ts_plugin,
-        },
-      },
-    },
-  },
-  filetypes = { "typescript", "javascript", "vue" },
-})
+-- vim.lsp.config("vtsls", {
+--   settings = {
+--     vtsls = {
+--       tsserver = {
+--         globalPlugins = {
+--           vue_ts_plugin,
+--         },
+--       },
+--     },
+--   },
+--   filetypes = { "vue" },
+-- })
 
-require("dapui").setup({})
-require("formatter").setup({})
+
+-- ALTERNATIVE FORMATTER 'CONFORM'
+-- require("conform").setup({
+--   formatters_by_ft = {
+--     lua = { "stylua" },
+--     -- Conform will run multiple formatters sequentially
+--     python = { "isort", "black" },
+--     -- You can customize some of the format options for the filetype (:help conform.format)
+--     rust = { "rustfmt", lsp_format = "fallback" },
+--     -- Conform will run the first available formatter
+--     javascript = { "eslint_d", stop_after_first = true },
+--     typescriptreact = { "eslint_d", stop_after_first = true },
+--     typescript = { "eslint_d", stop_after_first = true },
+--   },
+-- })
+--
+-- vim.api.nvim_create_user_command("Format", function(args)
+--   local range = nil
+--   if args.count ~= -1 then
+--     local end_line = vim.api.nvim_buf_get_lines(0, args.line2 - 1, args.line2, true)[1]
+--     range = {
+--       start = { args.line1, 0 },
+--       ["end"] = { args.line2, end_line:len() },
+--     }
+--   end
+--   require("conform").format({ async = true, lsp_format = "fallback", range = range })
+-- end, { range = true })
+-- vim.keymap.set("n", "<space>f", "<Cmd>Format<CR>")
+
+vim.keymap.set("n", "<space>f", function()
+    -- Call the LSP buffer formatting function synchronously
+    vim.lsp.buf.format({ async = false })
+end, { noremap = true, silent = true })
+
+-- require('formatter').setup({
+--   logging = false,
+--   filetype = {
+--     typescript = {
+--        function()
+--           return {
+--             exe = "eslint_d",
+--             args = {vim.api.nvim_buf_get_name(0)},
+--             stdin = true
+--           }
+--         end
+--     },
+--     -- other formatters ...
+--   }
+-- })
+
+-- "lukas-reineke/indent-blankline.nvim",
 require("ibl").setup()
 
 -- See `:help vim.diagnostic.*` for documentation on any of the below functions
-vim.keymap.set("n", "<space>we", vim.diagnostic.open_float)
 vim.keymap.set("n", "<space><left>", function()
   vim.diagnostic.jump({ count = -1 })
 end)
 vim.keymap.set("n", "<space><right>", function()
   vim.diagnostic.jump({ count = 1 })
 end)
+
+vim.o.updatetime = 300
+
+local function hover_is_open()
+  for _, win in ipairs(vim.api.nvim_list_wins()) do
+    local cfg = vim.api.nvim_win_get_config(win)
+    if cfg and cfg.relative ~= "" then
+      local bufnr = vim.api.nvim_win_get_buf(win)
+      local ft = vim.api.nvim_buf_get_option(bufnr, "filetype")
+      -- Hover windows are opened with filetype = "lspinfo" or "markdown"
+      -- You can refine this check if needed
+      if ft == "markdown" then
+        return true
+      end
+    end
+  end
+  return false
+end
+
+vim.api.nvim_create_autocmd("CursorHold", {
+  callback = function()
+    if not hover_is_open() then
+      vim.diagnostic.open_float(nil, { focus = false })
+    end
+  end,
+})
+
 -- vim.keymap.set('n', '<space>q', vim.diagnostic.setloclist)
 
 -- Use LspAttach autocommand to only map the following keys
@@ -408,9 +472,6 @@ vim.api.nvim_create_autocmd("LspAttach", {
     vim.keymap.set("n", "<space>wr", vim.lsp.buf.rename, opts)
     vim.keymap.set({ "n", "v" }, "<space>wa", vim.lsp.buf.code_action, opts)
     -- vim.keymap.set('n', 'gr', vim.lsp.buf.references, opts)
-    vim.keymap.set("n", "<space>wf", function()
-      vim.lsp.buf.format({ async = true })
-    end, opts)
   end,
 })
 
@@ -449,6 +510,12 @@ require("neo-tree").setup({
   filesystem = {
     filtered_items = {
       visible = true,
+    },
+    window = {
+      mappings = {
+        -- disable fuzzy finder
+        ["/"] = "noop",
+      },
     },
   },
 })

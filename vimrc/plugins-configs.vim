@@ -1,37 +1,8 @@
-" Plugins followed by their mappings and/or custom settings {{{
-" plugin mappings and settings
-  " themes
-  "settings for 'morhetz/gruvbox'
+  " LSP related keybindings
+  nnoremap ,r :lua vim.lsp.buf.rename()<CR>
+  nnoremap <silent> <F7> :LspRestart<CR>
+  nnoremap <silent> <space><space> <cmd>lua vim.lsp.buf.hover()<CR>
 
-  " settings for dstein64/nvim-scrollview
-  " gitsigns is enabled manually look for 'scrollview.contrib.gitsigns'
-  let g:scrollview_signs_on_startup = ['search', 'diagnostics', 'cursor']
-
-  set background=dark    " Setting dark mode
-  " Plug 'posva/vim-vue'
-
-  "settings for 'glacambre/firenvim', { 'do': { _ -> firenvim#install(0) } }
-  if exists('g:started_by_firenvim')
-    set guifontwide=0
-    set guifont=monospace:h10
-  endif
-  "settings for 'ianding1/leetcode.vim'
-  let g:leetcode_browser = 'firefox'
-  let g:leetcode_solution_filetype = 'javascript'
-  "nnoremap <space>4 :LeetCodeTest<cr>
-
-  " hides formatting symbols, might be overriden
-  set conceallevel=0
-  " hidden characters
-  let g:vim_json_conceal = 0
-  let g:vim_markdown_conceal = 0
-  let g:vim_markdown_folding_disabled = 1
-  map <Plug> <Plug>Markdown_MoveToCurHeader
-
-  "settings for 'mhartington/formatter.nvim'
-  " nnoremap <silent> <space>F :Format<CR>
-  nnoremap <silent> <space>f <cmd>lua vim.lsp.buf.format()<CR>
-  nnoremap <silent> <space>l <cmd>lua vim.lsp.buf.code_action()<CR>
 
   "settings for 'aaronhallaert/advanced-git-search.nvim'
   noremap ,ga :AdvancedGitSearch<CR>
@@ -63,10 +34,6 @@
   let g:startify_change_to_vcs_root = 0
   let g:startify_session_persistence = 0
 
-  "settings for 'honza/vim-snippets'
-  "treesitter throwing exceptions so use the alternative
-  "Plug 'elixir-editors/vim-elixir'
-
   "settings for 'michaeljsmith/vim-indent-object'
   " remap to my own needs since you cannot remap the built in ones
   omap ai aI
@@ -76,170 +43,12 @@
   nmap { [%
   nmap } ]%
 
-  "settings for 'nvim-treesitter/nvim-treesitter', {'do': ':TSUpdate'}  " We recommend updating the parsers on update
-  "settings for 'RRethy/nvim-treesitter-textsubjects'
-  "settings for 'nvim-treesitter/playground'
-
-
-  " CoC Config {{{
-
-    "settings for 'neoclide/coc.nvim', {'branch': 'release'}"
-    "let g:coc_node_path = '~/.nvm/versions/node/v16.3.0/bin/node'
-    let g:coc_global_extensions = [ 'coc-emmet', 'coc-git', 'coc-vimlsp',
-      \ 'coc-lists', 'coc-snippets', 'coc-html', 'coc-tsserver', 'coc-jest',
-      \ 'coc-eslint', 'coc-marketplace',
-      \ 'coc-css', 'coc-json', 'coc-yank', 'coc-prettier',
-      \ '@yaegassy/coc-volar'] "vue specific
-
-    " You will have bad experience for diagnostic messages when it's default 4000.
-    " set updatetime=500
-    " autocmd CursorHold * silent call CocActionAsync('highlight')
-    " autocmd User CocJumpPlaceholder call CocActionAsync('showSignatureHelp')
-
-    " Use tab for trigger completion with characters ahead and navigate.
-    " Use command ':verbose imap <tab>' to make sure tab is not mapped by other plugin.
-    "Make <tab> used for trigger completion, completion confirm, snippet expand and jump like VSCode.
-    " inoremap <silent><expr> <tab>
-    "       \ coc#pum#visible() ? coc#pum#next(1):
-    "       \ CheckBackspace() ? "\<Tab>" :
-    "       \ coc#refresh()
-    " inoremap <expr><S-TAB> coc#pum#visible() ? coc#pum#prev(1) : "\<C-h>"
-    "old mapping
-    "inoremap <silent><expr> <TAB>
-      "\ pumvisible() ? "\<C-n>" :
-      "\ <SID>check_back_space() ? "\<TAB>" :
-      "\ coc#refresh()
-    "inoremap <expr><S-TAB> pumvisible() ? "\<C-p>" : "\<C-h>"
-
-    " function! CheckBackspace() abort
-    "   let col = col('.') - 1
-    "   return !col || getline('.')[col - 1]  =~# '\s'
-    " endfunction
-
-    " jump through predefined locations in current snippet
-    " let g:coc_snippet_next = '<tab>'
-
-    " Use <c-space> to trigger completion.
-    " inoremap <silent><expr> <C-Space> coc#refresh()
-
-    " Use <cr> to confirm completion, `<C-g>u` means break undo chain at current position.
-    " Coc only does snippet and additional edit on confirm.
-    " inoremap <silent><expr> <CR> coc#pum#visible() ? coc#pum#confirm()
-    "                           \: "\<C-g>u\<CR>\<c-r>=coc#on_enter()\<CR>"
-    "inoremap <expr> <cr> pumvisible() ? "\<C-y>" : "\<C-g>u\<CR>"
-
-    " Use `[c` and `]c` to navigate diagnostics
-    " nmap <silent> <space><left> <Plug>(coc-diagnostic-prev)
-    " nmap <silent> <space><right> <Plug>(coc-diagnostic-next)
-
-    nnoremap <silent> <space>1 :call CocAction('runCommand', 'eslint.executeAutofix')<CR>
-    nnoremap <silent> <space>^ :call CocAction('runCommand', 'tsserver.findAllFileReferences')<CR>
-    nnoremap <silent> <space>! :!npx eslint $(git diff --name-only HEAD \| xargs) --fix --ext .js,.ts,.tsx,.vue<CR>
-
-    " Remap keys for gotos
-    nmap <silent> gd <Plug>(coc-definition)
-    "nmap <silent> ,d <cmd>lua vim.lsp.buf.definition({reuse_win = true})<CR>
-    nmap <silent> ,D <Plug>(coc-type-definition)
-    nmap <silent> ,i <Plug>(coc-implementation)
-    nmap <silent> ,6 <Plug>(coc-references)
-    nmap <silent> ,w <Plug>(coc-codelens-action)
-
-    " keeping this here till fully believing the one below works
-    " nnoremap <silent> <space><space> :call <SID>show_documentation()<CR>:call CocAction('highlight')<CR>
-    nnoremap <silent> <space><space> <cmd>lua vim.lsp.buf.hover()<CR>
-
-    function! s:show_documentation()
-      if CocAction('doHover')
-      elseif (index(['vim','help'], &filetype) >= 0)
-        execute 'h '.expand('<cword>')
-      endif
-    endfunction
-
-    " :nmap <space>e :CocCommand explorer<CR>
-
-    " Remap for rename current word
-    nmap ,r <Plug>(coc-rename)
-    nmap ,R <Plug>(coc-refactor)
-
-    " Remap for format selected region
-    " xmap <space>f  <Plug>(coc-format-selected)
-    " nmap <space>f  <Plug>(coc-format)
-    nnoremap <silent> <F7> :CocRestart<CR>:LspRestart<CR>
-
-    " select inside function and all function
-    " xmap if <Plug>(coc-funcobj-i)
-    omap if <Plug>(coc-funcobj-i)
-
-    omap af <Plug>(coc-funcobj-a)
-    xmap af <Plug>(coc-funcobj-a)
-
-    " select inside class/struct/interface and all function
-    xmap ic <Plug>(coc-classobj-i)
-    omap ic <Plug>(coc-classobj-i)
-
-    xmap ac <Plug>(coc-classobj-a)
-    omap ac <Plug>(coc-classobj-a)
-
-    " Remap for do codeAction of selected region, ex: `<leader>aap` for current paragraph
-    " xmap <space>l  <Plug>(coc-codeaction-selected)
-    " Remap for do codeAction of current line
-    " nmap <space>j  :CocListResume<cr>
-    " nmap <space>l  <Plug>(coc-codeaction)
-    " nmap <space>k  :CocList<cr>
-    " Fix autofix problem of current line
-    " nmap <space>qf  <Plug>(coc-fix-current)
-
-    " Use <tab> for select selections ranges, needs server support, like: coc-tsserver, coc-python
-    nmap <silent> 1 <Plug>(coc-range-select)
-    xmap <silent> 1 <Plug>(coc-range-select)
-    "  <silent> <S-TAB> <Plug>(coc-range-select-backword)
-
-    " Use `:Format` to format current buffer
-    command! -nargs=0 Format :call CocAction('format')
-
-    " Use `:Fold` to fold current buffer
-    command! -nargs=? Fold :call     CocAction('fold', <f-args>)
-
-    " use `:OR` for organize import of current buffer
-    command! -nargs=0 OR   :call     CocAction('runCommand', 'editor.action.organizeImport')
-
-    " Using CocList
-    " Show all diagnostics
-    nnoremap <silent> <space>ca  :<C-u>CocList diagnostics<cr>
-    " Manage extensions
-    nnoremap <silent> <space>ce  :<C-u>CocList extensions<cr>
-    " Show commands
-    nnoremap <silent> <space>cc  :<C-u>CocList commands<cr>
-    " Find symbol of current document
-    nnoremap <silent> <space>O  :<C-u>CocList outline<cr>
-    " Find symbol of current workspace
-    " nnoremap <silent> <space>O  :<C-u>CocList symbols<cr>
-
-    "show all functions that are calling the one under the cursor
-    nnoremap <silent> <space>u :call CocAction('showIncomingCalls')<CR><C-w>H
-    nnoremap <silent> <space>U :call CocAction('showOutgoingCalls')<CR><C-w>H
-    " Search workspace symbols
-    nnoremap <silent> <space>cs  :<C-u>CocList -I symbols<cr>
-    " Do default action for next item.
-    nnoremap <silent> <space>cj  :<C-u>CocNext<CR>
-    " Do default action for previous item.
-    nnoremap <silent> <space>ck  :<C-u>CocPrev<CR>
-    " Resume latest coc list
-    nnoremap <silent> <space>cp  :<C-u>CocListResume<CR>
-    " Show yanks history
-    nnoremap <silent> <space>y  :<C-u>CocList -A --normal yank<cr>
-
-  " end of coc config }}}}
-
   "settings for 'dnlhc/glance.nvim'
-
   nmap <silent> ,d :Glance definitions<cr>
   nmap <silent> gti :Glance implementations<cr>
   nmap <silent> gr :Glance references<cr>
   nmap <silent> gT :Glance type_definitions<cr>
   nmap <silent> <space><backspace> :Glance references<cr>
-
-  "settings for 'm-pilia/vim-ccls'
 
   "settings for 'tpope/vim-repeat'
   "settings for 'tpope/vim-unimpaired'
@@ -356,14 +165,6 @@
   noremap ,gh :DiffviewFileHistory %<cr>
   noremap ,gm :DiffviewOpen origin/<C-r>=GetMasterBranchName()<CR>...HEAD<cr>
 
-  "settings for 'folke/trouble.nvim'
-
-  " restore mappings
-  " use 2X to call `checkout --ours` or 3X to call `checkout --theirs`
-
-  "settings for 'junegunn/gv.vim'
-  "settings for 'tpope/vim-rhubarb'
-  " change surrounding brancjes
   "settings for 'tpope/vim-surround'
   vmap s S
 
@@ -475,27 +276,10 @@
   nnoremap <leader>pro :Octo pr checkout 
   nnoremap <leader>prr :Octo review start<cr>
 
-  "settings for 'junegunn/vim-easy-align'
-
-  "settings for 'bronson/vim-visual-star-search'
-
-  "" use + and _ to incrementally visually select
-  "Plug 'terryma/vim-expand-region'
-
-  " adds text objects for pairs such as brackets and quiotes, commas etc.
-  "settings for 'wellle/targets.vim'
-
-  "settings for 'haya14busa/vim-textobj-function-syntax'
-
   nmap <expr> - (foldclosed(line(".")) == -1) ? 'za':'zA'
   " this was manual way of setting folding, no longer needed because there is nvim-ufo plugin as provided
   vnoremap - zf
   nmap _ zc
-
-  "settings for 'chrisbra/csv.vim'
-
-  " use workspace properties if project uses editorconfig
-  "settings for 'editorconfig/editorconfig-vim'
 
   " if ripgrep
   if executable ('rg')
@@ -515,4 +299,6 @@
   " not working tbh
   nnoremap gpd <cmd>lua require('goto-preview').goto_preview_declaration()<CR>
 
-" }}}
+  nnoremap <silent> <space>l :Lspsaga code_action<CR>
+  nnoremap <space>u :Lspsaga outgoing_calls<CR>
+  nnoremap <space>U :Lspsaga incoming_calls<CR>
