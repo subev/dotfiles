@@ -52,6 +52,8 @@ ln -s "$HOME/dotfiles/gruvbox.tmTheme" "$HOME/.config/bat/themes/gruvbox.tmTheme
 
 ln -s "$HOME/dotfiles/ultisnips/" "$HOME/.config/coc/"
 
+ln -s "$HOME/dotfiles/lua/lsp_file_refs.lua" "$HOME/.config/nvim/lua/lsp_file_refs.lua"
+
 # tree-sitter for neovim
 mkdir -p ~/.local/share/nvim/site/pack/nvim-treesitter/start
 cd ~/.local/share/nvim/site/pack/nvim-treesitter/start

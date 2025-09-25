@@ -264,7 +264,13 @@ require("lazy").setup({
   {
     'saghen/blink.cmp',
     -- optional: provides snippets for the snippet source
-    dependencies = { 'rafamadriz/friendly-snippets' },
+    dependencies = {
+      'rafamadriz/friendly-snippets',
+      {
+        "mikavilpas/blink-ripgrep.nvim",
+        version = "*", -- use the latest stable version
+      }
+    },
 
     -- use a release tag to download pre-built binaries
     version = '1.*',
@@ -279,11 +285,28 @@ require("lazy").setup({
         nerd_font_variant = 'mono'
       },
       -- (Default) Only show the documentation popup when manually triggered
-      completion = { documentation = { auto_show = false } },
+      completion = { documentation = { auto_show = true } },
       -- Default list of enabled providers defined so that you can extend it
       -- elsewhere in your config, without redefining it, due to `opts_extend`
       sources = {
-        default = { 'lsp', 'path', 'snippets', 'buffer' },
+        default = {
+          'lsp',
+          'path',
+          'snippets',
+          'buffer',
+          'ripgrep'  -- 👈🏻 add "ripgrep" here
+        },
+        providers = {
+          -- 👇🏻👇🏻 add the ripgrep provider config below
+          ripgrep = {
+            module = "blink-ripgrep",
+            name = "Ripgrep",
+            -- see the full configuration below for all available options
+            ---@module "blink-ripgrep"
+            ---@type blink-ripgrep.Options
+            opts = {},
+          },
+        },
       },
       -- (Default) Rust fuzzy matcher for typo resistance and significantly better performance
       -- You may use a lua implementation instead by using `implementation = "lua"` or fallback to the lua implementation,
@@ -329,6 +352,8 @@ source ~/dotfiles/vimrc/functions.vim
 source ~/dotfiles/vimrc/general-variables.vim
 source ~/dotfiles/vimrc/autocommands.vim
 source ~/dotfiles/neovide.lua
+
+lua require('lsp_file_refs').setup()
 
 highlight link HlSearchLensNear Substitute
 highlight link ScrollViewSearch Question

@@ -218,10 +218,62 @@
   " nnoremap <space>6 :Rg <<c-r>=expand('%:t:r')<CR>\b<CR>
   " improved version of the above
   nnoremap <space>6 :<C-U>call RgFileReferences()<CR>
+  nnoremap <space>8 :<C-U>call RgXDefault(0)<CR>
   vnoremap <space>s y:Rg <c-r>"<cr>
   vnoremap <space>` y:CustomBLines <c-r>"<cr>
 
   nnoremap g1 :<C-U>call MergeKeepLeft()<CR>
+
+  function! RgXDefault(bang) abort
+    " Full absolute path of current buffer
+    let l:abs = expand('%:p')
+    if empty(l:abs)
+      echoerr "RgX: current buffer has no file"
+      return
+    endif
+
+    " Basename without extension -> initial search pattern
+    let l:tail = expand('%:t')
+    let l:pattern = substitute(l:tail, '\..*$', '', '')
+    if empty(l:pattern)
+      echoerr "RgX: cannot determine file basename"
+      return
+    endif
+
+    " Try to compute path relative to git root (if in a git repo),
+    " otherwise relative to vim's cwd (:pwd).
+    let l:rel = ''
+    let l:git_top = systemlist('git rev-parse --show-toplevel 2>/dev/null')
+    if !empty(l:git_top) && v:shell_error == 0
+      let l:git_top = substitute(l:git_top[0], '/\+$', '', '')
+      " only strip git root if the file path starts with it
+      if stridx(l:abs, l:git_top) == 0
+        let l:rel = l:abs[len(l:git_top) + 1 : ]     " path after git root + slash
+      endif
+    endif
+
+    " fallback to relative to current working directory
+    if empty(l:rel)
+      let l:rel = fnamemodify(l:abs, ':.')
+    endif
+
+    " Normalize Windows backslashes to forward slashes (rg expects /)
+    let l:rel = substitute(l:rel, '\\\\', '/', 'g')
+
+    " Anchor the exclusion to the search root (leading slash) so we exclude exactly that file:
+    let l:exclude_glob = '--glob ' . shellescape('!/' . l:rel)
+
+    " Build rg command: pattern after -- (safe quoting)
+    let l:rg_cmd = 'rg --column --line-number --no-heading --color=always -s -F '
+    let l:rg_cmd .= l:exclude_glob . ' -- ' . l:pattern
+    echom l:rg_cmd
+
+    " Call fzf.vim's grep wrapper with preview (pass the bang flag through)
+    call fzf#vim#grep(l:rg_cmd, fzf#vim#with_preview(), a:bang)
+  endfunction
+
+  " Command accepts a bang; only allow no-args use (as requested)
+  command! -bang -nargs=0 RgX call RgXDefault(<bang>0)
 
   function! RgFileReferences()
     let currentExtension = expand('%:e')
