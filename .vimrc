@@ -122,6 +122,7 @@ require("lazy").setup({
   'kien/ctrlp.vim',
   'nvim-lua/plenary.nvim',
   'nvim-telescope/telescope.nvim',
+  -- { 'nvim-telescope/telescope-fzf-native.nvim', build = 'cmake -S. -Bbuild -DCMAKE_BUILD_TYPE=Release && cmake --build build --config Release' },
   'nvim-tree/nvim-web-devicons',
   'pwntester/octo.nvim',
   'junegunn/vim-easy-align',
@@ -354,6 +355,7 @@ source ~/dotfiles/vimrc/autocommands.vim
 source ~/dotfiles/neovide.lua
 
 lua require('lsp_file_refs').setup()
+lua require('lsp_file_refs_treesitter').setup()
 
 highlight link HlSearchLensNear Substitute
 highlight link ScrollViewSearch Question
