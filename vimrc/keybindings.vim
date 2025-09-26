@@ -141,6 +141,7 @@
   noremap ; "0p
   vmap gp <c-n>\\CP<esc>
   vmap gm <c-n>\\C
+  noremap gj <S-j>
 
   vnoremap < c<<space>/><Esc>hhP
   vnoremap > c<><Esc>Pf>a</><Esc>P

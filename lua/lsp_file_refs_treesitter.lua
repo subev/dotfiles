@@ -1,8 +1,4 @@
--- find_exports_telescope.lua (query-free, robust)
--- Walks the treesitter AST to find export_statement nodes, extracts shallow
--- identifier/type_identifier children as exported names, then asks LSP for
--- references and presents external references in a Telescope picker (or quickfix
--- fallback).
+-- find_exports_telescope.lua (query-free, robust, with UNUSED warnings - fixed)
 
 local M = {}
 
@@ -49,7 +45,7 @@ local function get_line_from_uri(uri, lnum)
   return ""
 end
 
--- Walk the tree to collect export_statement nodes (no queries used)
+-- Walk the tree to collect export_statement nodes
 local function collect_export_statement_nodes(bufnr)
   local lang = ts_lang_for_buf(bufnr)
   local ok, parser = pcall(vim.treesitter.get_parser, bufnr, lang)
@@ -69,7 +65,7 @@ local function collect_export_statement_nodes(bufnr)
     end
     if node:type() == "export_statement" then
       table.insert(nodes, node)
-      return -- don't walk inside this node deeper than we need (we'll shallow-scan it later)
+      return
     end
     for child in node:iter_children() do
       walk(child)
@@ -79,12 +75,11 @@ local function collect_export_statement_nodes(bufnr)
   return nodes
 end
 
--- Collect only the first/direct exported name from each top-level export_statement.
+-- Collect only the first/direct exported name
 local function collect_exports_from_nodes(bufnr, nodes, opts)
   opts = opts or {}
   local exports = {}
   local MAX_DEPTH = 3
-
   local function shallow_find(node, depth)
     if depth > MAX_DEPTH then
       return nil
@@ -103,7 +98,6 @@ local function collect_exports_from_nodes(bufnr, nodes, opts)
   end
 
   for _, stmt in ipairs(nodes) do
-    -- skip re-exports like `export { x } from "..."` (they reference other files)
     local is_reexport = false
     for ch in stmt:iter_children() do
       if ch:type() == "string" or ch:type() == "source" then
@@ -121,19 +115,17 @@ local function collect_exports_from_nodes(bufnr, nodes, opts)
       if name and name ~= "" and not exports[name] then
         local r, c = name_node:start()
         exports[name] = { line = r, col = c, node = name_node }
-        if opts.verbose then
+        if opts and opts.verbose then
           vim.notify(string.format("export found: %s @%d:%d", name, r + 1, c + 1))
         end
       end
     end
-
     ::continue::
   end
-
   return exports
 end
 
--- Ask LSP for references for each candidate and collect external references
+-- Ask LSP for references (ignore the declaration itself when deciding internal refs)
 local function find_references_for_candidates(bufnr, candidates, opts, cb)
   opts = opts or {}
   local results = {}
@@ -144,12 +136,10 @@ local function find_references_for_candidates(bufnr, candidates, opts, cb)
   end
 
   local abs_current = vim.fn.fnamemodify(vim.api.nvim_buf_get_name(bufnr), ":p")
+  local rel_current = vim.fn.fnamemodify(abs_current, ":.")
 
   for _, cand in ipairs(candidates) do
     vim.schedule(function()
-      if opts.verbose then
-        vim.notify(string.format("requesting refs for %s @ %d:%d", cand.name, cand.pos.line + 1, cand.pos.col + 1))
-      end
       local params = {
         textDocument = { uri = vim.uri_from_bufnr(bufnr) },
         position = { line = cand.pos.line, character = cand.pos.col },
@@ -157,35 +147,77 @@ local function find_references_for_candidates(bufnr, candidates, opts, cb)
       }
 
       vim.lsp.buf_request(bufnr, "textDocument/references", params, function(err, refs)
-        if err then
-          if opts.verbose then
-            vim.notify("LSP refs error for " .. cand.name .. ": " .. vim.inspect(err), vim.log.levels.WARN)
-          end
+        if err and opts.verbose then
+          vim.notify("LSP refs error for " .. cand.name .. ": " .. vim.inspect(err), vim.log.levels.WARN)
         end
+
+        local has_external = false
+        local has_internal_non_decl = false
 
         if refs then
           for _, r in ipairs(refs) do
-            -- support both Location and LocationLink shapes
             local uri = r.uri or r.targetUri
             local range = r.range or r.targetSelectionRange
             if uri and range then
               local abs_uri = vim.fn.fnamemodify(vim.uri_to_fname(uri), ":p")
-              if abs_uri ~= abs_current then -- drop current buffer refs
-                local rel = vim.fn.fnamemodify(abs_uri, ":.")
-                local lnum = range.start.line + 1
-                local text = get_line_from_uri(uri, range.start.line)
-                table.insert(results, { filename = rel, lnum = lnum, text = text, symbol = cand.name })
+              local rel = vim.fn.fnamemodify(abs_uri, ":.")
+              local lnum = range.start.line + 1
+              local text = get_line_from_uri(uri, range.start.line)
+
+              if abs_uri ~= abs_current then
+                has_external = true
+                table.insert(results, {
+                  filename = rel,
+                  lnum = lnum,
+                  text = text,
+                  symbol = cand.name,
+                })
+              else
+                -- same-file reference: only count as "internal" if it's NOT the declaration itself
+                local decl_is_same = (range.start.line == cand.pos.line) and (range.start.character == cand.pos.col)
+                if not decl_is_same then
+                  has_internal_non_decl = true
+                  -- we don't insert internal refs in normal flow; they are considered when no external exists
+                end
               end
             end
           end
-        else
-          if opts.verbose then
-            vim.notify(string.format("no refs returned for %s", cand.name))
-          end
+        end
+
+        if not has_external then
+          -- no external references; inject an entry pointing to the export line in the current file
+          local status = has_internal_non_decl and "EXPORT-NOT-USED" or "TOTALLY-UNUSED"
+          table.insert(results, {
+            filename = rel_current,
+            lnum = cand.pos.line + 1,
+            text = "",
+            symbol = cand.name,
+            status = status,
+          })
         end
 
         pending = pending - 1
         if pending == 0 then
+          -- sort: TOTALLY-UNUSED first, then EXPORT-NOT-USED, then regular results
+          local function weight(item)
+            if item.status == "TOTALLY-UNUSED" then
+              return 1
+            end
+            if item.status == "EXPORT-NOT-USED" then
+              return 2
+            end
+            return 3
+          end
+          table.sort(results, function(a, b)
+            local wa, wb = weight(a), weight(b)
+            if wa ~= wb then
+              return wa > wb
+            end
+            if a.filename == b.filename then
+              return (a.lnum or 0) > (b.lnum or 0)
+            end
+            return (a.filename or "") > (b.filename or "")
+          end)
           cb(results)
         end
       end)
@@ -195,16 +227,9 @@ end
 
 local function show_results(results)
   if not results or vim.tbl_isempty(results) then
-    vim.notify("No external references found.")
+    vim.notify("No references found.")
     return
   end
-
-  table.sort(results, function(a, b)
-    if a.filename == b.filename then
-      return a.lnum > b.lnum
-    end
-    return a.filename > b.filename
-  end)
 
   if pickers_ok and finders_ok and conf_ok and actions_ok and action_state_ok then
     pickers
@@ -213,20 +238,36 @@ local function show_results(results)
         finder = finders.new_table({
           results = results,
           entry_maker = function(item)
+            -- prefix status at beginning so it's plainly visible
+            local prefix = ""
+            if item.status == "TOTALLY-UNUSED" then
+              prefix = "[💀DEAD]"
+            elseif item.status == "EXPORT-NOT-USED" then
+              prefix = "[👎EXPORT]"
+            end
+
             return {
               value = item,
               display = string.format(
-                "%s:%d [%s] %s",
-                item.filename,
-                item.lnum,
+                "%s[%s] %s:%d %s",
+                prefix,
                 item.symbol or "",
+                item.filename or "",
+                item.lnum or 0,
                 vim.trim(item.text or "")
               ),
-              ordinal = item.filename .. " " .. tostring(item.lnum) .. " " .. (item.text or ""),
+              ordinal = table.concat({
+                prefix,
+                item.symbol or "",
+                item.filename or "",
+                tostring(item.lnum or ""),
+                item.text or "",
+              }, " "),
               filename = item.filename,
               lnum = item.lnum,
               text = item.text,
               symbol = item.symbol,
+              status = item.status,
             }
           end,
         }),
@@ -236,11 +277,11 @@ local function show_results(results)
           actions.select_default:replace(function()
             actions.close(prompt_bufnr)
             local selection = action_state.get_selected_entry()
-            if selection then
+            if selection and selection.filename then
               local fname = vim.fn.fnameescape(selection.filename)
               vim.cmd("edit " .. fname)
               pcall(function()
-                vim.api.nvim_win_set_cursor(0, { selection.lnum, 0 })
+                vim.api.nvim_win_set_cursor(0, { selection.lnum or 1, 0 })
               end)
             end
           end)
@@ -249,23 +290,24 @@ local function show_results(results)
       })
       :find()
   else
-    -- simple quickfix fallback
+    -- quickfix fallback: include status prefix
     local qf = {}
     for _, r in ipairs(results) do
-      table.insert(
-        qf,
-        { filename = r.filename, lnum = r.lnum, col = 1, text = string.format("[%s] %s", r.symbol, r.text) }
-      )
+      local text = (r.status and ("[" .. r.status .. "]") or r.text or "")
+      table.insert(qf, {
+        filename = r.filename,
+        lnum = r.lnum or 1,
+        col = 1,
+        text = string.format("[%s] %s", r.symbol or "", text),
+      })
     end
     vim.fn.setqflist({}, " ", { title = "Export references", items = qf })
     vim.cmd("copen")
   end
 end
 
--- Public entry
 function M.find_exports_and_refs(user_opts)
   user_opts = user_opts or {}
-  local verbose = user_opts.verbose
   local bufnr = vim.api.nvim_get_current_buf()
 
   local nodes, err = collect_export_statement_nodes(bufnr)
@@ -274,7 +316,7 @@ function M.find_exports_and_refs(user_opts)
     return
   end
 
-  local exports = collect_exports_from_nodes(bufnr, nodes, { verbose = verbose })
+  local exports = collect_exports_from_nodes(bufnr, nodes, { verbose = user_opts.verbose })
   local candidates = {}
   for name, meta in pairs(exports) do
     table.insert(candidates, { name = name, pos = { line = meta.line, col = meta.col } })
@@ -295,7 +337,7 @@ function M.setup(user_opts)
   vim.api.nvim_create_user_command("FindExportsRefsTelescope", function()
     M.find_exports_and_refs(user_opts)
   end, {})
-  vim.keymap.set("n", "<Space>0", function()
+  vim.keymap.set("n", "<Space>9", function()
     M.find_exports_and_refs(user_opts)
   end, { noremap = true, silent = true })
 end

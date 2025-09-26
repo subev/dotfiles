@@ -18,10 +18,12 @@ require("lazy").setup({
   'rmagatti/goto-preview',
   'nvim-treesitter/nvim-treesitter',
   'nvim-treesitter/playground',
+  -- shows wrapping function signature if it is outside of the view
   'nvim-treesitter/nvim-treesitter-context',
   'nvim-treesitter/nvim-treesitter-textobjects',
   'ziontee113/syntax-tree-surfer',
   'RRethy/nvim-treesitter-textsubjects',
+
   'sainnhe/sonokai',
   'sainnhe/everforest',
   {
@@ -354,7 +356,6 @@ source ~/dotfiles/vimrc/general-variables.vim
 source ~/dotfiles/vimrc/autocommands.vim
 source ~/dotfiles/neovide.lua
 
-lua require('lsp_file_refs').setup()
 lua require('lsp_file_refs_treesitter').setup()
 
 highlight link HlSearchLensNear Substitute
