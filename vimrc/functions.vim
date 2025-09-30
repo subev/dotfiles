@@ -123,22 +123,17 @@
 
   function! UpdateMappingBasedOnFile(filename)
       if filereadable(a:filename)
-        nnoremap <buffer> <Space>tt :call CocAction('runCommand', 'vitest.singleTest')<CR>
-
-        nnoremap <buffer> <Space>tC :call CocAction('runCommand', 'vitest.fileTest')<CR>
         nnoremap <buffer> <Space>tc <c-w>v:<C-U>call OpenTerminalAndRunVitestForCurrentFileAndWatch()<CR>
-
-        nnoremap <buffer> <Space>ta <c-w>v:<C-U>call OpenTerminalAndRunVitestForCurrentFileAndWatch('all')<CR>G
-        nnoremap <buffer> <Space>tA :call CocAction('runCommand', 'vitest.projectTest')<CR>
+        " nnoremap <buffer> <Space>ta <c-w>v:<C-U>call OpenTerminalAndRunVitestForCurrentFileAndWatch('all')<CR>G
       endif
   endfunction
 
   function! OpenTerminalAndRunVitestForCurrentFileAndWatch(...)
     if a:0 > 0 && a:1 == 'all'
-      :terminal npm run test:unit -- --watch
+      :terminal npm run test -- --watch
     else
       let $currentFP=expand('%:p')
-      :terminal npm run test:unit $currentFP -- --watch
+      :terminal npm run test $currentFP -- --watch
     endif
   endfunction
 

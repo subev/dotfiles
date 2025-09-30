@@ -168,30 +168,6 @@
   "settings for 'tpope/vim-surround'
   vmap s S
 
-  "settings for 'itchyny/lightline.vim'
-  let g:lightline = {
-  \ 'active': {
-  \   'left': [ [ 'mode', 'paste' ],
-  \             [ 'readonly', 'lightfilepath', 'modified', 'cocstatus' ]],
-  \   'right': [ [ 'lineinfo' ],
-  \            [ 'percent' ] ],
-  \ },
-  \ 'component_function': {
-  \   'cocstatus': 'coc#status',
-  \   'lightfilepath': 'LightlineFilepath',
-  \ },
-  \ 'colorscheme': 'sonokai',
-  \ 'component': {
-  \   'lineinfo': "%{line('.') . ':' . col('.') . '/' . line('$')}",
-  \ }}
-
-  function! LightlineFilepath()
-    return winwidth(0) > 100 ? expand('%f') : expand('%:t')
-  endfunction
-
-  " Use autocmd to force lightline update.
-  autocmd User CocStatusChange,CocDiagnosticChange call lightline#update()
-
   "settings for 'jlanzarotta/bufexplorer'
   nnoremap ,b :BufExplorerVerticalSplit<CR>
   "BufExplorer show relative paths by default

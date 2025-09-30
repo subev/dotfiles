@@ -123,7 +123,7 @@
   "nnoremap <space>g y:silent ! open -a 'Google Chrome' 'http://google.com/search?q='<left>
   vnoremap <space>g y:silent ! open -a 'Google Chrome' 'http://google.com/search?q=<c-r>"'<CR>
   " add a breakpoint above the current line and test just current file with node
-  nnoremap <space>td Odebugger<esc>:w<cr>:! open -a 'Google Chrome' 'chrome://inspect/'<CR>:!node --inspect-brk node_modules/.bin/jest --runInBand --no-cache --config jest.config.js -- %<CR>
+  " nnoremap <space>td Odebugger<esc>:w<cr>:! open -a 'Google Chrome' 'chrome://inspect/'<CR>:!node --inspect-brk node_modules/.bin/jest --runInBand --no-cache --config jest.config.js -- %<CR>
   " update snapshot of current file
   nnoremap <space>tu :!npm run test:unit -- -u %<CR>
 
@@ -220,8 +220,6 @@
   nnoremap gtj :e <C-R>=expand('%:r') . '.js'<CR><CR>
   "go migrate flow and go to tsx
   nmap gtf :!flow-to-ts %:p -o tsx<cr>:e <C-R>=expand('%:r') . '.tsx'<CR><CR>
-
-  nnoremap <Space>te <c-w>v:terminal npm run test:e2e<CR>
 
   noremap <leader>ve :e $MYVIMRC<CR>
   noremap <leader>vE :vsplit $MYVIMRC<CR>

@@ -6,14 +6,8 @@
     " Update signature help on jump placeholder
     autocmd User CocJumpPlaceholder call CocActionAsync('showSignatureHelp')
 
-    au FileType markdown nnoremap <silent><buffer> <Space>o :Toc<CR>
-
-    au FileType markdown nnoremap <silent><buffer> <Space>7 :MarkdownPreview<CR>
-
     au FileType ctrlsf nnoremap <silent><buffer> <space>` :BLines<cr>
-
     au FileType ctrlsf vnoremap <silent><buffer> <space>` y:BLines <c-r>"<cr>
-
     au FileType ctrlsf nnoremap <silent><buffer> gn n
 
     au FileType fugitive nnoremap <buffer> 2 2
@@ -39,19 +33,11 @@
     au FileType help setlocal number
     au FileType vim setlocal shiftwidth=2
     au FileType vim vnoremap <buffer> <Space>= :<C-u>@*<CR>
-    "au FileType elixir nnoremap <buffer> <Space>= :let $currentFP=expand('%:p')<CR>:terminal iex $currentFP<CR>
-    au FileType elixir nnoremap <buffer> <Space>= :terminal elixir %:p<cr>i
     "execute current buffer or current selection in via ts-node (ignoring erros)
     au FileType typescript,javascript,vue vnoremap <space>= :lua visual_selection_to_node()<CR>
     " same as above but for normal mode, we first select the whole buffer
     au FileType typescript,javascript,vue nnoremap <space>= ggVG:lua visual_selection_to_node()<CR>
 :
-    "use space-t to use list plugin
-    au FileType typescript,javascript nnoremap <silent> <space>ta :call CocAction('runCommand', 'jest.projectTest')<CR>
-    au FileType typescript,javascript nnoremap <silent> <space>tc :call CocAction('runCommand', 'jest.fileTest', ['%'])<CR>
-    au FileType typescript,javascript nnoremap <silent> <space>tt :call CocAction('runCommand', 'jest.singleTest')<CR>
-    au FileType elixir nnoremap <silent> <space>tc :!mix test %:p<CR>
-    au FileType elixir nnoremap <silent> <space>f :silent !mix format %:p<CR>
     au FileType git nmap <buffer> o gO
     au FileType git setlocal foldmethod=expr foldexpr=DiffFoldLevel() foldlevel=0 foldenable
     au FileType git nmap <buffer> <expr> - (foldclosed(line(".")) == -1) ? 'za':'zA'
