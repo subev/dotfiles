@@ -144,7 +144,7 @@
   "git tools blame, log, view files in other branches
   "settings for 'tpope/vim-fugitive'
   nnoremap gD :Gvdiffsplit<cr>
-  nnoremap gb :G blame<cr>
+  nnoremap gb :G blame --date=relative<cr>
   vnoremap gb :GBrowse<cr>
   noremap ,g :G<CR>
   noremap ,g<space> :G<space>

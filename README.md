@@ -24,8 +24,6 @@ ln -s "$HOME/dotfiles/.tmux.conf" "$HOME/.tmux.conf"
 
 ln -s "$HOME/dotfiles/.gitconfig" "$HOME/.gitconfig"
 
-ln -s "$HOME/dotfiles/.vimrc" "$HOME/.vimrc"
-
 ln -s "$HOME/dotfiles/.gvimrc" "$HOME/.gvimrc"
 
 ln -s "$HOME/dotfiles/.inputrc" "$HOME/.inputrc"
@@ -38,7 +36,7 @@ ln -s "$HOME/dotfiles/.agignore" "$HOME/.rgignore"
 
 mkdir -p ~/.config/nvim/
 
-ln -s "$HOME/dotfiles/.vimrc" "$HOME/.config/nvim/init.vim"
+ln -s "$HOME/dotfiles/init.lua" "$HOME/.config/nvim/init.lua"
 
 ln -s "$HOME/dotfiles/coc-settings.json" "$HOME/.config/nvim/coc-settings.json"
 
