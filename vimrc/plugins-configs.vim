@@ -254,9 +254,9 @@
   function! RgFileReferences()
     let currentExtension = expand('%:e')
     if currentExtension == 'vue' || currentExtension == 'jsx' || currentExtension == 'tsx'
-      execute ':Rg <' . expand("%:t:r") .. '\b'
+      execute ':Rg <' . expand('%:t:r') . '\b'
     else
-      execute ':Rg ' . expand('%:t:r') .. '\('
+      execute ':Rg ' . expand('%:t:r') . '\('
     endif
   endfunction
 

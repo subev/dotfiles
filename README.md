@@ -38,6 +38,8 @@ mkdir -p ~/.config/nvim/
 
 ln -s "$HOME/dotfiles/init.lua" "$HOME/.config/nvim/init.lua"
 
+ln -s "$HOME/dotfiles/.luarc.json" "$HOME/.config/nvim/.luarc.json"
+
 ln -s "$HOME/dotfiles/coc-settings.json" "$HOME/.config/nvim/coc-settings.json"
 
 ln -s "$HOME/dotfiles/karabiner.json" "$HOME/.config/karabiner/karabiner.json"
@@ -50,7 +52,7 @@ ln -s "$HOME/dotfiles/gruvbox.tmTheme" "$HOME/.config/bat/themes/gruvbox.tmTheme
 
 ln -s "$HOME/dotfiles/ultisnips/" "$HOME/.config/coc/"
 
-ln -s "$HOME/dotfiles/lua/lsp_file_refs.lua" "$HOME/.config/nvim/lua/lsp_file_refs.lua"
+for f in ~/dotfiles/lua/*; do ln -s "$f" ~/.config/nvim/lua; done
 
 # tree-sitter for neovim
 mkdir -p ~/.local/share/nvim/site/pack/nvim-treesitter/start
