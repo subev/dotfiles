@@ -12,175 +12,173 @@ end
 vim.opt.rtp:prepend(lazypath)
 
 require("lazy").setup({
+  "sainnhe/sonokai",
+  "sainnhe/everforest",
   {
     "rmagatti/goto-preview",
-    config = function()
-      require("goto-preview").setup({
-        width = 150,
-        height = 20,
-        references = {
-          width = 250,
-        },
-      })
-
-      local opts = { noremap = true, silent = true }
-      local goto_preview = require("goto-preview")
-      vim.keymap.set("n", "gpp", goto_preview.goto_preview_definition, opts)
-      vim.keymap.set("n", "gpt", goto_preview.goto_preview_type_definition, opts)
-      vim.keymap.set("n", "gpi", goto_preview.goto_preview_implementation, opts)
-      vim.keymap.set("n", "gp", goto_preview.close_all_win, opts)
-      vim.keymap.set("n", "gpr", goto_preview.goto_preview_references, opts)
-      vim.keymap.set("n", "gpd", goto_preview.goto_preview_declaration, opts)
-    end,
+    opts = {
+      width = 150,
+      height = 20,
+      references = {
+        width = 250,
+      },
+    },
+    keys = {
+      { "gpp", "<cmd>lua require('goto-preview').goto_preview_definition()<CR>", desc = "Preview definition" },
+      { "gpt", "<cmd>lua require('goto-preview').goto_preview_type_definition()<CR>", desc = "Preview type definition" },
+      { "gpi", "<cmd>lua require('goto-preview').goto_preview_implementation()<CR>", desc = "Preview implementation" },
+      { "gp",  "<cmd>lua require('goto-preview').close_all_win()<CR>", desc = "Close all preview windows" },
+      { "gpr", "<cmd>lua require('goto-preview').goto_preview_references()<CR>", desc = "Preview references" },
+      { "gpd", "<cmd>lua require('goto-preview').goto_preview_declaration()<CR>", desc = "Preview declaration" },
+    },
   },
   {
     "nvim-treesitter/nvim-treesitter",
-    config = function()
-      require("nvim-treesitter.configs").setup({
-        highlight = {
-          enable = true, -- false will disable the whole extension
-          -- disable = { "elixir" },  -- list of language that will be disabled
-          -- Setting this to true will run `:h syntax` and tree-sitter at the same time.
-          -- Set this to `true` if you depend on 'syntax' being enabled (like for indentation).
-          -- Using this option may slow down your editor, and you may see some duplicate highlights.
-          -- Instead of true it can also be a list of languages
-          -- additional_vim_regex_highlighting = false,
-        },
-        textobjects = {
-          select = {
-            enable = true,
-
-            -- Automatically jump forward to textobj, similar to targets.vim
-            lookahead = true,
-
-            keymaps = {
-              -- You can use the capture groups defined in textobjects.scm
-              ["af"] = "@function.outer",
-              ["if"] = "@function.inner",
-              ["ac"] = "@class.outer",
-              -- You can optionally set descriptions to the mappings (used in the desc parameter of
-              -- nvim_buf_set_keymap) which plugins like which-key display
-              ["ic"] = { query = "@class.inner", desc = "Select inner part of a class region" },
-              -- You can also use captures from other query groups like `locals.scm`
-              ["as"] = { query = "@local.scope", query_group = "locals", desc = "Select language scope" },
-              -- selects the return statement without the return keyword
-              ["ir"] = { query = "@return.inner", desc = "Select inner part of a return statement" },
-              ["ar"] = { query = "@return.outer", desc = "Select outer part of a return statement" },
-            },
-            -- You can choose the select mode (default is charwise 'v')
-            --
-            -- Can also be a function which gets passed a table with the keys
-            -- * query_string: eg '@function.inner'
-            -- * method: eg 'v' or 'o'
-            -- and should return the mode ('v', 'V', or '<c-v>') or a table
-            -- mapping query_strings to modes.
-            selection_modes = {
-              ["@parameter.outer"] = "v", -- charwise
-              ["@function.outer"] = "V",  -- linewise
-              ["@class.outer"] = "<c-v>", -- blockwise
-            },
-            -- If you set this to `true` (default is `false`) then any textobject is
-            -- extended to include preceding or succeeding whitespace. Succeeding
-            -- whitespace has priority in order to act similarly to eg the built-in
-            -- `ap`.
-            --
-            -- Can also be a function which gets passed a table with the keys
-            -- * query_string: eg '@function.inner'
-            -- * selection_mode: eg 'v'
-            -- and should return true or false
-            include_surrounding_whitespace = false,
-          },
-          move = {
-            enable = true,
-            set_jumps = true, -- whether to set jumps in the jumplist
-            goto_next_start = {
-              ["]m"] = "@function.outer",
-              -- ["]]"] = { query = "@class.outer", desc = "Next class start" },
-              --
-              -- You can use regex matching (i.e. lua pattern) and/or pass a list in a "query" key to group multiple queries.
-              -- ["]o"] = "@loop.*",
-              -- ["]o"] = { query = { "@loop.inner", "@loop.outer" } }
-              --
-              -- You can pass a query group to use query from `queries/<lang>/<query_group>.scm file in your runtime path.
-              -- Below example nvim-treesitter's `locals.scm` and `folds.scm`. They also provide highlights.scm and indent.scm.
-              ["]s"] = { query = "@local.scope", query_group = "locals", desc = "Next scope" },
-              -- uses shift down arrow to go to next statement (more granular than function)
-              ["J"] = "@statement.outer",
-            },
-            goto_next_end = {
-              ["]M"] = "@function.outer",
-              ["]["] = "@class.outer",
-            },
-            goto_previous_start = {
-              ["[m"] = "@function.outer",
-              -- ["[["] = "@class.outer",
-              ["K"] = "@statement.outer",
-            },
-            goto_previous_end = {
-              ["[M"] = "@function.outer",
-              ["[]"] = "@class.outer",
-            },
-            -- Below will go to either the start or the end, whichever is closer.
-            -- Use if you want more granular movements
-            -- Make it even more gradual by adding multiple queries and regex.
-            goto_next = {
-              ["]d"] = "@conditional.outer",
-            },
-            goto_previous = {
-              ["[d"] = "@conditional.outer",
-            },
-          },
-        },
-        textsubjects = {
+    opts = {
+      highlight = {
+        enable = true, -- false will disable the whole extension
+        -- disable = { "elixir" },  -- list of language that will be disabled
+        -- Setting this to true will run `:h syntax` and tree-sitter at the same time.
+        -- Set this to `true` if you depend on 'syntax' being enabled (like for indentation).
+        -- Using this option may slow down your editor, and you may see some duplicate highlights.
+        -- Instead of true it can also be a list of languages
+        -- additional_vim_regex_highlighting = false,
+      },
+      textobjects = {
+        select = {
           enable = true,
+
+          -- Automatically jump forward to textobj, similar to targets.vim
+          lookahead = true,
+
           keymaps = {
-            [">"] = "textsubjects-smart",
-            ["+"] = "textsubjects-container-outer",
+            -- You can use the capture groups defined in textobjects.scm
+            ["af"] = "@function.outer",
+            ["if"] = "@function.inner",
+            ["ac"] = "@class.outer",
+            -- You can optionally set descriptions to the mappings (used in the desc parameter of
+            -- nvim_buf_set_keymap) which plugins like which-key display
+            ["ic"] = { query = "@class.inner", desc = "Select inner part of a class region" },
+            -- You can also use captures from other query groups like `locals.scm`
+            ["as"] = { query = "@local.scope", query_group = "locals", desc = "Select language scope" },
+            -- selects the return statement without the return keyword
+            ["ir"] = { query = "@return.inner", desc = "Select inner part of a return statement" },
+            ["ar"] = { query = "@return.outer", desc = "Select outer part of a return statement" },
           },
+          -- You can choose the select mode (default is charwise 'v')
+          --
+          -- Can also be a function which gets passed a table with the keys
+          -- * query_string: eg '@function.inner'
+          -- * method: eg 'v' or 'o'
+          -- and should return the mode ('v', 'V', or '<c-v>') or a table
+          -- mapping query_strings to modes.
+          selection_modes = {
+            ["@parameter.outer"] = "v", -- charwise
+            ["@function.outer"] = "V",  -- linewise
+            ["@class.outer"] = "<c-v>", -- blockwise
+          },
+          -- If you set this to `true` (default is `false`) then any textobject is
+          -- extended to include preceding or succeeding whitespace. Succeeding
+          -- whitespace has priority in order to act similarly to eg the built-in
+          -- `ap`.
+          --
+          -- Can also be a function which gets passed a table with the keys
+          -- * query_string: eg '@function.inner'
+          -- * selection_mode: eg 'v'
+          -- and should return true or false
+          include_surrounding_whitespace = false,
         },
-        playground = {
+        move = {
           enable = true,
-          disable = {},
-          updatetime = 25,         -- Debounced time for highlighting nodes in the playground from source code
-          persist_queries = false, -- Whether the query persists across vim sessions
-          keybindings = {
-            toggle_query_editor = "o",
-            toggle_hl_groups = "i",
-            toggle_injected_languages = "t",
-            toggle_anonymous_nodes = "a",
-            toggle_language_display = "I",
-            focus_language = "f",
-            unfocus_language = "F",
-            update = "R",
-            goto_node = "<cr>",
-            show_help = "?",
+          set_jumps = true, -- whether to set jumps in the jumplist
+          goto_next_start = {
+            ["]m"] = "@function.outer",
+            -- ["]]"] = { query = "@class.outer", desc = "Next class start" },
+            --
+            -- You can use regex matching (i.e. lua pattern) and/or pass a list in a "query" key to group multiple queries.
+            -- ["]o"] = "@loop.*",
+            -- ["]o"] = { query = { "@loop.inner", "@loop.outer" } }
+            --
+            -- You can pass a query group to use query from `queries/<lang>/<query_group>.scm file in your runtime path.
+            -- Below example nvim-treesitter's `locals.scm` and `folds.scm`. They also provide highlights.scm and indent.scm.
+            ["]s"] = { query = "@local.scope", query_group = "locals", desc = "Next scope" },
+            -- uses shift down arrow to go to next statement (more granular than function)
+            ["J"] = "@statement.outer",
+          },
+          goto_next_end = {
+            ["]M"] = "@function.outer",
+            ["]["] = "@class.outer",
+          },
+          goto_previous_start = {
+            ["[m"] = "@function.outer",
+            -- ["[["] = "@class.outer",
+            ["K"] = "@statement.outer",
+          },
+          goto_previous_end = {
+            ["[M"] = "@function.outer",
+            ["[]"] = "@class.outer",
+          },
+          -- Below will go to either the start or the end, whichever is closer.
+          -- Use if you want more granular movements
+          -- Make it even more gradual by adding multiple queries and regex.
+          goto_next = {
+            ["]d"] = "@conditional.outer",
+          },
+          goto_previous = {
+            ["[d"] = "@conditional.outer",
           },
         },
-      })
-    end,
+      },
+      textsubjects = {
+        enable = true,
+        keymaps = {
+          [">"] = "textsubjects-smart",
+          ["+"] = "textsubjects-container-outer",
+        },
+      },
+      playground = {
+        enable = true,
+        disable = {},
+        updatetime = 25,         -- Debounced time for highlighting nodes in the playground from source code
+        persist_queries = false, -- Whether the query persists across vim sessions
+        keybindings = {
+          toggle_query_editor = "o",
+          toggle_hl_groups = "i",
+          toggle_injected_languages = "t",
+          toggle_anonymous_nodes = "a",
+          toggle_language_display = "I",
+          focus_language = "f",
+          unfocus_language = "F",
+          update = "R",
+          goto_node = "<cr>",
+          show_help = "?",
+        },
+      },
+    },
   },
-  "nvim-treesitter/playground",
+  {
+    "nvim-treesitter/playground",
+    lazy = true,
+    cmd = {
+      "TSPlaygroundToggle",
+    },
+  },
   -- shows wrapping function signature if it is outside of the view
   "nvim-treesitter/nvim-treesitter-context",
   "nvim-treesitter/nvim-treesitter-textobjects",
   {
     "ziontee113/syntax-tree-surfer",
-    config = function()
-      require("syntax-tree-surfer").setup()
-
-      local opts = { noremap = true, silent = true }
-      vim.keymap.set("x", "<c-j>", "<cmd>STSSelectNextSiblingNode<cr>", opts)
-      vim.keymap.set("x", "<c-k>", "<cmd>STSSelectPrevSiblingNode<cr>", opts)
-      vim.keymap.set("x", "<c-h>", "<cmd>STSSelectParentNode<cr>", opts)
-      vim.keymap.set("x", "<c-l>", "<cmd>STSSelectChildNode<cr>", opts)
-
-      vim.keymap.set("n", "<c-h>", "ve<c-h>", { noremap = false, silent = true })
-    end,
+    opts = {},
+    lazy = true,
+    keys = {
+      { "<c-j>", "<cmd>STSSelectNextSiblingNode<cr>", mode = "x", desc = "Select next sibling node" },
+      { "<c-k>", "<cmd>STSSelectPrevSiblingNode<cr>", mode = "x", desc = "Select previous sibling node" },
+      { "<c-h>", "<cmd>STSSelectParentNode<cr>", mode = "x", desc = "Select parent node" },
+      { "<c-l>", "<cmd>STSSelectChildNode<cr>", mode = "x", desc = "Select child node" },
+      { "<c-h>", "ve<c-h>", mode = "n", noremap = false, silent = true, desc = "Expand selection left" },
+    },
   },
   "RRethy/nvim-treesitter-textsubjects",
-
-  "sainnhe/sonokai",
-  "sainnhe/everforest",
 
   {
     "kawre/leetcode.nvim",
@@ -194,155 +192,196 @@ require("lazy").setup({
       arg = "leet",
       lang = "typescript",
     },
+    lazy = true,
+    cmd = { "Leet" },
   },
 
   "github/copilot.vim",
 
   {
     "numToStr/Comment.nvim",
-    config = function()
-      require("Comment").setup({
-        opleader = {
-          block = "gB",
-        },
-      })
-    end,
+    opts = {
+      opleader = {
+        block = "gB",
+      },
+    },
   },
 
-  "scrooloose/nerdtree",
-  "Xuyuanp/nerdtree-git-plugin",
-  "mhinz/vim-startify",
+  {
+    "preservim/nerdtree",
+    dependencies = { "Xuyuanp/nerdtree-git-plugin" },
+    init = function()
+      vim.g.NERDTreeQuitOnOpen = 1
+      vim.g.NERDTreeChDirMode = 1
+      vim.g.NERDTreeShowHidden = 1
+      vim.g.NERDTreeWinSize = 70
+    end,
+    keys = {
+      { "<space>p", ":NERDTreeFind<CR>zz", desc = "Find file in NERDTree" },
+    },
+    cmd = { "NERDTreeFind" },
+    lazy = true,
+  },
+
+  {
+    "mhinz/vim-startify",
+    init = function()
+      vim.g.startify_change_to_dir = 0
+      vim.g.startify_change_to_vcs_root = 0
+      vim.g.startify_session_persistence = 0
+    end
+  },
   "skanehira/gh.vim",
 
   {
     "lewis6991/gitsigns.nvim",
-    config = function()
-      require("gitsigns").setup({
-        current_line_blame = true,
-        on_attach = function(bufnr)
-          local gs = package.loaded.gitsigns
+    opts = {
+      current_line_blame = true,
+      on_attach = function(bufnr)
+        local gs = package.loaded.gitsigns
 
-          local function map(mode, l, r, opts)
-            opts = opts or {}
-            opts.buffer = bufnr
-            vim.keymap.set(mode, l, r, opts)
+        local function map(mode, l, r, opts)
+          opts = opts or {}
+          opts.buffer = bufnr
+          vim.keymap.set(mode, l, r, opts)
+        end
+
+        -- Navigation
+        map("n", "]c", function()
+          if vim.wo.diff then
+            return "]c"
           end
-
-          -- Navigation
-          map("n", "]c", function()
-            if vim.wo.diff then
-              return "]c"
-            end
-            vim.schedule(function()
-              gs.next_hunk()
-            end)
-            return "<Ignore>"
-          end, { expr = true })
-
-          map("n", "[c", function()
-            if vim.wo.diff then
-              return "[c"
-            end
-            vim.schedule(function()
-              gs.prev_hunk()
-            end)
-            return "<Ignore>"
-          end, { expr = true })
-
-          -- Actions
-          map("n", "<space>x", gs.reset_hunk)
-          map("n", "<space>h", gs.preview_hunk)
-
-          map("n", "<leader>hs", gs.stage_hunk)
-          map("v", "<leader>hs", function()
-            gs.stage_hunk({ vim.fn.line("."), vim.fn.line("v") })
+          vim.schedule(function()
+            gs.next_hunk()
           end)
-          map("v", "<space>x", function()
-            gs.reset_hunk({ vim.fn.line("."), vim.fn.line("v") })
-          end)
-          map("n", "<leader>hS", gs.stage_buffer)
-          map("n", "<leader>hu", gs.undo_stage_hunk)
-          map("n", "<leader>hR", gs.reset_buffer)
-          map("n", "<leader>hb", function()
-            gs.blame_line({ full = true })
-          end)
-          map("n", "<leader>tb", gs.toggle_current_line_blame)
-          map("n", "<leader>hd", gs.diffthis)
-          map("n", "<leader>hD", function()
-            gs.diffthis("~")
-          end)
-          map("n", "<leader>td", gs.toggle_deleted)
+          return "<Ignore>"
+        end, { expr = true })
 
-          -- Text object
-          map({ "o", "x" }, "ah", ":<C-U>Gitsigns select_hunk<CR>")
-        end,
-      })
-    end,
+        map("n", "[c", function()
+          if vim.wo.diff then
+            return "[c"
+          end
+          vim.schedule(function()
+            gs.prev_hunk()
+          end)
+          return "<Ignore>"
+        end, { expr = true })
+
+        -- Actions
+        map("n", "<space>x", gs.reset_hunk)
+        map("n", "<space>h", gs.preview_hunk)
+
+        map("n", "<leader>hs", gs.stage_hunk)
+        map("v", "<leader>hs", function()
+          gs.stage_hunk({ vim.fn.line("."), vim.fn.line("v") })
+        end)
+        map("v", "<space>x", function()
+          gs.reset_hunk({ vim.fn.line("."), vim.fn.line("v") })
+        end)
+        map("n", "<leader>hS", gs.stage_buffer)
+        map("n", "<leader>hu", gs.undo_stage_hunk)
+        map("n", "<leader>hR", gs.reset_buffer)
+        map("n", "<leader>hb", function()
+          gs.blame_line({ full = true })
+        end)
+        map("n", "<leader>tb", gs.toggle_current_line_blame)
+        map("n", "<leader>hd", gs.diffthis)
+        map("n", "<leader>hD", function()
+          gs.diffthis("~")
+        end)
+        map("n", "<leader>td", gs.toggle_deleted)
+
+        -- Text object
+        map({ "o", "x" }, "ah", ":<C-U>Gitsigns select_hunk<CR>")
+      end,
+    }
   },
 
   {
     "dnlhc/glance.nvim",
-    config = function()
-      require("glance").setup({
-        hooks = {
-          before_open = function(results, open, jump, method)
-            local uri = vim.uri_from_bufnr(0)
-            if #results == 1 then
-              local target_uri = results[1].uri or results[1].targetUri
-              if target_uri == uri then
-                jump(results[1])
-              else
-                open(results)
-              end
+    opts = {
+      hooks = {
+        before_open = function(results, open, jump, method)
+          local uri = vim.uri_from_bufnr(0)
+          if #results == 1 then
+            local target_uri = results[1].uri or results[1].targetUri
+            if target_uri == uri then
+              jump(results[1])
             else
               open(results)
             end
-          end,
-        },
-        detached = function(winid)
-          return vim.api.nvim_win_get_width(winid) < 150
+          else
+            open(results)
+          end
         end,
-      })
-    end,
+      },
+      detached = function(winid)
+        return vim.api.nvim_win_get_width(winid) < 150
+      end,
+    },
+    keys = {
+      { ",d", "<cmd>Glance definitions<cr>", desc = "Glance definitions" },
+      { "gti", "<cmd>Glance implementations<cr>", desc = "Glance implementations" },
+      { "gr", "<cmd>Glance references<cr>", desc = "Glance references" },
+      { "gT", "<cmd>Glance type_definitions<cr>", desc = "Glance type_definitions" },
+      { "<space><backspace>", "<cmd>Glance references<cr>", desc = "Glance references" },
+    },
   },
 
   "tpope/vim-repeat",
   "tpope/vim-unimpaired",
-  "tpope/vim-fireplace",
-  "clojure-vim/vim-cider",
   "kana/vim-smartword",
   "bkad/camelcasemotion",
-  "mg979/vim-visual-multi",
+
+  {
+    "mg979/vim-visual-multi",
+    init = function ()
+      vim.g.VM_mouse_mappings = 1
+    end,
+    keys = {
+      -- TODO
+      -- map <F2> \\A
+      -- map <F3> \\C
+    }
+  },
   {
     "easymotion/vim-easymotion",
-    config = function()
+    init = function ()
       vim.g.EasyMotion_smartcase = 1
       vim.g.EasyMotion_keys = "asdghklqwertyuiopzxcvbnmfj"
-      -- Map "f" to Easymotion’s over-window motion
-      vim.keymap.set(
-        "n",
+    end,
+    lazy = true,
+    keys = {
+      {
         "f",
         "<Plug>(easymotion-overwin-f2)",
-        { noremap = false, silent = true, desc = "Easymotion over window f2" }
-      )
-    end,
+        mode = "n",
+        noremap = false,
+        silent = true,
+        desc = "Easymotion over window f2",
+      },
+    }
   },
   {
     "AndrewRadev/switch.vim",
-    config = function()
+    init = function()
       -- Define custom switch pairs
       vim.g.switch_custom_definitions = {
         { "!==", "===" },
         { "!=",  "==" },
       }
-      -- Keymap to trigger Switch
-      vim.keymap.set(
-        "n",
+    end,
+    lazy = true,
+    keys = {
+      {
         "!",
         "<Plug>(Switch)",
-        { noremap = false, silent = true, desc = "Toggle operator with switch.vim" }
-      )
-    end,
+        mode = "n",
+        noremap = false,
+        silent = true,
+        desc = "Toggle operator with switch.vim",
+      },
+    }
   },
   {
     "AndrewRadev/splitjoin.vim",
@@ -378,32 +417,119 @@ require("lazy").setup({
     end,
   },
   "HiPhish/rainbow-delimiters.nvim",
-  "mbbill/undotree",
-  "matze/vim-move",
-  "dyng/ctrlsf.vim",
-  "tpope/vim-fugitive",
+
+  {
+    "mbbill/undotree",
+    lazy = true,
+    keys = {
+      { "<leader>u", ":UndotreeToggle<cr>", noremap = true, silent = true, desc = "Toggle Undotree" },
+    },
+    cmd = { "UndotreeToggle" },
+  },
+
+  {
+    "matze/vim-move",
+    init = function ()
+      vim.g.move_map_keys = 0
+      vim.keymap.set("v", "H", "<Plug>MoveBlockUp", {
+        noremap = false,
+        silent = true,
+        desc = "Move block up",
+      })
+      vim.keymap.set("v", "L", "<Plug>MoveBlockDown", {
+        noremap = false,
+        silent = true,
+        desc = "Move block down",
+      })
+      vim.keymap.set("n", "H", "<Plug>MoveLineUp", {
+        noremap = false,
+        silent = true,
+        desc = "Move line up",
+      })
+      vim.keymap.set("n", "L", "<Plug>MoveLineDown", {
+        noremap = false,
+        silent = true,
+        desc = "Move line down",
+      })
+    end
+  },
+
+  {
+    "dyng/ctrlsf.vim",
+    init = function ()
+      vim.g.ctrlsf_ackprg = "rg"
+      vim.g.ctrlsf_mapping = {
+        next = "n",
+        prev = "N",
+        vsplit = "s",
+        open = "<cr>",
+      }
+      vim.g.ctrlsf_auto_focus = {
+        at = "start",
+      }
+      vim.g.ctrlsf_confirm_save = 0
+    end,
+
+    keys = {
+      { "<leader>r", ":CtrlSF<space>", noremap = true, silent = true, desc = "CtrlSF" },
+      { "<space>r", ":CtrlSFOpen<CR>", noremap = true, silent = true, desc = "CtrlSF Open" },
+      { "<leader>r", 'y:CtrlSF \\b<C-R>"\\b -R -G !*.test.ts<CR>', mode = "v", noremap = true, silent = true, desc = "CtrlSF with visual selection (ignore .test.ts files)" },
+      { "<space>r", 'y:CtrlSF <C-R>" <C-R>=expand("%:p")<cr><cr>', mode = "v", noremap = true, silent = true, desc = "CtrlSF in current file with visual selection" },
+      { "R", ":CtrlSF <C-R><C-W> -W<CR>", noremap = true, silent = true, desc = "CtrlSF word under cursor" },
+      { "R", 'y:CtrlSF "<C-R>""<CR>', mode = "v", noremap = true, silent = true, desc = "CtrlSF with visual selection" },
+      { "T", 'y:CtrlSF "<C-R>"" -G !*.test.ts<CR>', mode = "v", noremap = true, silent = true, desc = "CtrlSF with visual selection (ignore .test.ts files)" },
+    }
+  },
+
+  {
+    "tpope/vim-fugitive",
+    init = function ()
+      
+      vim.keymap.set("n", "gD", ":Gvdiffsplit<cr>", { noremap = true, silent = true, desc = "Git vertical diff split" })
+      vim.keymap.set("n", "gb", ":G blame --date=relative<cr>", { noremap = true, silent = true, desc = "Git blame" })
+      vim.keymap.set("v", "gb", ":GBrowse<cr>", { noremap = true, silent = true, desc = "Git browse" })
+      vim.keymap.set("n", ",g", ":G<CR>", { noremap = true, silent = true, desc = "Git status" })
+      vim.keymap.set("n", ",g<space>", ":G<space>", { noremap = true, silent = true, desc = "Git status with args" })
+      vim.keymap.set("n", ",gg", ":G<CR><c-w>H", { noremap = true, silent = true, desc = "Git status in left pane" })
+      vim.keymap.set("n", ",gc", ":GV?<cr><c-w>H", { noremap = true, silent = true, desc = "Git commit log in new tab" })
+      vim.keymap.set("n", ",gH", ":G log --stat -p -U0 --abbrev-commit --date=relative -- %<cr><c-w>H", { noremap = true, silent = true, desc = "Git file history in left pane" })
+      vim.keymap.set("n", ",gp", ":G pull", { noremap = true, silent = true, desc = "Git pull (waiting for confirm)" })
+      vim.keymap.set("n", ",gs", ":G push", { noremap = true, silent = true, desc = "Git push (waiting for confirm)" })
+      vim.keymap.set("n", ",gf", ":G fetch<cr>", { noremap = true, silent = true, desc = "Git fetch" })
+      vim.keymap.set("n", ",gx", ":G merge origin/master<cr>", { noremap = true, silent = true, desc = "Git merge origin/master" })
+      vim.keymap.set("n", ",gz", ":G merge --continue<cr>", { noremap = true, silent = true, desc = "Git merge continue" })
+      vim.keymap.set("n", "gM", ":Gvsplit origin/<C-r>=GetMasterBranchName()<CR>:%<cr>", { noremap = true, silent = true, desc = "Git vertical diff split with master" })
+      vim.keymap.set("n", "gm", ":Gvdiffsplit origin/<C-r>=GetMasterBranchName()<CR>:%<cr>", { noremap = true, silent = true, desc = "Git see same file but in master" })
+      vim.keymap.set("n", ",gM", ":G diff origin/<C-r>=GetMasterBranchName()<CR>... <cr><c-w>H", { noremap = true, silent = true, desc = "Git diff with master in left pane" })
+    end
+  },
+
   {
     "sindrets/diffview.nvim",
-    config = function()
-      require("diffview").setup({
-        keymaps = {
-          view = { q = "<Cmd>DiffviewClose<CR>" },
-          file_panel = { q = "<Cmd>DiffviewClose<CR>" },
-          file_history_panel = { q = "<Cmd>DiffviewClose<CR>" },
+    opts = {
+      keymaps = {
+        view = { q = "<Cmd>DiffviewClose<CR>" },
+        file_panel = { q = "<Cmd>DiffviewClose<CR>" },
+        file_history_panel = { q = "<Cmd>DiffviewClose<CR>" },
+      },
+      file_panel = {
+        win_config = {
+          width = 50,
         },
-        file_panel = {
-          win_config = {
-            width = 50,
-          },
+      },
+      view = {
+        merge_tool = {
+          layout = "diff4_mixed",
+          disable_diagnostics = true,
         },
-        view = {
-          merge_tool = {
-            layout = "diff4_mixed",
-            disable_diagnostics = true,
-          },
-        },
-      })
-    end,
+      },
+    },
+    lazy = true,
+    keys = {
+      { ",gd", ":DiffviewOpen<cr>", desc = "Git Diffview Open" },
+      { ",gh", ":DiffviewFileHistory %<cr>", desc = "Git Diffview File History" },
+      { ",gm", ":DiffviewOpen origin/<C-r>=GetMasterBranchName()<CR>...HEAD<cr>", desc = "Git Diffview Open with master" },
+    },
   },
   {
     "folke/trouble.nvim",
@@ -780,6 +906,7 @@ require("lazy").setup({
       vim.g.ctrlp_by_filename = 1
       vim.g.ctrlp_mruf_max = 2500
       vim.g.ctrlp_mruf_exclude = "/tmp/.*\\|/temp/.*\\|/private/.*\\|.*/node_modules/.*\\|.*/.pyenv/.*"
+      vim.g.ctrlp_user_command = 'rg %s --files --color=never --glob ""'
       -- Keymaps
       vim.keymap.set("n", ",x", ":CtrlPMRUFiles<CR>", { noremap = true, silent = true })
       vim.keymap.set("n", ",v", "<cmd>Telescope oldfiles<cr>", { noremap = true, silent = true })
@@ -885,26 +1012,16 @@ require("lazy").setup({
 
   {
     "pwntester/octo.nvim",
-    config = function()
-      require("octo").setup({
-        enable_builtin = true,
-      })
-
-      vim.keymap.set("n", "<space>v", "<cmd>Octo<cr>", { noremap = true, silent = true, desc = "Open Octo" })
-      vim.keymap.set("n", "<space>vv", "<cmd>Octo<cr>", { noremap = true, silent = true, desc = "Open Octo" })
-      vim.keymap.set(
-        "n",
-        "<leader>pro",
-        "<cmd>Octo pr checkout<cr>",
-        { noremap = true, silent = true, desc = "Checkout PR" }
-      )
-      vim.keymap.set(
-        "n",
-        "<leader>prr",
-        "<cmd>Octo review start<cr>",
-        { noremap = true, silent = true, desc = "Start PR Review" }
-      )
-    end,
+    opts = {
+      enable_builtin = true,
+    },
+    keys = {
+      { "<space>v", "<cmd>Octo<cr>", desc = "Open Octo" },
+      { "<space>vv", "<cmd>Octo<cr>", desc = "Open Octo" },
+      { "<leader>pro", "<cmd>Octo pr checkout<cr>", desc = "Checkout PR" },
+      { "<leader>prr", "<cmd>Octo review start<cr>", desc = "Start PR Review" },
+    },
+    cmd = { "Octo" },
   },
 
   {
@@ -1340,12 +1457,6 @@ require("lazy").setup({
   },
   -- nice markdown preview
   { "OXY2DEV/markview.nvim" },
-  {
-    "alex-popov-tech/store.nvim",
-    dependencies = { "OXY2DEV/markview.nvim" },
-    opts = {},
-    cmd = "Store"
-  },
 })
 
 vim.keymap.set("n", "<space>f", function()

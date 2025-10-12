@@ -9,19 +9,6 @@
   imap <C-n> <Plug>(copilot-next)
   imap <C-p> <Plug>(copilot-previous)
 
-  "settings for 'Xuyuanp/nerdtree-git-plugin'
-  let g:NERDTreeQuitOnOpen = 1
-  let g:NERDTreeChDirMode  = 0
-  let NERDTreeShowHidden = 1
-  let NERDTreeWinSize = 70
-  noremap <space>p :NERDTreeFind<CR>zz
-  noremap <silent> <F4> :NERDTreeToggle<CR>
-
-  "settings for 'mhinz/vim-startify'
-  let g:startify_change_to_dir = 0
-  let g:startify_change_to_vcs_root = 0
-  let g:startify_session_persistence = 0
-
   "settings for 'michaeljsmith/vim-indent-object'
   " remap to my own needs since you cannot remap the built in ones
   omap ai aI
@@ -30,13 +17,6 @@
   " settings for 'jeetsukumaran/vim-indentwise'
   nmap { [%
   nmap } ]%
-
-  "settings for 'dnlhc/glance.nvim'
-  nmap <silent> ,d :Glance definitions<cr>
-  nmap <silent> gti :Glance implementations<cr>
-  nmap <silent> gr :Glance references<cr>
-  nmap <silent> gT :Glance type_definitions<cr>
-  nmap <silent> <space><backspace> :Glance references<cr>
 
   "settings for 'tpope/vim-repeat'
   "settings for 'tpope/vim-unimpaired'
@@ -55,70 +35,8 @@
   vmap <silent> E <Plug>CamelCaseMotion_e
 
   "settings for 'mg979/vim-visual-multi'
-  let g:VM_mouse_mappings = 1
   map <F2> \\A
   map <F3> \\C
-
-  "settings for 'mbbill/undotree'
-  nnoremap <leader>u :UndotreeToggle<cr>
-
-  "this one should be used instead of the keybindings near the end of the file'
-  "settings for 'matze/vim-move'
-  let g:move_map_keys = 0
-  vmap H <Plug>MoveBlockUp
-  vmap L <Plug>MoveBlockDown
-  nmap H <Plug>MoveLineUp
-  nmap L <Plug>MoveLineDown
-
-  "settings for 'dyng/ctrlsf.vim'
-  let g:ctrlsf_ackprg = 'rg'
-  let g:ctrlsf_mapping = {
-    \ "next": "n",
-    \ "prev": "N",
-    \ "vsplit": "s",
-    \ "open": "<cr>",
-    \ }
-  let g:ctrlsf_auto_focus = {
-      \ "at" : "start"
-      \ }
-  let g:ctrlsf_confirm_save = 0
-
-  " search with sublime-alternative
-  noremap <leader>r :CtrlSF<space>
-  noremap <Space>r :CtrlSFOpen<CR><space>
-  vnoremap <leader>r y:CtrlSF \b<C-R>"\b -R -G !*.test.ts
-  " search within the current file
-  vnoremap <Space>r y:CtrlSF <C-R>" <C-R>=expand('%:p')<cr><cr>
-  " bind R to search and replace word under the cursor or visual selection
-  nnoremap R :CtrlSF <C-R><C-W> -W<CR>
-  vnoremap R y:CtrlSF "<C-R>""<CR>
-  "same as above but ignore test files
-  vnoremap T y:CtrlSF "<C-R>"" -G !*.test.ts<CR>
-
-
-  "git tools blame, log, view files in other branches
-  "settings for 'tpope/vim-fugitive'
-  nnoremap gD :Gvdiffsplit<cr>
-  nnoremap gb :G blame --date=relative<cr>
-  vnoremap gb :GBrowse<cr>
-  noremap ,g :G<CR>
-  noremap ,g<space> :G<space>
-  noremap ,gg :G<CR><c-w>H
-  noremap ,gc :GV?<cr><c-w>H
-  noremap ,gH :G log --stat -p -U0 --abbrev-commit --date=relative -- %<cr><c-w>H
-  noremap ,gp :G pull
-  noremap ,gs :G push
-  noremap ,gf :G fetch
-  noremap ,gx :G merge origin/master
-  noremap ,gz :G merge --continue
-  nnoremap gM :Gvsplit origin/<C-r>=GetMasterBranchName()<CR>:%<cr>
-  nnoremap gm :Gvdiffsplit origin/<C-r>=GetMasterBranchName()<CR>:%<cr>
-  noremap ,gM :G diff origin/<C-r>=GetMasterBranchName()<CR>... <cr><c-w>H
-
-  "settings for 'sindrets/diffview.nvim'
-  noremap ,gd :DiffviewOpen<CR>
-  noremap ,gh :DiffviewFileHistory %<cr>
-  noremap ,gm :DiffviewOpen origin/<C-r>=GetMasterBranchName()<CR>...HEAD<cr>
 
   nnoremap <space>6 :<C-U>call RgFileReferences()<CR>
   nnoremap <space>8 :<C-U>call RgXDefault(0)<CR>
@@ -204,12 +122,3 @@
   " this was manual way of setting folding, no longer needed because there is nvim-ufo plugin as provided
   vnoremap - zf
   nmap _ zc
-
-  " if ripgrep
-  if executable ('rg')
-    set grepprg=rg\ --color=never
-    "set grepformat=%f:%l:%c:%m,%f:%l:%m
-    let g:ackprg = 'rg --vimgrep --no-heading'
-    let g:ctrlp_user_command = 'rg %s --files --color=never --glob ""'
-  endif
-
