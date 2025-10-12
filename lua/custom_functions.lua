@@ -25,22 +25,22 @@ function Unique_Buffers()
 end
 
 function GetMasterBranchName()
-  local main_exists = vim.fn.system('git branch --list main')
-  if string.find(main_exists, 'main') then
-    return 'main'
+  local main_exists = vim.fn.system("git branch --list main")
+  if string.find(main_exists, "main") then
+    return "main"
   else
-    return 'master'
+    return "master"
   end
 end
 
 -- noremap ,gl :lua GiT_Log_CurrentFile_With_External_Diff_Inside_New_Terminal()<cr>
 
 function GiT_Log_CurrentFile_With_External_Diff_Inside_New_Terminal()
-  local current_file = vim.fn.expand('%:p')
+  local current_file = vim.fn.expand("%:p")
   local git_command = "GIT_EXTERNAL_DIFF=difft git log --ext-diff -p -- " .. current_file
-  vim.cmd('tabnew')
-  vim.cmd('terminal ' .. git_command)
-  vim.cmd('startinsert')
+  vim.cmd("tabnew")
+  vim.cmd("terminal " .. git_command)
+  vim.cmd("startinsert")
 
   -- Close the tab if the command exits
   vim.cmd([[
@@ -51,9 +51,9 @@ end
 -- noremap ,gp :lua Git_Show_Log_Patches()<cr>
 function Git_Show_Log_Patches()
   local git_command = "GIT_EXTERNAL_DIFF=difft git ls -p"
-  vim.cmd('tabnew')
-  vim.cmd('terminal ' .. git_command)
-  vim.cmd('startinsert')
+  vim.cmd("tabnew")
+  vim.cmd("terminal " .. git_command)
+  vim.cmd("startinsert")
 
   -- Close the tab if the command exits
   vim.cmd([[
@@ -65,9 +65,9 @@ end
 function Git_Show_Diff_Against_Main_Or_Master()
   local main_branch = GetMasterBranchName()
   local git_command = "GIT_EXTERNAL_DIFF=difft git diff --ext-diff origin/" .. main_branch .. "...HEAD"
-  vim.cmd('tabnew')
-  vim.cmd('terminal ' .. git_command)
-  vim.cmd('startinsert')
+  vim.cmd("tabnew")
+  vim.cmd("terminal " .. git_command)
+  vim.cmd("startinsert")
 
   -- Close the tab if the command exits
   vim.cmd([[
@@ -94,9 +94,7 @@ function VisualSelectionToNode()
   local selection = table.concat(lines, "\n")
 
   -- Pass the selection to node with eval mode and discard stderr
-  local command = 'node --experimental-strip-types -e "' .. selection:gsub('"', '\\"') .. '"' .. ' 2>/dev/null'
-  -- same without discarding stderr
-  local command = 'node --experimental-strip-types -e "' .. selection:gsub('"', '\\"') .. '"'
+  local command = { "node", "--experimental-strip-types", "-e", selection }
   local output = vim.fn.system(command)
   print(output)
 end

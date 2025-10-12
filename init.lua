@@ -13,7 +13,7 @@ vim.opt.rtp:prepend(lazypath)
 
 require("lazy").setup({
   {
-    'rmagatti/goto-preview',
+    "rmagatti/goto-preview",
     config = function()
       require("goto-preview").setup({
         width = 150,
@@ -22,10 +22,19 @@ require("lazy").setup({
           width = 250,
         },
       })
-    end
+
+      local opts = { noremap = true, silent = true }
+      local goto_preview = require("goto-preview")
+      vim.keymap.set("n", "gpp", goto_preview.goto_preview_definition, opts)
+      vim.keymap.set("n", "gpt", goto_preview.goto_preview_type_definition, opts)
+      vim.keymap.set("n", "gpi", goto_preview.goto_preview_implementation, opts)
+      vim.keymap.set("n", "gp", goto_preview.close_all_win, opts)
+      vim.keymap.set("n", "gpr", goto_preview.goto_preview_references, opts)
+      vim.keymap.set("n", "gpd", goto_preview.goto_preview_declaration, opts)
+    end,
   },
   {
-    'nvim-treesitter/nvim-treesitter',
+    "nvim-treesitter/nvim-treesitter",
     config = function()
       require("nvim-treesitter.configs").setup({
         highlight = {
@@ -67,7 +76,7 @@ require("lazy").setup({
             -- mapping query_strings to modes.
             selection_modes = {
               ["@parameter.outer"] = "v", -- charwise
-              ["@function.outer"] = "V", -- linewise
+              ["@function.outer"] = "V",  -- linewise
               ["@class.outer"] = "<c-v>", -- blockwise
             },
             -- If you set this to `true` (default is `false`) then any textobject is
@@ -132,7 +141,7 @@ require("lazy").setup({
         playground = {
           enable = true,
           disable = {},
-          updatetime = 25, -- Debounced time for highlighting nodes in the playground from source code
+          updatetime = 25,         -- Debounced time for highlighting nodes in the playground from source code
           persist_queries = false, -- Whether the query persists across vim sessions
           keybindings = {
             toggle_query_editor = "o",
@@ -148,14 +157,14 @@ require("lazy").setup({
           },
         },
       })
-    end
-    },
-  'nvim-treesitter/playground',
+    end,
+  },
+  "nvim-treesitter/playground",
   -- shows wrapping function signature if it is outside of the view
-  'nvim-treesitter/nvim-treesitter-context',
-  'nvim-treesitter/nvim-treesitter-textobjects',
+  "nvim-treesitter/nvim-treesitter-context",
+  "nvim-treesitter/nvim-treesitter-textobjects",
   {
-    'ziontee113/syntax-tree-surfer',
+    "ziontee113/syntax-tree-surfer",
     config = function()
       require("syntax-tree-surfer").setup()
 
@@ -166,20 +175,20 @@ require("lazy").setup({
       vim.keymap.set("x", "<c-l>", "<cmd>STSSelectChildNode<cr>", opts)
 
       vim.keymap.set("n", "<c-h>", "ve<c-h>", { noremap = false, silent = true })
-    end
+    end,
   },
-  'RRethy/nvim-treesitter-textsubjects',
+  "RRethy/nvim-treesitter-textsubjects",
 
-  'sainnhe/sonokai',
-  'sainnhe/everforest',
+  "sainnhe/sonokai",
+  "sainnhe/everforest",
 
   {
     "kawre/leetcode.nvim",
     build = ":TSUpdate html", -- if you have `nvim-treesitter` installed
     dependencies = {
-        -- include a picker of your choice, see picker section for more details
-        "nvim-lua/plenary.nvim",
-        "MunifTanjim/nui.nvim",
+      -- include a picker of your choice, see picker section for more details
+      "nvim-lua/plenary.nvim",
+      "MunifTanjim/nui.nvim",
     },
     opts = {
       arg = "leet",
@@ -187,46 +196,26 @@ require("lazy").setup({
     },
   },
 
-  {
-    'aaronhallaert/advanced-git-search.nvim', dependencies = "ibhagwan/fzf-lua",
-    config = function()
-      require("advanced_git_search.fzf").setup({
-        diff_plugin = "fugitive",
-      })
-    end
-  },
-
-  { "junegunn/fzf", build = "./install --bin" },
-  'github/copilot.vim',
+  "github/copilot.vim",
 
   {
-    "iamcco/markdown-preview.nvim",
-    cmd = { "MarkdownPreviewToggle", "MarkdownPreview", "MarkdownPreviewStop" },
-    build = "cd app && yarn install",
-    init = function()
-      vim.g.mkdp_filetypes = { "markdown" }
-    end,
-    ft = { "markdown" }
-  },
-
-  {
-    'numToStr/Comment.nvim',
+    "numToStr/Comment.nvim",
     config = function()
       require("Comment").setup({
         opleader = {
           block = "gB",
         },
       })
-    end
+    end,
   },
 
-  'scrooloose/nerdtree',
-  'Xuyuanp/nerdtree-git-plugin',
-  'mhinz/vim-startify',
-  'skanehira/gh.vim',
+  "scrooloose/nerdtree",
+  "Xuyuanp/nerdtree-git-plugin",
+  "mhinz/vim-startify",
+  "skanehira/gh.vim",
 
   {
-    'lewis6991/gitsigns.nvim',
+    "lewis6991/gitsigns.nvim",
     config = function()
       require("gitsigns").setup({
         current_line_blame = true,
@@ -288,11 +277,11 @@ require("lazy").setup({
           map({ "o", "x" }, "ah", ":<C-U>Gitsigns select_hunk<CR>")
         end,
       })
-    end
+    end,
   },
 
   {
-    'dnlhc/glance.nvim',
+    "dnlhc/glance.nvim",
     config = function()
       require("glance").setup({
         hooks = {
@@ -314,24 +303,71 @@ require("lazy").setup({
           return vim.api.nvim_win_get_width(winid) < 150
         end,
       })
-    end
+    end,
   },
 
-  'tpope/vim-repeat',
-  'tpope/vim-unimpaired',
-  'tpope/vim-fireplace',
-  'clojure-vim/vim-cider',
-  'kana/vim-smartword',
-  'bkad/camelcasemotion',
-  'mg979/vim-visual-multi',
-  'easymotion/vim-easymotion',
-  'AndrewRadev/switch.vim',
-  'AndrewRadev/splitjoin.vim',
-  'AndrewRadev/sideways.vim',
-  'jiangmiao/auto-pairs',
+  "tpope/vim-repeat",
+  "tpope/vim-unimpaired",
+  "tpope/vim-fireplace",
+  "clojure-vim/vim-cider",
+  "kana/vim-smartword",
+  "bkad/camelcasemotion",
+  "mg979/vim-visual-multi",
+  {
+    "easymotion/vim-easymotion",
+    config = function()
+      vim.g.EasyMotion_smartcase = 1
+      vim.g.EasyMotion_keys = "asdghklqwertyuiopzxcvbnmfj"
+      -- Map "f" to Easymotion’s over-window motion
+      vim.keymap.set(
+        "n",
+        "f",
+        "<Plug>(easymotion-overwin-f2)",
+        { noremap = false, silent = true, desc = "Easymotion over window f2" }
+      )
+    end,
+  },
+  {
+    "AndrewRadev/switch.vim",
+    config = function()
+      -- Define custom switch pairs
+      vim.g.switch_custom_definitions = {
+        { "!==", "===" },
+        { "!=",  "==" },
+      }
+      -- Keymap to trigger Switch
+      vim.keymap.set(
+        "n",
+        "!",
+        "<Plug>(Switch)",
+        { noremap = false, silent = true, desc = "Toggle operator with switch.vim" }
+      )
+    end,
+  },
+  {
+    "AndrewRadev/splitjoin.vim",
+    config = function()
+      vim.keymap.set("n", "gs", ":SplitjoinSplit<cr>", { noremap = true, silent = true })
+      vim.keymap.set("n", "gj", ":SplitjoinJoin<cr>", { noremap = true, silent = true })
+    end,
+  },
+  {
+    "AndrewRadev/sideways.vim",
+    config = function()
+      vim.keymap.set("n", "gh", ":SidewaysLeft<cr>", { noremap = true, silent = true })
+      vim.keymap.set("n", "gl", ":SidewaysRight<cr>", { noremap = true, silent = true })
+    end,
+  },
+  {
+    "jiangmiao/auto-pairs",
+    config = function()
+      vim.g.AutoPairsShortcutBackInsert = "<C-b>"
+      vim.g.AutoPairsShortcutFastWrap = "<C-e>"
+    end,
+  },
 
   {
-    'NvChad/nvim-colorizer.lua',
+    "NvChad/nvim-colorizer.lua",
     config = function()
       require("colorizer").setup({
         user_default_options = {
@@ -339,15 +375,15 @@ require("lazy").setup({
           tailwind = true,
         },
       })
-    end
+    end,
   },
-  'HiPhish/rainbow-delimiters.nvim',
-  'mbbill/undotree',
-  'matze/vim-move',
-  'dyng/ctrlsf.vim',
-  'tpope/vim-fugitive',
+  "HiPhish/rainbow-delimiters.nvim",
+  "mbbill/undotree",
+  "matze/vim-move",
+  "dyng/ctrlsf.vim",
+  "tpope/vim-fugitive",
   {
-    'sindrets/diffview.nvim',
+    "sindrets/diffview.nvim",
     config = function()
       require("diffview").setup({
         keymaps = {
@@ -367,7 +403,7 @@ require("lazy").setup({
           },
         },
       })
-    end
+    end,
   },
   {
     "folke/trouble.nvim",
@@ -406,12 +442,21 @@ require("lazy").setup({
       -- },
     },
   },
-  'junegunn/gv.vim',
-  'tpope/vim-rhubarb',
-  'tpope/vim-surround',
+  "tpope/vim-rhubarb",
   {
-    'nvim-lualine/lualine.nvim',
-    dependencies = { 'nvim-tree/nvim-web-devicons' },
+    "kylechui/nvim-surround",
+    event = "VeryLazy",
+    config = function()
+      require("nvim-surround").setup({
+        -- Configuration here, or leave empty to use defaults
+        -- "settings for 'tpope/vim-surround'
+        -- vmap s S
+      })
+    end,
+  },
+  {
+    "nvim-lualine/lualine.nvim",
+    dependencies = { "nvim-tree/nvim-web-devicons" },
     config = function()
       require("lualine").setup({
         options = {
@@ -481,7 +526,7 @@ require("lazy").setup({
           "nvim-dap-ui",
         },
       })
-    end
+    end,
   },
   {
     "hedyhli/outline.nvim",
@@ -493,9 +538,9 @@ require("lazy").setup({
     opts = {
       -- Your setup opts here
       outline_window = {
-        position = 'left',
+        position = "left",
         auto_close = true,
-      }
+      },
     },
   },
   {
@@ -510,7 +555,7 @@ require("lazy").setup({
       require("neotest").setup({
         adapters = {
           require("neotest-vitest"),
-        }
+        },
       })
       vim.keymap.set("n", "<space>tt", function()
         require("neotest").run.run()
@@ -532,18 +577,18 @@ require("lazy").setup({
       end, { desc = "See the output from the tests" })
 
       vim.keymap.set("n", "<space>tww", function()
-        require('neotest').run.run({ vitestCommand = 'vitest --watch' })
+        require("neotest").run.run({ vitestCommand = "vitest --watch" })
       end, { desc = "Run & Watch Nearest Test" })
 
       vim.keymap.set("n", "<space>twa", function()
-        require('neotest').run.run({ vim.fn.expand('%'), vitestCommand = 'vitest --watch' })
+        require("neotest").run.run({ vim.fn.expand("%"), vitestCommand = "vitest --watch" })
       end, { desc = "Run and Watch File" })
     end,
   },
 
-  'mfussenegger/nvim-dap',
+  "mfussenegger/nvim-dap",
   {
-    'rcarriga/nvim-dap-ui',
+    "rcarriga/nvim-dap-ui",
     dependencies = {
       "mfussenegger/nvim-dap",
       "nvim-neotest/nvim-nio",
@@ -557,7 +602,7 @@ require("lazy").setup({
         executable = {
           command = vim.fn.stdpath("data") .. "/mason/bin/js-debug-adapter",
           args = { "${port}" },
-        }
+        },
       }
 
       dap.configurations.typescript = {
@@ -580,10 +625,11 @@ require("lazy").setup({
           runtimeArgs = {
             "${workspaceFolder}/node_modules/vitest/vitest.mjs", -- Vitest entry
             "run",
-            "${file}", -- run only the current test file
-            "--inspect-brk", -- ensure it waits for debugger
-            "--pool", "threads", -- disable worker threads (important for debugging)
-            "--poolOptions.threads.singleThread"
+            "${file}",                                           -- run only the current test file
+            "--inspect-brk",                                     -- ensure it waits for debugger
+            "--pool",
+            "threads",                                           -- disable worker threads (important for debugging)
+            "--poolOptions.threads.singleThread",
           },
           console = "integratedTerminal",
           internalConsoleOptions = "neverOpen",
@@ -611,22 +657,22 @@ require("lazy").setup({
         dap.clear_breakpoints()
         dap.disconnect()
         dap.close()
-      end ,{ desc = "DAP: Terminate" })
+      end, { desc = "DAP: Terminate" })
 
       -- maps F10 to step over
-      vim.keymap.set("n", "<F10>",
-        function() dap.step_over() end
-      ,{ desc = "DAP: Step Over" })
+      vim.keymap.set("n", "<F10>", function()
+        dap.step_over()
+      end, { desc = "DAP: Step Over" })
 
       -- maps F11 to step into
-      vim.keymap.set("n", "<F11>",
-        function() dap.step_into() end
-      ,{ desc = "DAP: Step Into" })
+      vim.keymap.set("n", "<F11>", function()
+        dap.step_into()
+      end, { desc = "DAP: Step Into" })
 
       -- maps F12 to step out
-      vim.keymap.set("n", "<F12>",
-        function() dap.step_out() end
-      ,{ desc = "DAP: Step Out" })
+      vim.keymap.set("n", "<F12>", function()
+        dap.step_out()
+      end, { desc = "DAP: Step Out" })
 
       -- add to watch expression elements the selected text in visual mode
       vim.keymap.set("v", "<space>tE", function()
@@ -636,7 +682,6 @@ require("lazy").setup({
         dapui.elements.watches.add(expr)
       end, { noremap = true, silent = true, desc = "Add selection as watch expression" })
 
-
       vim.keymap.set(
         { "n", "v" }, -- works in both normal and visual mode
         "<space>te",
@@ -645,16 +690,14 @@ require("lazy").setup({
         end,
         { noremap = true, silent = true, desc = "Evaluate expression in a floating window (dapui)" }
       )
-
     end,
   },
   {
     "rcarriga/nvim-dap-ui",
-    dependencies =
-    {
+    dependencies = {
       "mfussenegger/nvim-dap",
-      "nvim-neotest/nvim-nio"
-    }
+      "nvim-neotest/nvim-nio",
+    },
   },
   {
     "j-hui/fidget.nvim",
@@ -667,42 +710,133 @@ require("lazy").setup({
     event = "VeryLazy",
     priority = 1000,
     config = function()
-      require('tiny-inline-diagnostic').setup({
-
-      })
+      require("tiny-inline-diagnostic").setup({})
 
       vim.diagnostic.config({ virtual_text = false }) -- Disable default virtual text
-    end
+    end,
   },
-  'jlanzarotta/bufexplorer',
-  'junegunn/fzf.vim',
-  'pbogut/fzf-mru.vim',
-  'kien/ctrlp.vim',
-  'nvim-lua/plenary.nvim',
+  {
+    "jlanzarotta/bufexplorer",
+    config = function()
+      -- "settings for 'jlanzarotta/bufexplorer'
+      -- nnoremap ,b :BufExplorerVerticalSplit<CR>
+      -- "BufExplorer show relative paths by default
+      -- let g:bufExplorerShowNoName=1
+      -- let g:bufExplorerShowRelativePath=1  " Show relative paths.
+      vim.keymap.set("n", ",b", ":BufExplorerVerticalSplit<CR>", { noremap = true, silent = true })
+      vim.g.bufExplorerShowNoName = 1
+      vim.g.bufExplorerShowRelativePath = 1
+    end,
+  },
 
   {
-    'nvim-telescope/telescope.nvim',
-    config= function()
-      require("telescope").setup({
+    "junegunn/gv.vim",
+    config = function() end,
+  },
+  "junegunn/vim-easy-align",
+
+  { "junegunn/fzf",          build = "./install --bin" },
+  {
+    "junegunn/fzf.vim",
+    config = function()
+      vim.keymap.set(
+        "n",
+        "<space>s",
+        "<cmd>Rg<cr>",
+        { noremap = true, silent = true, desc = "Search with FZF Ripgrep" }
+      )
+      vim.keymap.set("v", "<space>s", 'y:Rg <C-r>"<CR>', {
+        noremap = true,
+        silent = true,
+        desc = "Search selection with FZF Ripgrep",
+      })
+    end,
+  },
+  {
+    "ibhagwan/fzf-lua",
+    -- optional for icon support
+    dependencies = { "nvim-tree/nvim-web-devicons" },
+    -- or if using mini.icons/mini.nvim
+    -- dependencies = { "nvim-mini/mini.icons" },
+    opts = {},
+    config = function()
+      -- maps F1 to open help tags
+      local fzf = require("fzf-lua")
+      vim.keymap.set("n", "<F1>", fzf.help_tags, { noremap = true, silent = true, desc = "FZF help tags" })
+      -- maps <space>s to :Rg (search in files)
+      -- vim.keymap.set('n', '<space>s', fzf.live_grep, { noremap = true, silent = true, desc = "FZF live grep" })
+      -- vim.keymap.set('v', '<space>s', fzf.grep_visual, { noremap = true, silent = true, desc = "FZF live grep" })
+      vim.keymap.set("n", "<space>`", fzf.grep_curbuf, { noremap = true, silent = true, desc = "FZF live grep" })
+    end,
+  },
+
+  "pbogut/fzf-mru.vim",
+  {
+    "kien/ctrlp.vim",
+    config = function()
+      vim.g.ctrlp_max_files = 0
+      vim.g.ctrlp_show_hidden = 1
+      vim.g.ctrlp_working_path_mode = "rw"
+      vim.g.ctrlp_by_filename = 1
+      vim.g.ctrlp_mruf_max = 2500
+      vim.g.ctrlp_mruf_exclude = "/tmp/.*\\|/temp/.*\\|/private/.*\\|.*/node_modules/.*\\|.*/.pyenv/.*"
+      -- Keymaps
+      vim.keymap.set("n", ",x", ":CtrlPMRUFiles<CR>", { noremap = true, silent = true })
+      vim.keymap.set("n", ",v", "<cmd>Telescope oldfiles<cr>", { noremap = true, silent = true })
+    end,
+  },
+  "nvim-lua/plenary.nvim",
+
+  {
+    "nvim-telescope/telescope.nvim",
+    config = function()
+      local telescope = require("telescope")
+      telescope.setup({
         extensions = {
           fzf = {
-            fuzzy = true, -- false will only do exact matching
+            fuzzy = true,                   -- false will only do exact matching
             override_generic_sorter = true, -- override the generic sorter
-            override_file_sorter = true, -- override the file sorter
-            case_mode = "smart_case", -- or "ignore_case" or "respect_case"
+            override_file_sorter = true,    -- override the file sorter
+            case_mode = "smart_case",       -- or "ignore_case" or "respect_case"
             -- the default case_mode is "smart_case"
           },
         },
       })
+      -- Load the FZF extension
+      telescope.load_extension("fzf")
 
-      -- CANT COMPILE THE FOLLOWING CAUSE CMAKE FAILS ON MACOS
-      -- To get fzf loaded and working with telescope, you need to call
-      -- load_extension, somewhere after setup function:
-      -- require('telescope').load_extension('fzf')
-    end
+      local builtin = require("telescope.builtin")
+      -- Keymaps
+      -- vim.keymap.set('n', '<F1>', builtin.help_tags, { desc = 'Telescope help tags' })
+      -- vim.keymap.set('n', '<space>d', '<cmd>Telescope<cr>', { desc = 'Open Telescope' }) -- optional
+      vim.keymap.set("n", ",f", builtin.find_files, { desc = "Telescope find files" })
+      -- The two below use <c-r><c-w>, which can’t be directly expressed in Lua — we simulate it using an expression
+      vim.keymap.set("n", ",F", function()
+        builtin.find_files({ default_text = vim.fn.expand("<cword>") })
+      end, { desc = "Find files with word under cursor" })
+      vim.keymap.set("n", "gF", function()
+        builtin.find_files({ search_file = vim.fn.expand("<cword>") })
+      end, { desc = "Search files matching word under cursor" })
+      vim.keymap.set("n", "<space>df", builtin.oldfiles, { desc = "Telescope old files" })
+      vim.keymap.set("n", "<space>dg", builtin.live_grep, { desc = "Telescope live grep" })
+      vim.keymap.set("n", "<space>db", builtin.buffers, { desc = "Telescope buffers" })
+      vim.keymap.set("n", "<space>dh", builtin.help_tags, { desc = "Telescope help tags" })
+      vim.keymap.set("n", "<space>de", builtin.builtin, { desc = "Telescope builtins" })
+    end,
+    dependencies = {
+      "nvim-lua/plenary.nvim",
+    },
   },
-  -- { 'nvim-telescope/telescope-fzf-native.nvim', build = 'cmake -S. -Bbuild -DCMAKE_BUILD_TYPE=Release && cmake --build build --config Release' },
-  { 'nvim-tree/nvim-web-devicons',
+  {
+    "nvim-telescope/telescope-fzf-native.nvim",
+    build = "make",
+    cond = function()
+      return vim.fn.executable("make") == 1
+    end,
+  },
+
+  {
+    "nvim-tree/nvim-web-devicons",
     config = function()
       require("nvim-web-devicons").setup({
         -- your personnal icons can go here (to override)
@@ -746,39 +880,54 @@ require("lazy").setup({
           },
         },
       })
-    end
+    end,
   },
 
   {
-    'pwntester/octo.nvim',
+    "pwntester/octo.nvim",
     config = function()
       require("octo").setup({
         enable_builtin = true,
       })
-    end
-  },
 
-  'junegunn/vim-easy-align',
+      vim.keymap.set("n", "<space>v", "<cmd>Octo<cr>", { noremap = true, silent = true, desc = "Open Octo" })
+      vim.keymap.set("n", "<space>vv", "<cmd>Octo<cr>", { noremap = true, silent = true, desc = "Open Octo" })
+      vim.keymap.set(
+        "n",
+        "<leader>pro",
+        "<cmd>Octo pr checkout<cr>",
+        { noremap = true, silent = true, desc = "Checkout PR" }
+      )
+      vim.keymap.set(
+        "n",
+        "<leader>prr",
+        "<cmd>Octo review start<cr>",
+        { noremap = true, silent = true, desc = "Start PR Review" }
+      )
+    end,
+  },
 
   {
-    "lukas-reineke/indent-blankline.nvim", main = "ibl", opts = {},
+    "lukas-reineke/indent-blankline.nvim",
+    main = "ibl",
+    opts = {},
     config = function()
       require("ibl").setup()
-    end
+    end,
   },
 
-  'bronson/vim-visual-star-search',
-  'terryma/vim-expand-region',
-  'wellle/targets.vim',
-  'michaeljsmith/vim-indent-object',
-  'haya14busa/vim-textobj-function-syntax',
-  'chrisbra/csv.vim',
+  "bronson/vim-visual-star-search",
+  "terryma/vim-expand-region",
+  "wellle/targets.vim",
+  "michaeljsmith/vim-indent-object",
+  "haya14busa/vim-textobj-function-syntax",
+  "chrisbra/csv.vim",
 
-  { 'stevearc/conform.nvim', opts = {}, },
+  { "stevearc/conform.nvim", opts = {} },
   -- 'mhartington/formatter.nvim',
 
-  'editorconfig/editorconfig-vim',
-  'jeetsukumaran/vim-indentwise',
+  "editorconfig/editorconfig-vim",
+  "jeetsukumaran/vim-indentwise",
 
   {
     -- does not seem to work
@@ -787,14 +936,14 @@ require("lazy").setup({
       { "<leader><space><space>", "<cmd>TWValues<cr>", desc = "Show tailwind CSS values" },
     },
     opts = {
-      border = "rounded", -- Valid window border style,
+      border = "rounded",          -- Valid window border style,
       show_unknown_classes = true, -- Shows the unknown classes popup
-      focus_preview = true, -- Sets the preview as the current window
-      copy_register = "", -- The register to copy values to,
+      focus_preview = true,        -- Sets the preview as the current window
+      copy_register = "",          -- The register to copy values to,
       keymaps = {
-        copy = "<C-y>"  -- Normal mode keymap to copy the CSS values between {}
-      }
-    }
+        copy = "<C-y>",            -- Normal mode keymap to copy the CSS values between {}
+      },
+    },
   },
 
   {
@@ -815,20 +964,37 @@ require("lazy").setup({
         },
         automatic_enable = true,
       })
-    end
+    end,
   },
 
   {
-    'mason-org/mason.nvim',
+    "mason-org/mason.nvim",
     config = function()
       require("mason").setup()
-    end
+    end,
   },
 
-  'neovim/nvim-lspconfig',
+  "neovim/nvim-lspconfig",
 
   {
-    'kevinhwang91/nvim-hlslens',
+    "jay-babu/mason-null-ls.nvim",
+    event = { "BufReadPre", "BufNewFile" },
+    dependencies = {
+      "mason-org/mason.nvim",
+      "nvimtools/none-ls.nvim",
+    },
+    config = function()
+      -- Primary Source of Truth is null-ls's setup
+      require("mason-null-ls").setup({
+        -- handlers = {},
+        ensure_installed = nil,
+        automatic_installation = true,
+      })
+    end,
+  },
+
+  {
+    "kevinhwang91/nvim-hlslens",
     config = function()
       require("hlslens").setup({
         nearest_only = {
@@ -855,11 +1021,15 @@ require("lazy").setup({
       })
 
       local kopts = { noremap = true, silent = true }
-      vim.api.nvim_set_keymap( "n", "n",
+      vim.api.nvim_set_keymap(
+        "n",
+        "n",
         [[<Cmd>execute('normal! ' . v:count1 . 'n')<CR><Cmd>lua require('hlslens').start()<CR>]],
         kopts
       )
-      vim.api.nvim_set_keymap( "n", "N",
+      vim.api.nvim_set_keymap(
+        "n",
+        "N",
         [[<Cmd>execute('normal! ' . v:count1 . 'N')<CR><Cmd>lua require('hlslens').start()<CR>]],
         kopts
       )
@@ -869,14 +1039,15 @@ require("lazy").setup({
       vim.api.nvim_set_keymap("n", "g#", [[g#<Cmd>lua require('hlslens').start()<CR>]], kopts)
 
       vim.api.nvim_set_keymap("n", "<Leader>l", "<Cmd>noh<CR>", kopts)
-    end
+    end,
   },
 
   {
-    'kevinhwang91/nvim-ufo', dependencies = "kevinhwang91/promise-async",
+    "kevinhwang91/nvim-ufo",
+    dependencies = "kevinhwang91/promise-async",
     config = function()
       vim.o.foldcolumn = "0" -- 1, '0' is not bad
-      vim.o.foldlevel = 99 -- Using ufo provider need a large value, feel free to decrease the value
+      vim.o.foldlevel = 99   -- Using ufo provider need a large value, feel free to decrease the value
       vim.o.foldlevelstart = 99
       vim.o.foldenable = true
 
@@ -921,7 +1092,7 @@ require("lazy").setup({
           return newVirtText
         end,
       })
-    end
+    end,
   },
 
   {
@@ -945,36 +1116,27 @@ require("lazy").setup({
   },
 
   {
-    'Bekaboo/dropbar.nvim',
+    "Bekaboo/dropbar.nvim",
     -- optional, but required for fuzzy finder support
-    dependencies = {
-      'nvim-telescope/telescope-fzf-native.nvim'
-    },
     opts = {
       bar = {
         sources = function()
-          local sources = require('dropbar.sources')
+          local sources = require("dropbar.sources")
           return {
-            sources.path
+            sources.path,
           }
-        end
-      }
+        end,
+      },
     },
     config = function()
       vim.keymap.set("n", "<space>2", require("dropbar.api").pick)
-    end
+    end,
   },
-
-  {
-    'nvim-telescope/telescope-fzf-native.nvim',
-    build = 'cmake -S. -Bbuild -DCMAKE_BUILD_TYPE=Release && cmake --build build --config Release'
-  },
-
   {
     "max397574/colortils.nvim",
     setup = function()
       require("colortils").setup()
-    end
+    end,
   },
 
   {
@@ -983,7 +1145,7 @@ require("lazy").setup({
     event = "VeryLazy",
     config = function()
       require("output_panel").setup({
-        max_buffer_size = 5000 -- default
+        max_buffer_size = 5000, -- default
       })
     end,
     cmd = { "OutputPanel" },
@@ -994,10 +1156,10 @@ require("lazy").setup({
         mode = "n",
         desc = "Toggle the output panel",
       },
-    }
+    },
   },
 
-  {'meznaric/key-analyzer.nvim', opts = {} },
+  { "meznaric/key-analyzer.nvim", opts = {} },
 
   {
     "olimorris/codecompanion.nvim",
@@ -1016,7 +1178,7 @@ require("lazy").setup({
       "MunifTanjim/nui.nvim",
       "nvim-tree/nvim-web-devicons", -- optional, but recommended
     },
-    lazy = false, -- neo-tree will lazily load itself
+    lazy = false,                    -- neo-tree will lazily load itself
     config = function()
       require("neo-tree").setup({
         event_handlers = {
@@ -1044,7 +1206,19 @@ require("lazy").setup({
       })
 
       vim.keymap.set("n", "<space>e", "<Cmd>Neotree reveal<CR>")
-    end
+    end,
+  },
+
+  {
+    "folke/lazydev.nvim",
+    ft = "lua", -- only load on lua files
+    opts = {
+      library = {
+        -- See the configuration section for more details
+        -- Load luvit types when the `vim.uv` word is found
+        { path = "${3rd}/luv/library", words = { "vim%.uv" } },
+      },
+    },
   },
 
   {
@@ -1070,38 +1244,31 @@ require("lazy").setup({
           -- require("none-ls.formatting.eslint"),
         },
       })
-    end
+    end,
   },
 
   {
-    "zeioth/none-ls-autoload.nvim",
-    event = "BufEnter",
-    dependencies = { "williamboman/mason.nvim", "nvimtools/none-ls.nvim" },
-    opts = {},
-  },
-
-  {
-    'saghen/blink.cmp',
+    "saghen/blink.cmp",
     -- optional: provides snippets for the snippet source
     dependencies = {
-      'rafamadriz/friendly-snippets',
+      "rafamadriz/friendly-snippets",
       {
         "mikavilpas/blink-ripgrep.nvim",
         version = "*", -- use the latest stable version
-      }
+      },
     },
 
     -- use a release tag to download pre-built binaries
-    version = '1.*',
+    version = "1.*",
 
     ---@module 'blink.cmp'
     ---@type blink.cmp.Config
     opts = {
-      keymap = { preset = 'default' },
+      keymap = { preset = "default" },
       appearance = {
         -- 'mono' (default) for 'Nerd Font Mono' or 'normal' for 'Nerd Font'
         -- Adjusts spacing to ensure icons are aligned
-        nerd_font_variant = 'mono'
+        nerd_font_variant = "mono",
       },
       -- (Default) Only show the documentation popup when manually triggered
       completion = { documentation = { auto_show = true } },
@@ -1109,21 +1276,31 @@ require("lazy").setup({
       -- elsewhere in your config, without redefining it, due to `opts_extend`
       sources = {
         default = {
-          'lsp',
-          'path',
-          'snippets',
-          'buffer',
-          'ripgrep'  -- 👈🏻 add "ripgrep" here
+          "lsp",
+          "path",
+          "snippets",
+          "buffer",
+          "lazydev",
+          "ripgrep", -- 👈🏻 add "ripgrep" here
         },
         providers = {
           -- 👇🏻👇🏻 add the ripgrep provider config below
           ripgrep = {
             module = "blink-ripgrep",
             name = "Ripgrep",
+            score_offset = -50,
             -- see the full configuration below for all available options
             ---@module "blink-ripgrep"
             ---@type blink-ripgrep.Options
-            opts = {},
+            opts = {
+              min_length = 4, -- only trigger after 4+ chars typed
+            },
+          },
+          lazydev = {
+            name = "LazyDev",
+            module = "lazydev.integrations.blink",
+            -- make lazydev completions top priority (see `:h blink.cmp`)
+            score_offset = 100,
           },
         },
       },
@@ -1133,17 +1310,17 @@ require("lazy").setup({
       --
       -- See the fuzzy documentation for more information
       fuzzy = { implementation = "prefer_rust_with_warning" },
-      signature = { enabled = true }
+      signature = { enabled = true },
     },
-    opts_extend = { "sources.default" }
+    opts_extend = { "sources.default" },
   },
 
-  'RRethy/vim-illuminate',
+  "RRethy/vim-illuminate",
 
   {
-    'nvimdev/lspsaga.nvim',
+    "nvimdev/lspsaga.nvim",
     config = function()
-      require('lspsaga').setup({
+      require("lspsaga").setup({
         lightbulb = {
           enable = false,
         },
@@ -1151,14 +1328,25 @@ require("lazy").setup({
           enable = false,
         },
       })
+
+      vim.keymap.set("n", "<space>l", "<cmd>Lspsaga code_action<CR>")
+      vim.keymap.set("n", "<space>u", "<cmd>Lspsaga outgoing_calls<CR>")
+      vim.keymap.set("n", "<space>U", "<cmd>Lspsaga incoming_calls<CR>")
     end,
     dependencies = {
-      'nvim-treesitter/nvim-treesitter', -- optional
-      'nvim-tree/nvim-web-devicons',     -- optional
-    }
-  }
+      "nvim-treesitter/nvim-treesitter", -- optional
+      "nvim-tree/nvim-web-devicons",     -- optional
+    },
+  },
+  -- nice markdown preview
+  { "OXY2DEV/markview.nvim" },
+  {
+    "alex-popov-tech/store.nvim",
+    dependencies = { "OXY2DEV/markview.nvim" },
+    opts = {},
+    cmd = "Store"
+  },
 })
-
 
 vim.keymap.set("n", "<space>f", function()
   -- Call the LSP buffer formatting function synchronously
@@ -1210,8 +1398,8 @@ vim.cmd("source " .. vim.fn.expand("~/dotfiles/vimrc/functions.vim"))
 vim.cmd("source " .. vim.fn.expand("~/dotfiles/vimrc/general-variables.vim"))
 vim.cmd("source " .. vim.fn.expand("~/dotfiles/vimrc/autocommands.vim"))
 
-require('lsp_file_refs_treesitter').setup()
-require('custom_functions')
+require("lsp_file_refs_treesitter").setup()
+require("custom_functions")
 
 vim.cmd([[
   highlight link HlSearchLensNear Substitute

@@ -3,24 +3,12 @@
   nnoremap <silent> <F7> :LspRestart<CR>
   nnoremap <silent> <space><space> <cmd>lua vim.lsp.buf.hover()<CR>
 
-
-  "settings for 'aaronhallaert/advanced-git-search.nvim'
-  noremap ,ga :AdvancedGitSearch<CR>
-  " dependency to the one above
-  "settings for 'ibhagwan/fzf-lua', {'branch': 'main'}
-
   "settings for 'github/copilot.vim'
   imap <silent><script><expr> <c-cr> copilot#Accept("")
   let g:copilot_no_tab_map = v:true
   imap <C-n> <Plug>(copilot-next)
   imap <C-p> <Plug>(copilot-previous)
 
-  "settings for 'iamcco/markdown-preview.nvim', { 'do': { -> mkdp#util#install() }, 'for': ['markdown', 'vim-plug']}
-  let g:mkdp_auto_close = 0
-
-  "settings for 'numToStr/Comment.nvim'
-
-  "settings for 'scrooloose/nerdtree'
   "settings for 'Xuyuanp/nerdtree-git-plugin'
   let g:NERDTreeQuitOnOpen = 1
   let g:NERDTreeChDirMode  = 0
@@ -70,39 +58,6 @@
   let g:VM_mouse_mappings = 1
   map <F2> \\A
   map <F3> \\C
-
-  "settings for 'easymotion/vim-easymotion'
-  let g:EasyMotion_smartcase = 1
-  let g:EasyMotion_keys = 'asdghklqwertyuiopzxcvbnmfj'
-
-  " move to single character
-  nmap f <Plug>(easymotion-overwin-f2)
-
-  " This addon does the oposite of 'J' in vim
-  "settings for 'AndrewRadev/switch.vim'
-  " let g:switch_mapping = "7"
-  let g:switch_custom_definitions =
-  \ [
-  \   ['!==', '==='],
-  \   ['!=', '==']
-  \ ]
-
-  nnoremap ! <Plug>(Switch)
-  " unmap gs
-
-  "settings for 'AndrewRadev/splitjoin.vim'
-  " changing the default gS and gJ
-  let g:splitjoin_split_mapping = 'gs'
-  let g:splitjoin_join_mapping = 'gj'
-
-  "settings for 'AndrewRadev/sideways.vim'
-  nnoremap gh :SidewaysLeft<cr>
-  nnoremap gl :SidewaysRight<cr>
-
-  "addon for auto closing brackets
-  "settings for 'jiangmiao/auto-pairs'
-  let g:AutoPairsShortcutBackInsert = '<C-b>'
-  let g:AutoPairsShortcutFastWrap = '<C-e>'
 
   "settings for 'mbbill/undotree'
   nnoremap <leader>u :UndotreeToggle<cr>
@@ -165,37 +120,8 @@
   noremap ,gh :DiffviewFileHistory %<cr>
   noremap ,gm :DiffviewOpen origin/<C-r>=GetMasterBranchName()<CR>...HEAD<cr>
 
-  "settings for 'tpope/vim-surround'
-  vmap s S
-
-  "settings for 'jlanzarotta/bufexplorer'
-  nnoremap ,b :BufExplorerVerticalSplit<CR>
-  "BufExplorer show relative paths by default
-  let g:bufExplorerShowNoName=1
-  let g:bufExplorerShowRelativePath=1  " Show relative paths.
-
-  "settings for 'junegunn/fzf', { 'dir': '~/.fzf', 'do': './install --all' }
-  "settings for 'junegunn/fzf.vim'
-  "settings for 'pbogut/fzf-mru.vim'
-  let $FZF_DEFAULT_OPTS = '--layout=reverse'
-  nnoremap <space>: :History:<cr>
-
-  " migrate to telescope instead of fzf
-  nnoremap <space>dd :Files<cr>
-  " nnoremap ,F :FZF -q <c-r><c-w><cr>
-  " vnoremap ,f y:FZF -q <c-r>"<cr>
-
-  nnoremap <space>` :CustomBLines<cr>
-  nnoremap ,s :BLines<cr>
-  vnoremap ,s y:BLines <c-r>"<cr>
-  "vnoremap ,s y:Telescope current_buffer_fuzzy_find<cr>i<c-r>"<backspace><backspace>
-  nnoremap <space>s :Rg<cr>
-  " opens and searching for the filename under the cursor and either prepend <
-  " nnoremap <space>6 :Rg <<c-r>=expand('%:t:r')<CR>\b<CR>
-  " improved version of the above
   nnoremap <space>6 :<C-U>call RgFileReferences()<CR>
   nnoremap <space>8 :<C-U>call RgXDefault(0)<CR>
-  vnoremap <space>s y:Rg <c-r>"<cr>
   vnoremap <space>` y:CustomBLines <c-r>"<cr>
 
   nnoremap g1 :<C-U>call MergeKeepLeft()<CR>
@@ -269,40 +195,10 @@
 
   inoremap <expr> <c-x><c-f> fzf#vim#complete#path('rg --files')
 
-  "settings for 'kien/ctrlp.vim'
-  let g:ctrlp_max_files = 0
-  let g:ctrlp_show_hidden = 1
-  let g:ctrlp_working_path_mode = 'rw'
-  let g:ctrlp_by_filename = 1
-  let g:ctrlp_mruf_max = 2500
-  let g:ctrlp_mruf_exclude = '/tmp/.*\|/temp/.*\|/private/.*\|.*/node_modules/.*\|.*/.pyenv/.*' " MacOSX/Linux
-  nnoremap ,x :CtrlPMRUFiles<CR>
-  nnoremap ,v <cmd>Telescope oldfiles<cr>
-
-  "settings for 'nvim-lua/plenary.nvim'
-  "settings for 'nvim-telescope/telescope.nvim'
-
-  nmap <F1> :Telescope help_tags<cr>
-  " nnoremap <space>d <cmd>Telescope<cr>
-  nnoremap ,f :Telescope find_files<cr>
-  nnoremap ,F :Telescope find_files default_text=<c-r><c-w><cr>
-  nmap gF :Telescope find_files search_file=<c-r><c-w><cr>
-
-  nnoremap <space>df <cmd>Telescope oldfiles<cr>
-  nnoremap <space>dg <cmd>Telescope live_grep<cr>
-  nnoremap <space>db <cmd>Telescope buffers<cr>
-  nnoremap <space>dh <cmd>Telescope help_tags<cr>
-  nnoremap <space>de <cmd>Telescope builtin<cr>
-
-
   "THE BEST FONT IS 1) Meslo 2) Hack
   "settings for 'nvim-tree/nvim-web-devicons'
   " octo is a github pr review plugin
   "settings for 'pwntester/octo.nvim'
-  nnoremap <space>v :Octo<CR>
-  nnoremap <space>vv :Octo<CR>
-  nnoremap <leader>pro :Octo pr checkout 
-  nnoremap <leader>prr :Octo review start<cr>
 
   nmap <expr> - (foldclosed(line(".")) == -1) ? 'za':'zA'
   " this was manual way of setting folding, no longer needed because there is nvim-ufo plugin as provided
@@ -317,16 +213,3 @@
     let g:ctrlp_user_command = 'rg %s --files --color=never --glob ""'
   endif
 
-  "settings for 'rmagatti/goto-preview'
-
-  nnoremap gpp <cmd>lua require('goto-preview').goto_preview_definition()<CR>
-  nnoremap gpt <cmd>lua require('goto-preview').goto_preview_type_definition()<CR>
-  nnoremap gpi <cmd>lua require('goto-preview').goto_preview_implementation()<CR>
-  nnoremap gp <cmd>lua require('goto-preview').close_all_win()<CR>
-  nnoremap gpr <cmd>lua require('goto-preview').goto_preview_references()<CR>
-  " not working tbh
-  nnoremap gpd <cmd>lua require('goto-preview').goto_preview_declaration()<CR>
-
-  nnoremap <silent> <space>l :Lspsaga code_action<CR>
-  nnoremap <space>u :Lspsaga outgoing_calls<CR>
-  nnoremap <space>U :Lspsaga incoming_calls<CR>
