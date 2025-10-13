@@ -196,7 +196,52 @@ require("lazy").setup({
     cmd = { "Leet" },
   },
 
-  "github/copilot.vim",
+  -- leaving this for reference until I am confident copilot.lua works well
+  -- {
+  --   "github/copilot.vim",
+  --   init = function()
+  --     vim.g.copilot_no_tab_map = true
+  --   end,
+  --   lazy = false,
+  --   keys = {
+  --     { "<C-CR>", 'copilot#Accept("")', mode = "i", expr = true, silent = true, script = true, desc = "Copilot Accept" },
+  --     { "<C-j>", "<Plug>(copilot-next)", mode = "i", desc = "Copilot Next Suggestion" },
+  --     { "<C-k>", "<Plug>(copilot-previous)", mode = "i", desc = "Copilot Previous Suggestion" },
+  --   },
+  -- },
+
+  {
+    "zbirenbaum/copilot.lua",
+    dependencies = {
+      "copilotlsp-nvim/copilot-lsp",
+    },
+    opts = {
+      panel = {
+        enabled = true,
+        auto_refresh = true,
+      },
+      suggestion = {
+        enabled = true,
+        auto_trigger = true,
+        keymap = {
+          accept = "<c-cr>",
+          next = "<c-j>",
+          prev = "<c-k>",
+          accept_line = "<c-l>",
+        }
+      },
+      -- not sure how this works
+      -- nes = {
+      --   enabled = true, -- requires copilot-lsp as a dependency
+      --   auto_trigger = true,
+      --   keymap = {
+      --     accept_and_goto = '<c-i>',
+      --     accept = false,
+      --     dismiss = false,
+      --   },
+      -- },
+    },
+  },
 
   {
     "numToStr/Comment.nvim",
@@ -484,7 +529,6 @@ require("lazy").setup({
   {
     "tpope/vim-fugitive",
     init = function ()
-      
       vim.keymap.set("n", "gD", ":Gvdiffsplit<cr>", { noremap = true, silent = true, desc = "Git vertical diff split" })
       vim.keymap.set("n", "gb", ":G blame --date=relative<cr>", { noremap = true, silent = true, desc = "Git blame" })
       vim.keymap.set("v", "gb", ":GBrowse<cr>", { noremap = true, silent = true, desc = "Git browse" })
@@ -1381,7 +1425,10 @@ require("lazy").setup({
     ---@module 'blink.cmp'
     ---@type blink.cmp.Config
     opts = {
-      keymap = { preset = "default" },
+      keymap = {
+        preset = "default",
+        ['<C-k>'] = false, -- or {}
+      },
       appearance = {
         -- 'mono' (default) for 'Nerd Font Mono' or 'normal' for 'Nerd Font'
         -- Adjusts spacing to ensure icons are aligned

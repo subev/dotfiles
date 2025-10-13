@@ -3,12 +3,6 @@
   nnoremap <silent> <F7> :LspRestart<CR>
   nnoremap <silent> <space><space> <cmd>lua vim.lsp.buf.hover()<CR>
 
-  "settings for 'github/copilot.vim'
-  imap <silent><script><expr> <c-cr> copilot#Accept("")
-  let g:copilot_no_tab_map = v:true
-  imap <C-n> <Plug>(copilot-next)
-  imap <C-p> <Plug>(copilot-previous)
-
   "settings for 'michaeljsmith/vim-indent-object'
   " remap to my own needs since you cannot remap the built in ones
   omap ai aI
