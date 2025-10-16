@@ -34,9 +34,16 @@ require("lazy").setup({
   },
   {
     "nvim-treesitter/nvim-treesitter",
-    opts = {
-      highlight = {
-        enable = true, -- false will disable the whole extension
+    branch = 'master', lazy = false, build = ":TSUpdate",
+    dependencies = {
+      "nvim-treesitter/nvim-treesitter-textobjects",
+      -- shows wrapping function signature if it is outside of the view
+      "nvim-treesitter/nvim-treesitter-context",
+    },
+    config = function()
+      require("nvim-treesitter.configs").setup({
+        highlight = {
+          enable = true, -- false will disable the whole extension
         -- disable = { "elixir" },  -- list of language that will be disabled
         -- Setting this to true will run `:h syntax` and tree-sitter at the same time.
         -- Set this to `true` if you depend on 'syntax' being enabled (like for indentation).
@@ -154,7 +161,8 @@ require("lazy").setup({
           show_help = "?",
         },
       },
-    },
+    })
+    end,
   },
   {
     "nvim-treesitter/playground",
@@ -163,23 +171,6 @@ require("lazy").setup({
       "TSPlaygroundToggle",
     },
   },
-  -- shows wrapping function signature if it is outside of the view
-  "nvim-treesitter/nvim-treesitter-context",
-  "nvim-treesitter/nvim-treesitter-textobjects",
-  {
-    "ziontee113/syntax-tree-surfer",
-    opts = {},
-    lazy = true,
-    keys = {
-      { "<c-j>", "<cmd>STSSelectNextSiblingNode<cr>", mode = "x", desc = "Select next sibling node" },
-      { "<c-k>", "<cmd>STSSelectPrevSiblingNode<cr>", mode = "x", desc = "Select previous sibling node" },
-      { "<c-h>", "<cmd>STSSelectParentNode<cr>", mode = "x", desc = "Select parent node" },
-      { "<c-l>", "<cmd>STSSelectChildNode<cr>", mode = "x", desc = "Select child node" },
-      { "<c-h>", "ve<c-h>", mode = "n", noremap = false, silent = true, desc = "Expand selection left" },
-    },
-  },
-  "RRethy/nvim-treesitter-textsubjects",
-
   {
     "kawre/leetcode.nvim",
     build = ":TSUpdate html", -- if you have `nvim-treesitter` installed
@@ -204,105 +195,130 @@ require("lazy").setup({
   --   end,
   --   lazy = false,
   --   keys = {
-  --     { "<C-CR>", 'copilot#Accept("")', mode = "i", expr = true, silent = true, script = true, desc = "Copilot Accept" },
-  --     { "<C-j>", "<Plug>(copilot-next)", mode = "i", desc = "Copilot Next Suggestion" },
-  --     { "<C-k>", "<Plug>(copilot-previous)", mode = "i", desc = "Copilot Previous Suggestion" },
+  --     { "<C-CR>", 'copilot#Accept("")', mode = "i", expr = true, silent = true, script = true, desc = "Copilot.vim Accept" },
+  --     { "<C-j>", "<Plug>(copilot-next)", mode = "i", desc = "Copilot.vim Next Suggestion" },
+  --     { "<C-k>", "<Plug>(copilot-previous)", mode = "i", desc = "Copilot.vim Previous Suggestion" },
   --   },
   -- },
 
   {
-    "zbirenbaum/copilot.lua",
-    dependencies = {
-      "copilotlsp-nvim/copilot-lsp",
+    "copilotlsp-nvim/copilot-lsp",
+      opts = {},
+    init = function()
+        vim.g.copilot_nes_debounce = 300
+        -- this thing works but it relies on mason's copilot-lsp installation which conflicts with copilot.lua
+        -- vim.lsp.enable("copilot_ls")
+        -- vim.keymap.set("n", "7", function()
+        --     local bufnr = vim.api.nvim_get_current_buf()
+        --     local state = vim.b[bufnr].nes_state
+        --     if state then
+        --       -- Try to jump to the start of the suggestion edit.
+        --       -- If already at the start, then apply the pending suggestion and jump to the end of the edit.
+        --       local _ = require("copilot-lsp.nes").walk_cursor_start_edit()
+        --         or (
+        --           require("copilot-lsp.nes").apply_pending_nes()
+        --           and require("copilot-lsp.nes").walk_cursor_end_edit()
+        --         )
+        --       return nil
+        --     else
+        --       -- Resolving the terminal's inability to distinguish between `TAB` and `<C-i>` in normal mode
+        --       return "7"
+        --     end
+        --   end, { desc = "Accept Copilot NES suggestion", expr = true })
+      end,
     },
-    opts = {
-      panel = {
-        enabled = true,
-        auto_refresh = true,
-      },
-      suggestion = {
-        enabled = true,
-        auto_trigger = true,
-        keymap = {
-          accept = "<c-cr>",
-          next = "<c-j>",
-          prev = "<c-k>",
-          accept_line = "<c-l>",
-        }
-      },
-      -- not sure how this works
-      -- nes = {
-      --   enabled = true, -- requires copilot-lsp as a dependency
-      --   auto_trigger = true,
-      --   keymap = {
-      --     accept_and_goto = '<c-i>',
-      --     accept = false,
-      --     dismiss = false,
-      --   },
-      -- },
-    },
-  },
-  {
-    "folke/sidekick.nvim",
-    opts = {
-      -- add any options here
-      cli = {
-        mux = {
-          backend = "zellij",
+    {
+      "zbirenbaum/copilot.lua",
+      lazy = false,
+      opts = {
+        panel = {
+          enabled = false,
+          auto_refresh = true,
+        },
+        suggestion = {
           enabled = true,
+          auto_trigger = true,
+          keymap = {
+            accept = "<c-cr>",
+            next = "<c-j>",
+            prev = "<c-k>",
+            accept_line = "<c-l>",
+          }
+        },
+        -- can' seem to make this work neither with copilot.lua nor copilot-lsp
+        -- nes = {
+        --   enabled = true, -- requires copilot-lsp as a dependency
+        --   auto_trigger = true,
+        --   keymap = {
+        --     accept_and_goto = '<c-i>',
+        --     accept = false,
+        --     dismiss = false,
+        --   },
+        -- },
+      },
+    },
+    {
+      "folke/sidekick.nvim",
+      lazy = false,
+      opts = {
+        -- add any options here
+        cli = {
+          mux = {
+            backend = "zellij",
+            enabled = true,
+          },
         },
       },
-    },
-    keys = {
-      {
-        "<tab>",
-        function()
-          -- if there is a next edit, jump to it, otherwise apply it if any
-          if not require("sidekick").nes_jump_or_apply() then
-            return "<Tab>" -- fallback to normal tab
-          end
-        end,
-        expr = true,
-        desc = "Goto/Apply Next Edit Suggestion",
-      },
-      {
-        "<c-.>",
-        function() require("sidekick.cli").toggle() end,
-        desc = "Sidekick Toggle",
-        mode = { "n", "t", "i", "x" },
-      },
-      {
-        "<leader>aa",
-        function() require("sidekick.cli").toggle() end,
-        desc = "Sidekick Toggle CLI",
-      },
-      {
-        "<leader>as",
-        function() require("sidekick.cli").select() end,
-        -- Or to select only installed tools:
-        -- require("sidekick.cli").select({ filter = { installed = true } })
-        desc = "Select CLI",
-      },
-      {
-        "<leader>ad",
-        function() require("sidekick.cli").close() end,
-        desc = "Detach a CLI Session",
-      },
-      {
-        "<leader>at",
-        function() require("sidekick.cli").send({ msg = "{this}" }) end,
-        mode = { "x", "n" },
-        desc = "Send This",
-      },
-      {
-        "<leader>af",
-        function() require("sidekick.cli").send({ msg = "{file}" }) end,
-        desc = "Send File",
-      },
-      {
-        "<leader>av",
-        function() require("sidekick.cli").send({ msg = "{selection}" }) end,
-        mode = { "x" },
+      keys = {
+        {
+          "1",
+          function()
+            -- if there is a next edit, jump to it, otherwise apply it if any
+            if not require("sidekick").nes_jump_or_apply() then
+              return "1" -- fallback to normal
+            end
+          end,
+          expr = true,
+          desc = "Goto/Apply Next Edit Suggestion",
+        },
+        {
+          "<c-.>",
+          function() require("sidekick.cli").toggle() end,
+          desc = "Sidekick Toggle",
+          mode = { "n", "t", "i", "x" },
+        },
+        {
+          "<leader>aa",
+          function() require("sidekick.cli").toggle() end,
+          desc = "Sidekick Toggle CLI",
+        },
+        {
+          "<leader>as",
+          function() require("sidekick.cli").select() end,
+          -- Or to select only installed tools:
+          -- require("sidekick.cli").select({ filter = { installed = true } })
+          desc = "Select CLI",
+        },
+        {
+          "<leader>ad",
+          function() require("sidekick.cli").close() end,
+          desc = "Detach a CLI Session",
+        },
+        {
+          "<leader>at",
+          function() require("sidekick.cli").send({ msg = "{this}" }) end,
+          mode = { "x", "n" },
+          desc = "Send This (at cursor)",
+        },
+        {
+          "<leader>af",
+          function() require("sidekick.cli").send({ msg = "{file}" }) end,
+          desc = "Send File",
+        },
+        {
+          "<leader>av",
+          function() require("sidekick.cli").send({ msg = "{selection}" }) end,
+          mode = { "x" },
         desc = "Send Visual Selection",
       },
       {
@@ -331,6 +347,11 @@ require("lazy").setup({
       "nvim-mini/mini.pick",           -- optional
       "folke/snacks.nvim",             -- optional
     },
+    opts = {
+    },
+    keys = {
+      { "<leader>g", "<cmd>Neogit<cr>", desc = "Open Neogit" },
+    }
   },
 
   {
@@ -473,11 +494,6 @@ require("lazy").setup({
     init = function ()
       vim.g.VM_mouse_mappings = 1
     end,
-    keys = {
-      -- TODO
-      -- map <F2> \\A
-      -- map <F3> \\C
-    }
   },
   {
     "easymotion/vim-easymotion",
@@ -1005,11 +1021,11 @@ require("lazy").setup({
         "<cmd>Rg<cr>",
         { noremap = true, silent = true, desc = "Search with FZF Ripgrep" }
       )
-      vim.keymap.set("v", "<space>s", 'y:Rg <C-r>"<CR>', {
-        noremap = true,
-        silent = true,
-        desc = "Search selection with FZF Ripgrep",
-      })
+      -- vim.keymap.set("v", "<space>s", 'y:Rg <C-r>"<CR>', {
+      --   noremap = true,
+      --   silent = true,
+      --   desc = "Search selection with FZF Ripgrep",
+      -- })
     end,
   },
   {
@@ -1025,7 +1041,7 @@ require("lazy").setup({
       vim.keymap.set("n", "<F1>", fzf.help_tags, { noremap = true, silent = true, desc = "FZF help tags" })
       -- maps <space>s to :Rg (search in files)
       -- vim.keymap.set('n', '<space>s', fzf.live_grep, { noremap = true, silent = true, desc = "FZF live grep" })
-      -- vim.keymap.set('v', '<space>s', fzf.grep_visual, { noremap = true, silent = true, desc = "FZF live grep" })
+      vim.keymap.set('v', '<space>s', fzf.grep_visual, { noremap = true, silent = true, desc = "FZF live grep" })
       vim.keymap.set("n", "<space>`", fzf.grep_curbuf, { noremap = true, silent = true, desc = "FZF live grep" })
     end,
   },
@@ -1220,9 +1236,7 @@ require("lazy").setup({
 
   {
     "mason-org/mason.nvim",
-    config = function()
-      require("mason").setup()
-    end,
+    opts = {}
   },
 
   "neovim/nvim-lspconfig",
@@ -1507,6 +1521,8 @@ require("lazy").setup({
         "mikavilpas/blink-ripgrep.nvim",
         version = "*", -- use the latest stable version
       },
+      -- this adds blink suggestion items that are same as copilot, search below 'copilot'
+      -- { "fang2hou/blink-copilot" },
     },
 
     -- use a release tag to download pre-built binaries
@@ -1531,6 +1547,8 @@ require("lazy").setup({
       sources = {
         default = {
           "lsp",
+          -- needs fang2hou/blink-copilot
+          -- "copilot", -- for now using grayed out suggestions by copilot.lua
           "path",
           "snippets",
           "buffer",
@@ -1554,7 +1572,7 @@ require("lazy").setup({
             name = "LazyDev",
             module = "lazydev.integrations.blink",
             -- make lazydev completions top priority (see `:h blink.cmp`)
-            score_offset = 100,
+            score_offset = 90,
           },
         },
       },
