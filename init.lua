@@ -25,16 +25,22 @@ require("lazy").setup({
     },
     keys = {
       { "gpp", "<cmd>lua require('goto-preview').goto_preview_definition()<CR>", desc = "Preview definition" },
-      { "gpt", "<cmd>lua require('goto-preview').goto_preview_type_definition()<CR>", desc = "Preview type definition" },
+      {
+        "gpt",
+        "<cmd>lua require('goto-preview').goto_preview_type_definition()<CR>",
+        desc = "Preview type definition",
+      },
       { "gpi", "<cmd>lua require('goto-preview').goto_preview_implementation()<CR>", desc = "Preview implementation" },
-      { "gp",  "<cmd>lua require('goto-preview').close_all_win()<CR>", desc = "Close all preview windows" },
+      { "gp", "<cmd>lua require('goto-preview').close_all_win()<CR>", desc = "Close all preview windows" },
       { "gpr", "<cmd>lua require('goto-preview').goto_preview_references()<CR>", desc = "Preview references" },
       { "gpd", "<cmd>lua require('goto-preview').goto_preview_declaration()<CR>", desc = "Preview declaration" },
     },
   },
   {
     "nvim-treesitter/nvim-treesitter",
-    branch = 'master', lazy = false, build = ":TSUpdate",
+    branch = "master",
+    lazy = false,
+    build = ":TSUpdate",
     dependencies = {
       "nvim-treesitter/nvim-treesitter-textobjects",
       -- shows wrapping function signature if it is outside of the view
@@ -44,124 +50,124 @@ require("lazy").setup({
       require("nvim-treesitter.configs").setup({
         highlight = {
           enable = true, -- false will disable the whole extension
-        -- disable = { "elixir" },  -- list of language that will be disabled
-        -- Setting this to true will run `:h syntax` and tree-sitter at the same time.
-        -- Set this to `true` if you depend on 'syntax' being enabled (like for indentation).
-        -- Using this option may slow down your editor, and you may see some duplicate highlights.
-        -- Instead of true it can also be a list of languages
-        -- additional_vim_regex_highlighting = false,
-      },
-      textobjects = {
-        select = {
+          -- disable = { "elixir" },  -- list of language that will be disabled
+          -- Setting this to true will run `:h syntax` and tree-sitter at the same time.
+          -- Set this to `true` if you depend on 'syntax' being enabled (like for indentation).
+          -- Using this option may slow down your editor, and you may see some duplicate highlights.
+          -- Instead of true it can also be a list of languages
+          -- additional_vim_regex_highlighting = false,
+        },
+        textobjects = {
+          select = {
+            enable = true,
+
+            -- Automatically jump forward to textobj, similar to targets.vim
+            lookahead = true,
+
+            keymaps = {
+              -- You can use the capture groups defined in textobjects.scm
+              ["af"] = "@function.outer",
+              ["if"] = "@function.inner",
+              ["ac"] = "@class.outer",
+              -- You can optionally set descriptions to the mappings (used in the desc parameter of
+              -- nvim_buf_set_keymap) which plugins like which-key display
+              ["ic"] = { query = "@class.inner", desc = "Select inner part of a class region" },
+              -- You can also use captures from other query groups like `locals.scm`
+              ["as"] = { query = "@local.scope", query_group = "locals", desc = "Select language scope" },
+              -- selects the return statement without the return keyword
+              ["ir"] = { query = "@return.inner", desc = "Select inner part of a return statement" },
+              ["ar"] = { query = "@return.outer", desc = "Select outer part of a return statement" },
+            },
+            -- You can choose the select mode (default is charwise 'v')
+            --
+            -- Can also be a function which gets passed a table with the keys
+            -- * query_string: eg '@function.inner'
+            -- * method: eg 'v' or 'o'
+            -- and should return the mode ('v', 'V', or '<c-v>') or a table
+            -- mapping query_strings to modes.
+            selection_modes = {
+              ["@parameter.outer"] = "v", -- charwise
+              ["@function.outer"] = "V", -- linewise
+              ["@class.outer"] = "<c-v>", -- blockwise
+            },
+            -- If you set this to `true` (default is `false`) then any textobject is
+            -- extended to include preceding or succeeding whitespace. Succeeding
+            -- whitespace has priority in order to act similarly to eg the built-in
+            -- `ap`.
+            --
+            -- Can also be a function which gets passed a table with the keys
+            -- * query_string: eg '@function.inner'
+            -- * selection_mode: eg 'v'
+            -- and should return true or false
+            include_surrounding_whitespace = false,
+          },
+          move = {
+            enable = true,
+            set_jumps = true, -- whether to set jumps in the jumplist
+            goto_next_start = {
+              ["]m"] = "@function.outer",
+              -- ["]]"] = { query = "@class.outer", desc = "Next class start" },
+              --
+              -- You can use regex matching (i.e. lua pattern) and/or pass a list in a "query" key to group multiple queries.
+              -- ["]o"] = "@loop.*",
+              -- ["]o"] = { query = { "@loop.inner", "@loop.outer" } }
+              --
+              -- You can pass a query group to use query from `queries/<lang>/<query_group>.scm file in your runtime path.
+              -- Below example nvim-treesitter's `locals.scm` and `folds.scm`. They also provide highlights.scm and indent.scm.
+              ["]s"] = { query = "@local.scope", query_group = "locals", desc = "Next scope" },
+              -- uses shift down arrow to go to next statement (more granular than function)
+              ["J"] = "@statement.outer",
+            },
+            goto_next_end = {
+              ["]M"] = "@function.outer",
+              ["]["] = "@class.outer",
+            },
+            goto_previous_start = {
+              ["[m"] = "@function.outer",
+              -- ["[["] = "@class.outer",
+              ["K"] = "@statement.outer",
+            },
+            goto_previous_end = {
+              ["[M"] = "@function.outer",
+              ["[]"] = "@class.outer",
+            },
+            -- Below will go to either the start or the end, whichever is closer.
+            -- Use if you want more granular movements
+            -- Make it even more gradual by adding multiple queries and regex.
+            goto_next = {
+              ["]d"] = "@conditional.outer",
+            },
+            goto_previous = {
+              ["[d"] = "@conditional.outer",
+            },
+          },
+        },
+        textsubjects = {
           enable = true,
-
-          -- Automatically jump forward to textobj, similar to targets.vim
-          lookahead = true,
-
           keymaps = {
-            -- You can use the capture groups defined in textobjects.scm
-            ["af"] = "@function.outer",
-            ["if"] = "@function.inner",
-            ["ac"] = "@class.outer",
-            -- You can optionally set descriptions to the mappings (used in the desc parameter of
-            -- nvim_buf_set_keymap) which plugins like which-key display
-            ["ic"] = { query = "@class.inner", desc = "Select inner part of a class region" },
-            -- You can also use captures from other query groups like `locals.scm`
-            ["as"] = { query = "@local.scope", query_group = "locals", desc = "Select language scope" },
-            -- selects the return statement without the return keyword
-            ["ir"] = { query = "@return.inner", desc = "Select inner part of a return statement" },
-            ["ar"] = { query = "@return.outer", desc = "Select outer part of a return statement" },
+            [">"] = "textsubjects-smart",
+            ["+"] = "textsubjects-container-outer",
           },
-          -- You can choose the select mode (default is charwise 'v')
-          --
-          -- Can also be a function which gets passed a table with the keys
-          -- * query_string: eg '@function.inner'
-          -- * method: eg 'v' or 'o'
-          -- and should return the mode ('v', 'V', or '<c-v>') or a table
-          -- mapping query_strings to modes.
-          selection_modes = {
-            ["@parameter.outer"] = "v", -- charwise
-            ["@function.outer"] = "V",  -- linewise
-            ["@class.outer"] = "<c-v>", -- blockwise
-          },
-          -- If you set this to `true` (default is `false`) then any textobject is
-          -- extended to include preceding or succeeding whitespace. Succeeding
-          -- whitespace has priority in order to act similarly to eg the built-in
-          -- `ap`.
-          --
-          -- Can also be a function which gets passed a table with the keys
-          -- * query_string: eg '@function.inner'
-          -- * selection_mode: eg 'v'
-          -- and should return true or false
-          include_surrounding_whitespace = false,
         },
-        move = {
+        playground = {
           enable = true,
-          set_jumps = true, -- whether to set jumps in the jumplist
-          goto_next_start = {
-            ["]m"] = "@function.outer",
-            -- ["]]"] = { query = "@class.outer", desc = "Next class start" },
-            --
-            -- You can use regex matching (i.e. lua pattern) and/or pass a list in a "query" key to group multiple queries.
-            -- ["]o"] = "@loop.*",
-            -- ["]o"] = { query = { "@loop.inner", "@loop.outer" } }
-            --
-            -- You can pass a query group to use query from `queries/<lang>/<query_group>.scm file in your runtime path.
-            -- Below example nvim-treesitter's `locals.scm` and `folds.scm`. They also provide highlights.scm and indent.scm.
-            ["]s"] = { query = "@local.scope", query_group = "locals", desc = "Next scope" },
-            -- uses shift down arrow to go to next statement (more granular than function)
-            ["J"] = "@statement.outer",
-          },
-          goto_next_end = {
-            ["]M"] = "@function.outer",
-            ["]["] = "@class.outer",
-          },
-          goto_previous_start = {
-            ["[m"] = "@function.outer",
-            -- ["[["] = "@class.outer",
-            ["K"] = "@statement.outer",
-          },
-          goto_previous_end = {
-            ["[M"] = "@function.outer",
-            ["[]"] = "@class.outer",
-          },
-          -- Below will go to either the start or the end, whichever is closer.
-          -- Use if you want more granular movements
-          -- Make it even more gradual by adding multiple queries and regex.
-          goto_next = {
-            ["]d"] = "@conditional.outer",
-          },
-          goto_previous = {
-            ["[d"] = "@conditional.outer",
+          disable = {},
+          updatetime = 25, -- Debounced time for highlighting nodes in the playground from source code
+          persist_queries = false, -- Whether the query persists across vim sessions
+          keybindings = {
+            toggle_query_editor = "o",
+            toggle_hl_groups = "i",
+            toggle_injected_languages = "t",
+            toggle_anonymous_nodes = "a",
+            toggle_language_display = "I",
+            focus_language = "f",
+            unfocus_language = "F",
+            update = "R",
+            goto_node = "<cr>",
+            show_help = "?",
           },
         },
-      },
-      textsubjects = {
-        enable = true,
-        keymaps = {
-          [">"] = "textsubjects-smart",
-          ["+"] = "textsubjects-container-outer",
-        },
-      },
-      playground = {
-        enable = true,
-        disable = {},
-        updatetime = 25,         -- Debounced time for highlighting nodes in the playground from source code
-        persist_queries = false, -- Whether the query persists across vim sessions
-        keybindings = {
-          toggle_query_editor = "o",
-          toggle_hl_groups = "i",
-          toggle_injected_languages = "t",
-          toggle_anonymous_nodes = "a",
-          toggle_language_display = "I",
-          focus_language = "f",
-          unfocus_language = "F",
-          update = "R",
-          goto_node = "<cr>",
-          show_help = "?",
-        },
-      },
-    })
+      })
     end,
   },
   {
@@ -203,134 +209,152 @@ require("lazy").setup({
 
   {
     "copilotlsp-nvim/copilot-lsp",
-      opts = {},
+    opts = {},
     init = function()
-        vim.g.copilot_nes_debounce = 300
-        -- this thing works but it relies on mason's copilot-lsp installation which conflicts with copilot.lua
-        -- vim.lsp.enable("copilot_ls")
-        -- vim.keymap.set("n", "7", function()
-        --     local bufnr = vim.api.nvim_get_current_buf()
-        --     local state = vim.b[bufnr].nes_state
-        --     if state then
-        --       -- Try to jump to the start of the suggestion edit.
-        --       -- If already at the start, then apply the pending suggestion and jump to the end of the edit.
-        --       local _ = require("copilot-lsp.nes").walk_cursor_start_edit()
-        --         or (
-        --           require("copilot-lsp.nes").apply_pending_nes()
-        --           and require("copilot-lsp.nes").walk_cursor_end_edit()
-        --         )
-        --       return nil
-        --     else
-        --       -- Resolving the terminal's inability to distinguish between `TAB` and `<C-i>` in normal mode
-        --       return "7"
-        --     end
-        --   end, { desc = "Accept Copilot NES suggestion", expr = true })
-      end,
-    },
-    {
-      "zbirenbaum/copilot.lua",
-      lazy = false,
-      opts = {
-        panel = {
-          enabled = false,
-          auto_refresh = true,
+      vim.g.copilot_nes_debounce = 300
+      -- this thing works but it relies on mason's copilot-lsp installation which conflicts with copilot.lua
+      -- vim.lsp.enable("copilot_ls")
+      -- vim.keymap.set("n", "7", function()
+      --     local bufnr = vim.api.nvim_get_current_buf()
+      --     local state = vim.b[bufnr].nes_state
+      --     if state then
+      --       -- Try to jump to the start of the suggestion edit.
+      --       -- If already at the start, then apply the pending suggestion and jump to the end of the edit.
+      --       local _ = require("copilot-lsp.nes").walk_cursor_start_edit()
+      --         or (
+      --           require("copilot-lsp.nes").apply_pending_nes()
+      --           and require("copilot-lsp.nes").walk_cursor_end_edit()
+      --         )
+      --       return nil
+      --     else
+      --       -- Resolving the terminal's inability to distinguish between `TAB` and `<C-i>` in normal mode
+      --       return "7"
+      --     end
+      --   end, { desc = "Accept Copilot NES suggestion", expr = true })
+    end,
+  },
+  {
+    "zbirenbaum/copilot.lua",
+    lazy = false,
+    opts = {
+      panel = {
+        enabled = false,
+        auto_refresh = true,
+      },
+      suggestion = {
+        enabled = true,
+        auto_trigger = true,
+        keymap = {
+          accept = "<c-cr>",
+          next = "<c-j>",
+          prev = "<c-k>",
+          accept_line = "<c-l>",
         },
-        suggestion = {
+      },
+      -- can' seem to make this work neither with copilot.lua nor copilot-lsp
+      -- nes = {
+      --   enabled = true, -- requires copilot-lsp as a dependency
+      --   auto_trigger = true,
+      --   keymap = {
+      --     accept_and_goto = '<c-i>',
+      --     accept = false,
+      --     dismiss = false,
+      --   },
+      -- },
+    },
+  },
+  {
+    "folke/sidekick.nvim",
+    lazy = false,
+    opts = {
+      -- add any options here
+      cli = {
+        mux = {
+          backend = "zellij",
           enabled = true,
-          auto_trigger = true,
-          keymap = {
-            accept = "<c-cr>",
-            next = "<c-j>",
-            prev = "<c-k>",
-            accept_line = "<c-l>",
-          }
         },
-        -- can' seem to make this work neither with copilot.lua nor copilot-lsp
-        -- nes = {
-        --   enabled = true, -- requires copilot-lsp as a dependency
-        --   auto_trigger = true,
-        --   keymap = {
-        --     accept_and_goto = '<c-i>',
-        --     accept = false,
-        --     dismiss = false,
-        --   },
-        -- },
       },
     },
-    {
-      "folke/sidekick.nvim",
-      lazy = false,
-      opts = {
-        -- add any options here
-        cli = {
-          mux = {
-            backend = "zellij",
-            enabled = true,
-          },
-        },
+    keys = {
+      {
+        "1",
+        function()
+          -- if there is a next edit, jump to it, otherwise apply it if any
+          if not require("sidekick").nes_jump_or_apply() then
+            return "1" -- fallback to normal
+          end
+        end,
+        expr = true,
+        desc = "Goto/Apply Next Edit Suggestion",
       },
-      keys = {
-        {
-          "1",
-          function()
-            -- if there is a next edit, jump to it, otherwise apply it if any
-            if not require("sidekick").nes_jump_or_apply() then
-              return "1" -- fallback to normal
-            end
-          end,
-          expr = true,
-          desc = "Goto/Apply Next Edit Suggestion",
-        },
-        {
-          "<c-.>",
-          function() require("sidekick.cli").toggle() end,
-          desc = "Sidekick Toggle",
-          mode = { "n", "t", "i", "x" },
-        },
-        {
-          "<leader>aa",
-          function() require("sidekick.cli").toggle() end,
-          desc = "Sidekick Toggle CLI",
-        },
-        {
-          "<leader>as",
-          function() require("sidekick.cli").select() end,
-          -- Or to select only installed tools:
-          -- require("sidekick.cli").select({ filter = { installed = true } })
-          desc = "Select CLI",
-        },
-        {
-          "<leader>ad",
-          function() require("sidekick.cli").close() end,
-          desc = "Detach a CLI Session",
-        },
-        {
-          "<leader>at",
-          function() require("sidekick.cli").send({ msg = "{this}" }) end,
-          mode = { "x", "n" },
-          desc = "Send This (at cursor)",
-        },
-        {
-          "<leader>af",
-          function() require("sidekick.cli").send({ msg = "{file}" }) end,
-          desc = "Send File",
-        },
-        {
-          "<leader>av",
-          function() require("sidekick.cli").send({ msg = "{selection}" }) end,
-          mode = { "x" },
+      {
+        "<c-.>",
+        function()
+          require("sidekick.cli").toggle()
+        end,
+        desc = "Sidekick Toggle",
+        mode = { "n", "t", "i", "x" },
+      },
+      {
+        "<leader>aa",
+        function()
+          require("sidekick.cli").toggle()
+        end,
+        desc = "Sidekick Toggle CLI",
+      },
+      {
+        "<leader>as",
+        function()
+          require("sidekick.cli").select()
+        end,
+        -- Or to select only installed tools:
+        -- require("sidekick.cli").select({ filter = { installed = true } })
+        desc = "Select CLI",
+      },
+      {
+        "<leader>ad",
+        function()
+          require("sidekick.cli").close()
+        end,
+        desc = "Detach a CLI Session",
+      },
+      {
+        "<leader>at",
+        function()
+          require("sidekick.cli").send({ msg = "{this}" })
+        end,
+        mode = { "x", "n" },
+        desc = "Send This (at cursor)",
+      },
+      {
+        "<leader>af",
+        function()
+          require("sidekick.cli").send({ msg = "{file}" })
+        end,
+        desc = "Send File",
+      },
+      {
+        "<leader>av",
+        function()
+          require("sidekick.cli").send({ msg = "{selection}" })
+        end,
+        mode = { "x" },
         desc = "Send Visual Selection",
       },
       {
         "<leader>ap",
-        function() require("sidekick.cli").prompt() end,
+        function()
+          require("sidekick.cli").prompt()
+        end,
         mode = { "n", "x" },
         desc = "Sidekick Select Prompt",
       },
       -- Example of a keybinding to open Claude directly
       {
         "<leader>ac",
-        function() require("sidekick.cli").toggle({ name = "claude", focus = true }) end,
+        function()
+          require("sidekick.cli").toggle({ name = "claude", focus = true })
+        end,
         desc = "Sidekick Toggle Claude",
       },
     },
@@ -338,20 +362,19 @@ require("lazy").setup({
   {
     "NeogitOrg/neogit",
     dependencies = {
-      "nvim-lua/plenary.nvim",         -- required
-      "sindrets/diffview.nvim",        -- optional - Diff integration
+      "nvim-lua/plenary.nvim", -- required
+      "sindrets/diffview.nvim", -- optional - Diff integration
 
       -- Only one of these is needed.
       "nvim-telescope/telescope.nvim", -- optional
-      "ibhagwan/fzf-lua",              -- optional
-      "nvim-mini/mini.pick",           -- optional
-      "folke/snacks.nvim",             -- optional
+      "ibhagwan/fzf-lua", -- optional
+      "nvim-mini/mini.pick", -- optional
+      "folke/snacks.nvim", -- optional
     },
-    opts = {
-    },
+    opts = {},
     keys = {
       { "<leader>g", "<cmd>Neogit<cr>", desc = "Open Neogit" },
-    }
+    },
   },
 
   {
@@ -385,7 +408,7 @@ require("lazy").setup({
       vim.g.startify_change_to_dir = 0
       vim.g.startify_change_to_vcs_root = 0
       vim.g.startify_session_persistence = 0
-    end
+    end,
   },
   "skanehira/gh.vim",
 
@@ -450,7 +473,7 @@ require("lazy").setup({
         -- Text object
         map({ "o", "x" }, "ah", ":<C-U>Gitsigns select_hunk<CR>")
       end,
-    }
+    },
   },
 
   {
@@ -491,13 +514,13 @@ require("lazy").setup({
 
   {
     "mg979/vim-visual-multi",
-    init = function ()
+    init = function()
       vim.g.VM_mouse_mappings = 1
     end,
   },
   {
     "easymotion/vim-easymotion",
-    init = function ()
+    init = function()
       vim.g.EasyMotion_smartcase = 1
       vim.g.EasyMotion_keys = "asdghklqwertyuiopzxcvbnmfj"
     end,
@@ -511,7 +534,7 @@ require("lazy").setup({
         silent = true,
         desc = "Easymotion over window f2",
       },
-    }
+    },
   },
   {
     "AndrewRadev/switch.vim",
@@ -519,7 +542,7 @@ require("lazy").setup({
       -- Define custom switch pairs
       vim.g.switch_custom_definitions = {
         { "!==", "===" },
-        { "!=",  "==" },
+        { "!=", "==" },
       }
     end,
     lazy = true,
@@ -532,7 +555,7 @@ require("lazy").setup({
         silent = true,
         desc = "Toggle operator with switch.vim",
       },
-    }
+    },
   },
   {
     "AndrewRadev/splitjoin.vim",
@@ -580,7 +603,7 @@ require("lazy").setup({
 
   {
     "matze/vim-move",
-    init = function ()
+    init = function()
       vim.g.move_map_keys = 0
       vim.keymap.set("v", "H", "<Plug>MoveBlockUp", {
         noremap = false,
@@ -602,12 +625,12 @@ require("lazy").setup({
         silent = true,
         desc = "Move line down",
       })
-    end
+    end,
   },
 
   {
     "dyng/ctrlsf.vim",
-    init = function ()
+    init = function()
       vim.g.ctrlsf_ackprg = "rg"
       vim.g.ctrlsf_mapping = {
         next = "n",
@@ -624,34 +647,97 @@ require("lazy").setup({
     keys = {
       { "<leader>r", ":CtrlSF<space>", noremap = true, silent = true, desc = "CtrlSF" },
       { "<space>r", ":CtrlSFOpen<CR>", noremap = true, silent = true, desc = "CtrlSF Open" },
-      { "<leader>r", 'y:CtrlSF \\b<C-R>"\\b -R -G !*.test.ts<CR>', mode = "v", noremap = true, silent = true, desc = "CtrlSF with visual selection (ignore .test.ts files)" },
-      { "<space>r", 'y:CtrlSF <C-R>" <C-R>=expand("%:p")<cr><cr>', mode = "v", noremap = true, silent = true, desc = "CtrlSF in current file with visual selection" },
+      {
+        "<leader>r",
+        'y:CtrlSF \\b<C-R>"\\b -R -G !*.test.ts<CR>',
+        mode = "v",
+        noremap = true,
+        silent = true,
+        desc = "CtrlSF with visual selection (ignore .test.ts files)",
+      },
+      {
+        "<space>r",
+        'y:CtrlSF <C-R>" <C-R>=expand("%:p")<cr><cr>',
+        mode = "v",
+        noremap = true,
+        silent = true,
+        desc = "CtrlSF in current file with visual selection",
+      },
       { "R", ":CtrlSF <C-R><C-W> -W<CR>", noremap = true, silent = true, desc = "CtrlSF word under cursor" },
-      { "R", 'y:CtrlSF "<C-R>""<CR>', mode = "v", noremap = true, silent = true, desc = "CtrlSF with visual selection" },
-      { "T", 'y:CtrlSF "<C-R>"" -G !*.test.ts<CR>', mode = "v", noremap = true, silent = true, desc = "CtrlSF with visual selection (ignore .test.ts files)" },
-    }
+      {
+        "R",
+        'y:CtrlSF "<C-R>""<CR>',
+        mode = "v",
+        noremap = true,
+        silent = true,
+        desc = "CtrlSF with visual selection",
+      },
+      {
+        "T",
+        'y:CtrlSF "<C-R>"" -G !*.test.ts<CR>',
+        mode = "v",
+        noremap = true,
+        silent = true,
+        desc = "CtrlSF with visual selection (ignore .test.ts files)",
+      },
+    },
   },
 
   {
     "tpope/vim-fugitive",
-    init = function ()
+    init = function()
       vim.keymap.set("n", "gD", ":Gvdiffsplit<cr>", { noremap = true, silent = true, desc = "Git vertical diff split" })
       vim.keymap.set("n", "gb", ":G blame --date=relative<cr>", { noremap = true, silent = true, desc = "Git blame" })
       vim.keymap.set("v", "gb", ":GBrowse<cr>", { noremap = true, silent = true, desc = "Git browse" })
       vim.keymap.set("n", ",g", ":G<CR>", { noremap = true, silent = true, desc = "Git status" })
       vim.keymap.set("n", ",g<space>", ":G<space>", { noremap = true, silent = true, desc = "Git status with args" })
       vim.keymap.set("n", ",gg", ":G<CR><c-w>H", { noremap = true, silent = true, desc = "Git status in left pane" })
-      vim.keymap.set("n", ",gc", ":GV?<cr><c-w>H", { noremap = true, silent = true, desc = "Git commit log in new tab" })
-      vim.keymap.set("n", ",gH", ":G log --stat -p -U0 --abbrev-commit --date=relative -- %<cr><c-w>H", { noremap = true, silent = true, desc = "Git file history in left pane" })
+      vim.keymap.set(
+        "n",
+        ",gc",
+        ":GV?<cr><c-w>H",
+        { noremap = true, silent = true, desc = "Git commit log in new tab" }
+      )
+      vim.keymap.set(
+        "n",
+        ",gH",
+        ":G log --stat -p -U0 --abbrev-commit --date=relative -- %<cr><c-w>H",
+        { noremap = true, silent = true, desc = "Git file history in left pane" }
+      )
       vim.keymap.set("n", ",gp", ":G pull", { noremap = true, silent = true, desc = "Git pull (waiting for confirm)" })
       vim.keymap.set("n", ",gs", ":G push", { noremap = true, silent = true, desc = "Git push (waiting for confirm)" })
       vim.keymap.set("n", ",gf", ":G fetch<cr>", { noremap = true, silent = true, desc = "Git fetch" })
-      vim.keymap.set("n", ",gx", ":G merge origin/master<cr>", { noremap = true, silent = true, desc = "Git merge origin/master" })
-      vim.keymap.set("n", ",gz", ":G merge --continue<cr>", { noremap = true, silent = true, desc = "Git merge continue" })
-      vim.keymap.set("n", "gM", ":Gvsplit origin/<C-r>=GetMasterBranchName()<CR>:%<cr>", { noremap = true, silent = true, desc = "Git vertical diff split with master" })
-      vim.keymap.set("n", "gm", ":Gvdiffsplit origin/<C-r>=GetMasterBranchName()<CR>:%<cr>", { noremap = true, silent = true, desc = "Git see same file but in master" })
-      vim.keymap.set("n", ",gM", ":G diff origin/<C-r>=GetMasterBranchName()<CR>... <cr><c-w>H", { noremap = true, silent = true, desc = "Git diff with master in left pane" })
-    end
+      vim.keymap.set(
+        "n",
+        ",gx",
+        ":G merge origin/master<cr>",
+        { noremap = true, silent = true, desc = "Git merge origin/master" }
+      )
+      vim.keymap.set(
+        "n",
+        ",gz",
+        ":G merge --continue<cr>",
+        { noremap = true, silent = true, desc = "Git merge continue" }
+      )
+      vim.keymap.set(
+        "n",
+        "gM",
+        ":Gvsplit origin/<C-r>=GetMasterBranchName()<CR>:%<cr>",
+        { noremap = true, silent = true, desc = "Git vertical diff split with master" }
+      )
+      vim.keymap.set(
+        "n",
+        "gm",
+        ":Gvdiffsplit origin/<C-r>=GetMasterBranchName()<CR>:%<cr>",
+        { noremap = true, silent = true, desc = "Git see same file but in master" }
+      )
+      vim.keymap.set(
+        "n",
+        ",gM",
+        ":G diff origin/<C-r>=GetMasterBranchName()<CR>... <cr><c-w>H",
+        { noremap = true, silent = true, desc = "Git diff with master in left pane" }
+      )
+    end,
   },
 
   {
@@ -678,7 +764,11 @@ require("lazy").setup({
     keys = {
       { ",gd", ":DiffviewOpen<cr>", desc = "Git Diffview Open" },
       { ",gh", ":DiffviewFileHistory %<cr>", desc = "Git Diffview File History" },
-      { ",gm", ":DiffviewOpen origin/<C-r>=GetMasterBranchName()<CR>...HEAD<cr>", desc = "Git Diffview Open with master" },
+      {
+        ",gm",
+        ":DiffviewOpen origin/<C-r>=GetMasterBranchName()<CR>...HEAD<cr>",
+        desc = "Git Diffview Open with master",
+      },
     },
   },
   {
@@ -901,10 +991,10 @@ require("lazy").setup({
           runtimeArgs = {
             "${workspaceFolder}/node_modules/vitest/vitest.mjs", -- Vitest entry
             "run",
-            "${file}",                                           -- run only the current test file
-            "--inspect-brk",                                     -- ensure it waits for debugger
+            "${file}", -- run only the current test file
+            "--inspect-brk", -- ensure it waits for debugger
             "--pool",
-            "threads",                                           -- disable worker threads (important for debugging)
+            "threads", -- disable worker threads (important for debugging)
             "--poolOptions.threads.singleThread",
           },
           console = "integratedTerminal",
@@ -1011,10 +1101,11 @@ require("lazy").setup({
   },
   "junegunn/vim-easy-align",
 
-  { "junegunn/fzf",          build = "./install --bin" },
+  { "junegunn/fzf", build = "./install --bin" },
   {
     "junegunn/fzf.vim",
     config = function()
+      -- this whole plugin is for just that one mapping, still can't find better
       vim.keymap.set(
         "n",
         "<space>s",
@@ -1041,8 +1132,13 @@ require("lazy").setup({
       vim.keymap.set("n", "<F1>", fzf.help_tags, { noremap = true, silent = true, desc = "FZF help tags" })
       -- maps <space>s to :Rg (search in files)
       -- vim.keymap.set('n', '<space>s', fzf.live_grep, { noremap = true, silent = true, desc = "FZF live grep" })
-      vim.keymap.set('v', '<space>s', fzf.grep_visual, { noremap = true, silent = true, desc = "FZF live grep" })
-      vim.keymap.set("n", "<space>`", fzf.grep_curbuf, { noremap = true, silent = true, desc = "FZF live grep" })
+      vim.keymap.set("v", "<space>s", fzf.grep_visual, { noremap = true, silent = true, desc = "FZF live grep" })
+      vim.keymap.set(
+        "n",
+        "<space>`",
+        fzf.grep_curbuf,
+        { noremap = true, silent = true, desc = "FZF grep current buffer" }
+      )
     end,
   },
 
@@ -1071,10 +1167,10 @@ require("lazy").setup({
       telescope.setup({
         extensions = {
           fzf = {
-            fuzzy = true,                   -- false will only do exact matching
+            fuzzy = true, -- false will only do exact matching
             override_generic_sorter = true, -- override the generic sorter
-            override_file_sorter = true,    -- override the file sorter
-            case_mode = "smart_case",       -- or "ignore_case" or "respect_case"
+            override_file_sorter = true, -- override the file sorter
+            case_mode = "smart_case", -- or "ignore_case" or "respect_case"
             -- the default case_mode is "smart_case"
           },
         },
@@ -1190,7 +1286,43 @@ require("lazy").setup({
   "haya14busa/vim-textobj-function-syntax",
   "chrisbra/csv.vim",
 
-  { "stevearc/conform.nvim", opts = {} },
+  {
+    "stevearc/conform.nvim",
+    opts = {
+      formatters_by_ft = {
+        lua = { "stylua" },
+        -- Conform will run multiple formatters sequentially
+        python = { "isort", "black" },
+        -- You can customize some of the format options for the filetype (:help conform.format)
+        rust = { "rustfmt", lsp_format = "fallback" },
+        -- Conform will run the first available formatter
+        javascript = { "prettierd", "prettier", stop_after_first = true },
+        typescript = { "prettierd", "prettier", stop_after_first = true },
+        javascriptreact = { "prettierd", "prettier", stop_after_first = true },
+        typescriptreact = { "prettierd", "prettier", stop_after_first = true },
+      },
+    },
+    init = function()
+      vim.api.nvim_create_user_command("Format", function(args)
+        local range = nil
+        if args.count ~= -1 then
+          local end_line = vim.api.nvim_buf_get_lines(0, args.line2 - 1, args.line2, true)[1]
+          range = {
+            start = { args.line1, 0 },
+            ["end"] = { args.line2, end_line:len() },
+          }
+        end
+        require("conform").format({ async = true, lsp_format = "fallback", range = range })
+      end, { range = true })
+
+      -- maps it to <space>f
+      vim.keymap.set("n", "<space>f", ":Format<CR>", { noremap = true, silent = true, desc = "Format buffer" })
+      vim.keymap.set("v", "<space>f", ":Format<CR>", { noremap = true, silent = true, desc = "Format selection" })
+
+      -- set up formatexpr for gq formatting
+      vim.o.formatexpr = "v:lua.require'conform'.formatexpr()"
+    end,
+  },
   -- 'mhartington/formatter.nvim',
 
   "editorconfig/editorconfig-vim",
@@ -1203,12 +1335,12 @@ require("lazy").setup({
       { "<leader><space><space>", "<cmd>TWValues<cr>", desc = "Show tailwind CSS values" },
     },
     opts = {
-      border = "rounded",          -- Valid window border style,
+      border = "rounded", -- Valid window border style,
       show_unknown_classes = true, -- Shows the unknown classes popup
-      focus_preview = true,        -- Sets the preview as the current window
-      copy_register = "",          -- The register to copy values to,
+      focus_preview = true, -- Sets the preview as the current window
+      copy_register = "", -- The register to copy values to,
       keymaps = {
-        copy = "<C-y>",            -- Normal mode keymap to copy the CSS values between {}
+        copy = "<C-y>", -- Normal mode keymap to copy the CSS values between {}
       },
     },
   },
@@ -1236,7 +1368,7 @@ require("lazy").setup({
 
   {
     "mason-org/mason.nvim",
-    opts = {}
+    opts = {},
   },
 
   "neovim/nvim-lspconfig",
@@ -1312,7 +1444,7 @@ require("lazy").setup({
     dependencies = "kevinhwang91/promise-async",
     config = function()
       vim.o.foldcolumn = "0" -- 1, '0' is not bad
-      vim.o.foldlevel = 99   -- Using ufo provider need a large value, feel free to decrease the value
+      vim.o.foldlevel = 99 -- Using ufo provider need a large value, feel free to decrease the value
       vim.o.foldlevelstart = 99
       vim.o.foldenable = true
 
@@ -1443,7 +1575,7 @@ require("lazy").setup({
       "MunifTanjim/nui.nvim",
       "nvim-tree/nvim-web-devicons", -- optional, but recommended
     },
-    lazy = false,                    -- neo-tree will lazily load itself
+    lazy = false, -- neo-tree will lazily load itself
     config = function()
       require("neo-tree").setup({
         event_handlers = {
@@ -1533,7 +1665,7 @@ require("lazy").setup({
     opts = {
       keymap = {
         preset = "default",
-        ['<C-k>'] = false, -- or {}
+        ["<C-k>"] = false, -- or {}
       },
       appearance = {
         -- 'mono' (default) for 'Nerd Font Mono' or 'normal' for 'Nerd Font'
@@ -1607,17 +1739,26 @@ require("lazy").setup({
     end,
     dependencies = {
       "nvim-treesitter/nvim-treesitter", -- optional
-      "nvim-tree/nvim-web-devicons",     -- optional
+      "nvim-tree/nvim-web-devicons", -- optional
     },
   },
   -- nice markdown preview
-  { "OXY2DEV/markview.nvim" },
+  {
+    "OXY2DEV/markview.nvim",
+    lazy = false,
+    opts = {
+      preview = {
+        filetypes = { "markdown", "codecompanion" },
+        ignore_buftypes = {},
+      },
+    },
+  },
 })
 
-vim.keymap.set("n", "<space>f", function()
-  -- Call the LSP buffer formatting function synchronously
-  vim.lsp.buf.format({ async = false })
-end, { noremap = true, silent = true })
+-- vim.keymap.set("n", "<space>f", function()
+--   -- Call the LSP buffer formatting function synchronously
+--   vim.lsp.buf.format({ async = false })
+-- end, { noremap = true, silent = true })
 
 -- See `:help vim.diagnostic.*` for documentation on any of the below functions
 vim.keymap.set("n", "<space><left>", function()
