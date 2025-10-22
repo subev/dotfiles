@@ -48,6 +48,12 @@ require("lazy").setup({
     },
     config = function()
       require("nvim-treesitter.configs").setup({
+        modules = {}, -- Add modules if needed
+        sync_install = false, -- Install parsers asynchronously (recommended)
+        ensure_installed = { "lua", "typescript", "python", "json", "markdown" }, -- Add your desired languages
+        ignore_install = {}, -- Parsers to ignore
+        auto_install = true, -- Automatically install missing parsers
+
         highlight = {
           enable = true, -- false will disable the whole extension
           -- disable = { "elixir" },  -- list of language that will be disabled
@@ -943,11 +949,11 @@ require("lazy").setup({
       end, { desc = "See the output from the tests" })
 
       vim.keymap.set("n", "<space>tww", function()
-        require("neotest").run.run({ vitestCommand = "vitest --watch" })
+        require("neotest").run.run({ vitestCommand = "vitest --watch", suite = false })
       end, { desc = "Run & Watch Nearest Test" })
 
       vim.keymap.set("n", "<space>twa", function()
-        require("neotest").run.run({ vim.fn.expand("%"), vitestCommand = "vitest --watch" })
+        require("neotest").run.run({ vim.fn.expand("%"), vitestCommand = "vitest --watch", suite = false })
       end, { desc = "Run and Watch File" })
     end,
   },
@@ -1059,13 +1065,6 @@ require("lazy").setup({
     end,
   },
   {
-    "rcarriga/nvim-dap-ui",
-    dependencies = {
-      "mfussenegger/nvim-dap",
-      "nvim-neotest/nvim-nio",
-    },
-  },
-  {
     "j-hui/fidget.nvim",
     opts = {
       -- options
@@ -1081,20 +1080,6 @@ require("lazy").setup({
       vim.diagnostic.config({ virtual_text = false }) -- Disable default virtual text
     end,
   },
-  {
-    "jlanzarotta/bufexplorer",
-    config = function()
-      -- "settings for 'jlanzarotta/bufexplorer'
-      -- nnoremap ,b :BufExplorerVerticalSplit<CR>
-      -- "BufExplorer show relative paths by default
-      -- let g:bufExplorerShowNoName=1
-      -- let g:bufExplorerShowRelativePath=1  " Show relative paths.
-      vim.keymap.set("n", ",b", ":BufExplorerVerticalSplit<CR>", { noremap = true, silent = true })
-      vim.g.bufExplorerShowNoName = 1
-      vim.g.bufExplorerShowRelativePath = 1
-    end,
-  },
-
   {
     "junegunn/gv.vim",
     config = function() end,
@@ -1133,6 +1118,8 @@ require("lazy").setup({
       -- maps <space>s to :Rg (search in files)
       -- vim.keymap.set('n', '<space>s', fzf.live_grep, { noremap = true, silent = true, desc = "FZF live grep" })
       vim.keymap.set("v", "<space>s", fzf.grep_visual, { noremap = true, silent = true, desc = "FZF live grep" })
+      -- open buffers with ,b
+      vim.keymap.set("n", ",b", fzf.buffers, { noremap = true, silent = true, desc = "FZF buffers" })
       vim.keymap.set(
         "n",
         "<space>`",
@@ -1352,7 +1339,7 @@ require("lazy").setup({
       { "mason-org/mason.nvim", opts = {} },
       "neovim/nvim-lspconfig",
     },
-    config = function(_, opts)
+    config = function()
       require("mason-lspconfig").setup({
         ensure_installed = {
           "ts_ls",
@@ -1384,7 +1371,6 @@ require("lazy").setup({
       -- Primary Source of Truth is null-ls's setup
       require("mason-null-ls").setup({
         -- handlers = {},
-        ensure_installed = nil,
         automatic_installation = true,
       })
     end,
@@ -1398,10 +1384,12 @@ require("lazy").setup({
           description = [[Only add lens for the nearest matched instance and ignore others]],
           default = false,
         },
-        override_lens = function(render, posList, nearest, idx, relIdx)
+        build_position_cb = function(plist, _, _, _)
+          require("scrollbar.handlers.search").handler.show(plist.start_pos)
+        end,
+        override_lens = function(render, posList, nearest, idx)
           local sfw = vim.v.searchforward == 1
           local indicator, text, chunks
-          local absRelIdx = math.abs(relIdx)
           indicator = sfw and "▼" or "▲"
 
           local lnum, col = unpack(posList[idx])
@@ -1440,6 +1428,57 @@ require("lazy").setup({
   },
 
   {
+    "petertriho/nvim-scrollbar",
+    opts = {
+      show_in_active_only = false,
+      handlers = {
+        cursor = true,
+        diagnostic = true,
+        search = true, -- Requires hlslens
+        gitsigns = true, -- Requires gitsigns
+      },
+      handle = {
+        text = " ",
+        blend = 80, -- Integer between 0 and 100. 0 for fully opaque and 100 to full transparent. Defaults to 30.
+        color = nil,
+        color_nr = nil, -- cterm
+        highlight = "ScrollbarHandle",
+        hide_if_all_visible = true, -- Hides handle if all lines are visible
+      },
+      marks = {
+        Cursor = {
+          text = "•",
+          priority = 0,
+          gui = nil,
+          color = "#569CD6",
+          cterm = nil,
+          color_nr = nil, -- cterm
+          highlight = "Normal",
+        },
+        Search = {
+          text = { "─", "═" },
+          priority = 1,
+          gui = nil,
+          color = "#FFA500",
+          cterm = nil,
+          color_nr = nil, -- cterm
+          highlight = "Search",
+        },
+        Error = {
+          text = { "-", "=" },
+          priority = 2,
+          gui = nil,
+          color = nil,
+          cterm = nil,
+          color_nr = nil, -- cterm
+          highlight = "DiagnosticSignError",
+        },
+      },
+    },
+  },
+
+  {
+    -- ultra folding plugin
     "kevinhwang91/nvim-ufo",
     dependencies = "kevinhwang91/promise-async",
     config = function()
@@ -1458,7 +1497,7 @@ require("lazy").setup({
       require("ufo").setup({
         -- this is nice, but it is often too much
         -- close_fold_kinds = {'imports', 'comment'},
-        provider_selector = function(bufnr, filetype, buftype)
+        provider_selector = function()
           return { "lsp", "indent" }
         end,
         fold_virt_text_handler = function(virtText, lnum, endLnum, width, truncate)
@@ -1564,6 +1603,16 @@ require("lazy").setup({
     dependencies = {
       "nvim-lua/plenary.nvim",
       "nvim-treesitter/nvim-treesitter",
+    },
+    lazy = false,
+    keys = {
+      {
+        "<leader>cc",
+        function()
+          require("codecompanion").toggle()
+        end,
+        desc = "Toggle Code Companion",
+      },
     },
   },
 
@@ -1808,6 +1857,4 @@ vim.cmd("source " .. vim.fn.expand("~/dotfiles/vimrc/autocommands.vim"))
 require("lsp_file_refs_treesitter").setup()
 require("custom_functions")
 
-vim.cmd([[
-  highlight link HlSearchLensNear Substitute
-]])
+vim.api.nvim_set_hl(0, "HlSearchLensNear", { link = "Substitute" })
