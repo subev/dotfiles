@@ -821,7 +821,7 @@ require("lazy").setup({
 
       local group = vim.api.nvim_create_augroup("TroubleAutoUpdate", { clear = true })
 
-      vim.api.nvim_create_autocmd({ "DiagnosticChanged", 'WinEnter', 'InsertLeave' }, {
+      vim.api.nvim_create_autocmd({ "DiagnosticChanged", "WinEnter", "InsertLeave" }, {
         group = group,
         callback = function()
           vim.schedule(update_trouble_for_cur_buf_errors)
@@ -1657,19 +1657,74 @@ require("lazy").setup({
 
   {
     "olimorris/codecompanion.nvim",
-    opts = {},
+    opts = {
+      strategies = {
+        chat = {
+          adapter = {
+            name = "anthropic",
+            model = "claude-sonnet-4-5",
+          },
+          keymaps = {
+            send = {
+              modes = { n = "2" },
+              opts = {},
+            },
+            -- Add further custom keymaps here
+          },
+        },
+        inline = {
+          adapter = {
+            name = "anthropic",
+            model = "claude-sonnet-4-5",
+          },
+        },
+      },
+    },
     dependencies = {
       "nvim-lua/plenary.nvim",
       "nvim-treesitter/nvim-treesitter",
     },
     lazy = false,
+    init = function()
+      -- Expand 'cc' into 'CodeCompanion' in the command line
+      vim.cmd([[cab cc CodeCompanion]])
+    end,
     keys = {
       {
         "<leader>cc",
-        function()
-          require("codecompanion").toggle()
-        end,
-        desc = "Toggle Code Companion",
+        ":CodeCompanion #{buffer} ",
+        desc = "Prepare `Code Companion` with current buffer and visual selection",
+        mode = { "n", "v" },
+      },
+      {
+        "<leader>ca",
+        "<cmd>CodeCompanionActions<cr>",
+        desc = "Toggle Code Companion Actions",
+        mode = { "n", "v" },
+      },
+      {
+        "<leader>cv",
+        "<cmd>CodeCompanionChat Add<cr>",
+        desc = "Add visual selection to Code Companion Chat",
+        mode = "v",
+      },
+      {
+        "<leader>co",
+        "<cmd>CodeCompanionChat<cr>",
+        desc = "Open Code Companion Chat",
+        mode = "n",
+      },
+      {
+        "<leader>ce",
+        ":CodeCompanionChat /explain #{buffer} ",
+        desc = "Explain current visual selection with Code Companion",
+        mode = { "n", "v" },
+      },
+      {
+        "<leader>ct",
+        ":CodeCompanion #{buffer} /tests ",
+        desc = "Add tests for visual selection",
+        mode = { "n", "v" },
       },
     },
   },
