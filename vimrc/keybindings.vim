@@ -221,8 +221,7 @@
   "go migrate flow and go to tsx
   nmap gtf :!flow-to-ts %:p -o tsx<cr>:e <C-R>=expand('%:r') . '.tsx'<CR><CR>
 
-  noremap <leader>ve :e $MYVIMRC<CR>
-  noremap <leader>vE :vsplit $MYVIMRC<CR>
+  noremap <leader>ve :vsplit $MYVIMRC<CR>
   noremap <leader>vu :source %<CR>
 
   tnoremap <ESC><ESC> <C-\><C-N>

@@ -98,4 +98,4 @@
 [rebase]
   autostash = true
 [init]
-	defaultBranch = main
+  defaultBranch = main

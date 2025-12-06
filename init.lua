@@ -215,6 +215,7 @@ require("lazy").setup({
 
   {
     "copilotlsp-nvim/copilot-lsp",
+    enabled = false, -- disables Copilot Next Edit Suggestions (NES) popping up
     opts = {},
     init = function()
       vim.g.copilot_nes_debounce = 300
@@ -258,15 +259,15 @@ require("lazy").setup({
         },
       },
       -- can' seem to make this work neither with copilot.lua nor copilot-lsp
-      -- nes = {
-      --   enabled = true, -- requires copilot-lsp as a dependency
-      --   auto_trigger = true,
-      --   keymap = {
-      --     accept_and_goto = '<c-i>',
-      --     accept = false,
-      --     dismiss = false,
-      --   },
-      -- },
+      nes = {
+        enabled = false, -- requires copilot-lsp as a dependency
+        auto_trigger = true,
+        keymap = {
+          accept_and_goto = "<c-i>",
+          accept = false,
+          dismiss = false,
+        },
+      },
     },
   },
   {
@@ -275,6 +276,12 @@ require("lazy").setup({
     opts = {
       -- add any options here
       cli = {
+        layout = "right",
+        win = {
+          split = {
+            width = 0.4,
+          },
+        },
         mux = {
           backend = "zellij",
           enabled = true,
@@ -304,9 +311,10 @@ require("lazy").setup({
       {
         "<leader>aa",
         function()
-          require("sidekick.cli").toggle()
+          require("sidekick.cli").send({ msg = "{this}" })
         end,
-        desc = "Sidekick Toggle CLI",
+        mode = { "x", "n" },
+        desc = "Send This (at cursor)",
       },
       {
         "<leader>as",
@@ -323,14 +331,6 @@ require("lazy").setup({
           require("sidekick.cli").close()
         end,
         desc = "Detach a CLI Session",
-      },
-      {
-        "<leader>at",
-        function()
-          require("sidekick.cli").send({ msg = "{this}" })
-        end,
-        mode = { "x", "n" },
-        desc = "Send This (at cursor)",
       },
       {
         "<leader>af",
@@ -354,14 +354,6 @@ require("lazy").setup({
         end,
         mode = { "n", "x" },
         desc = "Sidekick Select Prompt",
-      },
-      -- Example of a keybinding to open Claude directly
-      {
-        "<leader>ac",
-        function()
-          require("sidekick.cli").toggle({ name = "claude", focus = true })
-        end,
-        desc = "Sidekick Toggle Claude",
       },
     },
   },
@@ -740,7 +732,7 @@ require("lazy").setup({
       vim.keymap.set(
         "n",
         ",gM",
-        ":G diff origin/<C-r>=GetMasterBranchName()<CR>... <cr><c-w>H",
+        ":G diff origin/<C-r>=GetMasterBranchName()<CR>... --no-ext-diff <cr><c-w>H",
         { noremap = true, silent = true, desc = "Git diff with master in left pane" }
       )
     end,
@@ -750,9 +742,33 @@ require("lazy").setup({
     "sindrets/diffview.nvim",
     opts = {
       keymaps = {
-        view = { q = "<Cmd>DiffviewClose<CR>" },
-        file_panel = { q = "<Cmd>DiffviewClose<CR>" },
-        file_history_panel = { q = "<Cmd>DiffviewClose<CR>" },
+        view = {
+          q = "<Cmd>DiffviewClose<CR>",
+        },
+        file_panel = {
+          q = "<Cmd>DiffviewClose<CR>",
+          {
+            "n",
+            "<up>",
+            function()
+              print("scrolling up, fix me")
+              require("diffview.actions").scroll_view(-10)
+            end,
+            { desc = "Scroll the view up" },
+          },
+          {
+            "n",
+            "<down>",
+            function()
+              print("scrolling down, fix me")
+              require("diffview.actions").scroll_view(10)
+            end,
+            { desc = "Scroll the view down" },
+          },
+        },
+        file_history_panel = {
+          q = "<Cmd>DiffviewClose<CR>",
+        },
       },
       file_panel = {
         win_config = {
@@ -766,7 +782,7 @@ require("lazy").setup({
         },
       },
     },
-    lazy = true,
+    lazy = false,
     keys = {
       { ",gd", ":DiffviewOpen<cr>", desc = "Git Diffview Open" },
       { ",gh", ":DiffviewFileHistory %<cr>", desc = "Git Diffview File History" },
@@ -802,6 +818,13 @@ require("lazy").setup({
           return
         end
 
+        -- Don't trigger if we're in a Trouble window
+        local current_buf = vim.api.nvim_get_current_buf()
+        local buf_filetype = vim.bo[current_buf].filetype
+        if buf_filetype == "trouble" then
+          return
+        end
+
         local bufnr = 0 -- current buffer
         local diagnostics = vim.diagnostic.get(bufnr, { severity = vim.diagnostic.severity.ERROR })
 
@@ -821,7 +844,7 @@ require("lazy").setup({
 
       local group = vim.api.nvim_create_augroup("TroubleAutoUpdate", { clear = true })
 
-      vim.api.nvim_create_autocmd({ "DiagnosticChanged", "WinEnter", "InsertLeave" }, {
+      vim.api.nvim_create_autocmd({ "DiagnosticChanged", "WinEnter", "InsertLeave", "BufEnter" }, {
         group = group,
         callback = function()
           vim.schedule(update_trouble_for_cur_buf_errors)
@@ -1174,8 +1197,18 @@ require("lazy").setup({
       local fzf = require("fzf-lua")
       vim.keymap.set("n", "<F1>", fzf.help_tags, { noremap = true, silent = true, desc = "FZF help tags" })
       -- maps <space>s to :Rg (search in files)
-      -- vim.keymap.set('n', '<space>s', fzf.live_grep, { noremap = true, silent = true, desc = "FZF live grep" })
-      vim.keymap.set("v", "<space>s", fzf.grep_visual, { noremap = true, silent = true, desc = "FZF live grep" })
+      vim.keymap.set(
+        "n",
+        ",s",
+        fzf.grep_project,
+        { noremap = true, silent = true, desc = "FZF live grep the whole project" }
+      )
+      vim.keymap.set(
+        "v",
+        "<space>s",
+        fzf.grep_visual,
+        { noremap = true, silent = true, desc = "FZF live grep the selection" }
+      )
       -- open buffers with ,b
       vim.keymap.set("n", ",b", fzf.buffers, { noremap = true, silent = true, desc = "FZF buffers" })
       vim.keymap.set(
@@ -1184,6 +1217,15 @@ require("lazy").setup({
         fzf.grep_curbuf,
         { noremap = true, silent = true, desc = "FZF grep current buffer" }
       )
+    end,
+  },
+
+  {
+    "jlanzarotta/bufexplorer",
+    config = function()
+      vim.keymap.set("n", ",B", ":BufExplorerVerticalSplit<CR>", { noremap = true, silent = true })
+      vim.g.bufExplorerShowNoName = 1
+      vim.g.bufExplorerShowRelativePath = 1
     end,
   },
 
@@ -1345,6 +1387,7 @@ require("lazy").setup({
         typescript = { "prettierd", "prettier", stop_after_first = true },
         javascriptreact = { "prettierd", "prettier", stop_after_first = true },
         typescriptreact = { "prettierd", "prettier", stop_after_first = true },
+        css = { "prettierd", "prettier", stop_after_first = true },
       },
     },
     init = function()
@@ -1660,10 +1703,7 @@ require("lazy").setup({
     opts = {
       strategies = {
         chat = {
-          adapter = {
-            name = "anthropic",
-            model = "claude-sonnet-4-5",
-          },
+          adapter = "anthropic",
           keymaps = {
             send = {
               modes = { n = "2" },
@@ -1673,10 +1713,20 @@ require("lazy").setup({
           },
         },
         inline = {
-          adapter = {
-            name = "anthropic",
-            model = "claude-sonnet-4-5",
-          },
+          adapter = "anthropic",
+        },
+      },
+      adapters = {
+        http = {
+          anthropic = function()
+            return require("codecompanion.adapters").extend("anthropic", {
+              schema = {
+                model = {
+                  default = "claude-sonnet-4-5",
+                },
+              },
+            })
+          end,
         },
       },
     },
@@ -1759,8 +1809,29 @@ require("lazy").setup({
             mappings = {
               -- disable fuzzy finder
               ["/"] = "noop",
+              ["o"] = "system_open",
             },
           },
+        },
+        commands = {
+          system_open = function(state)
+            local node = state.tree:get_node()
+            local path = node:get_id()
+            -- macOs: open file in default application in the background.
+            vim.fn.jobstart({ "open", path }, { detach = true })
+            -- Linux: open file in default application
+            vim.fn.jobstart({ "xdg-open", path }, { detach = true })
+
+            -- Windows: Without removing the file from the path, it opens in code.exe instead of explorer.exe
+            local p
+            local lastSlashIndex = path:match("^.+()\\[^\\]*$") -- Match the last slash and everything before it
+            if lastSlashIndex then
+              p = path:sub(1, lastSlashIndex - 1) -- Extract substring before the last slash
+            else
+              p = path -- If no slash found, return original path
+            end
+            vim.cmd("silent !start explorer " .. p)
+          end,
         },
       })
 
@@ -1790,14 +1861,15 @@ require("lazy").setup({
 
       null_ls.setup({
         sources = {
-          null_ls.builtins.formatting.stylua,
+          -- formatting is handled by conform.nvim, so we don't need these
+          -- null_ls.builtins.formatting.stylua,
           -- null_ls.builtins.formatting.prettierd,
           null_ls.builtins.code_actions.refactoring,
           -- null_ls.builtins.completion.spell,
           -- require("none-ls.diagnostics.eslint"),
-          require("none-ls.diagnostics.eslint_d"),
-          require("none-ls.code_actions.eslint_d"),
-          require("none-ls.formatting.eslint_d"),
+          -- require("none-ls.diagnostics.eslint"),
+          require("none-ls.code_actions.eslint"),
+          require("none-ls.formatting.eslint"),
           -- require("none-ls.diagnostics.eslint"),
           -- require("none-ls.code_actions.eslint"),
           -- require("none-ls.formatting.eslint"),
@@ -1895,7 +1967,7 @@ require("lazy").setup({
         },
       })
 
-      vim.keymap.set("n", "<space>l", "<cmd>Lspsaga code_action<CR>")
+      vim.keymap.set({ "n", "v" }, "<space>l", "<cmd>Lspsaga code_action<CR>")
       vim.keymap.set("n", "<space>u", "<cmd>Lspsaga outgoing_calls<CR>")
       vim.keymap.set("n", "<space>U", "<cmd>Lspsaga incoming_calls<CR>")
     end,
