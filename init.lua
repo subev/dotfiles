@@ -17,8 +17,8 @@ require("lazy").setup({
   {
     "rmagatti/goto-preview",
     opts = {
-      width = 150,
-      height = 20,
+      width = 100,
+      height = 40,
       references = {
         width = 250,
       },
@@ -122,7 +122,7 @@ require("lazy").setup({
               -- Below example nvim-treesitter's `locals.scm` and `folds.scm`. They also provide highlights.scm and indent.scm.
               ["]s"] = { query = "@local.scope", query_group = "locals", desc = "Next scope" },
               -- uses shift down arrow to go to next statement (more granular than function)
-              ["J"] = "@statement.outer",
+              -- ["J"] = "@statement.outer",
             },
             goto_next_end = {
               ["]M"] = "@function.outer",
@@ -131,7 +131,7 @@ require("lazy").setup({
             goto_previous_start = {
               ["[m"] = "@function.outer",
               -- ["[["] = "@class.outer",
-              ["K"] = "@statement.outer",
+              -- ["K"] = "@statement.outer",
             },
             goto_previous_end = {
               ["[M"] = "@function.outer",
@@ -215,10 +215,10 @@ require("lazy").setup({
 
   {
     "copilotlsp-nvim/copilot-lsp",
-    enabled = false, -- disables Copilot Next Edit Suggestions (NES) popping up
+    enabled = true,
     opts = {},
     init = function()
-      vim.g.copilot_nes_debounce = 300
+      -- vim.g.copilot_nes_debounce = 300
       -- this thing works but it relies on mason's copilot-lsp installation which conflicts with copilot.lua
       -- vim.lsp.enable("copilot_ls")
       -- vim.keymap.set("n", "7", function()
@@ -239,6 +239,21 @@ require("lazy").setup({
       --     end
       --   end, { desc = "Accept Copilot NES suggestion", expr = true })
     end,
+  },
+  {
+    "mawkler/refjump.nvim",
+    event = "LspAttach", -- Uncomment to lazy load
+    opts = {
+      keymaps = {
+        enable = true,
+        next = "J", -- Keymap to jump to next LSP reference
+        prev = "K", -- Keymap to jump to previous LSP reference
+      },
+      highlights = {
+        enable = true, -- Highlight the LSP references on jump
+        auto_clear = true, -- Automatically clear highlights when cursor moves
+      },
+    },
   },
   {
     "zbirenbaum/copilot.lua",
@@ -274,12 +289,12 @@ require("lazy").setup({
     "folke/sidekick.nvim",
     lazy = false,
     opts = {
-      -- add any options here
+      nes = { enabled = false },
       cli = {
         layout = "right",
         win = {
           split = {
-            width = 0.4,
+            width = 0.5,
           },
         },
         mux = {
@@ -992,7 +1007,7 @@ require("lazy").setup({
       -- Your setup opts here
       outline_window = {
         position = "left",
-        auto_close = true,
+        auto_close = false,
       },
     },
   },
@@ -1203,9 +1218,16 @@ require("lazy").setup({
         fzf.grep_project,
         { noremap = true, silent = true, desc = "FZF live grep the whole project" }
       )
+      vim.keymap.set("n", ",S", fzf.resume, { noremap = true, silent = true, desc = "FZF resume" })
       vim.keymap.set(
         "v",
         "<space>s",
+        fzf.grep_visual,
+        { noremap = true, silent = true, desc = "FZF live grep the selection" }
+      )
+      vim.keymap.set(
+        "v",
+        ",s",
         fzf.grep_visual,
         { noremap = true, silent = true, desc = "FZF live grep the selection" }
       )
@@ -1358,6 +1380,21 @@ require("lazy").setup({
   },
 
   {
+    "ldelossa/gh.nvim",
+    dependencies = {
+      {
+        "ldelossa/litee.nvim",
+        config = function()
+          require("litee.lib").setup()
+        end,
+      },
+    },
+    config = function()
+      require("litee.gh").setup()
+    end,
+  },
+
+  {
     "lukas-reineke/indent-blankline.nvim",
     main = "ibl",
     opts = {},
@@ -1376,19 +1413,59 @@ require("lazy").setup({
   {
     "stevearc/conform.nvim",
     opts = {
+      formatters = {
+        oxfmt = {
+          command = "oxfmt",
+          args = { "$FILENAME" },
+          stdin = false,
+          -- When stdin=false, use this template to generate the temporary file that gets formatted
+          tmpfile_format = ".conform.$RANDOM.$FILENAME",
+        },
+      },
       formatters_by_ft = {
         lua = { "stylua" },
         -- Conform will run multiple formatters sequentially
         python = { "isort", "black" },
         -- You can customize some of the format options for the filetype (:help conform.format)
         rust = { "rustfmt", lsp_format = "fallback" },
+        markdown = { "prettierd", "prettier", stop_after_first = true },
         -- Conform will run the first available formatter
-        javascript = { "prettierd", "prettier", stop_after_first = true },
-        typescript = { "prettierd", "prettier", stop_after_first = true },
-        javascriptreact = { "prettierd", "prettier", stop_after_first = true },
-        typescriptreact = { "prettierd", "prettier", stop_after_first = true },
+        javascript = {
+          "oxfmt",
+          "prettierd",
+          "prettier",
+          stop_after_first = true,
+        },
+        typescript = {
+          "oxfmt",
+          "prettierd",
+          "prettier",
+          stop_after_first = true,
+        },
+        javascriptreact = {
+          "oxfmt",
+          "prettierd",
+          "prettier",
+          stop_after_first = true,
+        },
+        typescriptreact = {
+          "oxfmt",
+          "prettierd",
+          "prettier",
+          stop_after_first = true,
+        },
         css = { "prettierd", "prettier", stop_after_first = true },
       },
+      format_after_save = function(bufnr)
+        local name = vim.api.nvim_buf_get_name(bufnr)
+        -- If a large file, don't format on save
+        local max_filesize = 512 * 1024 -- 512 KB
+        local ok, stats = pcall(vim.loop.fs_stat, name)
+        if ok and stats and stats.size > max_filesize then
+          return
+        end
+        return { lsp_fallback = false }
+      end,
     },
     init = function()
       vim.api.nvim_create_user_command("Format", function(args)
@@ -2043,3 +2120,4 @@ require("lsp_file_refs_treesitter").setup()
 require("custom_functions")
 
 vim.api.nvim_set_hl(0, "HlSearchLensNear", { link = "Substitute" })
+vim.api.nvim_set_hl(0, "RefjumpReference", { link = "Substitute" })
