@@ -197,7 +197,23 @@ require("lazy").setup({
       })
     end,
   },
-  "neovim/nvim-lspconfig",
+  {
+    "neovim/nvim-lspconfig",
+    config = function()
+      -- ESLint LSP Setup - Using modern Neovim 0.11+ framework
+      -- This automatically creates the LspEslintFixAll command
+      -- Note: Requires eslint.config.js or .eslintrc* file in your project
+      vim.lsp.enable('eslint')
+
+      -- ESLint auto-fix keybinding: <space>1
+      -- Fixes all auto-fixable ESLint issues, removes unused imports, etc.
+      vim.keymap.set("n", "<space>1", "<cmd>LspEslintFixAll<cr>", {
+        noremap = true,
+        silent = true,
+        desc = "ESLint: Fix all auto-fixable issues",
+      })
+    end,
+  },
   {
     "jay-babu/mason-null-ls.nvim",
     event = { "BufReadPre", "BufNewFile" },
@@ -424,12 +440,20 @@ require("lazy").setup({
           -- formatting is handled by conform.nvim, so we don't need these
           -- null_ls.builtins.formatting.stylua,
           -- null_ls.builtins.formatting.prettierd,
-          null_ls.builtins.code_actions.refactoring,
+
+          -- COMMENTED OUT: These code actions cause 3-4s delay in lspsaga
+          -- Refactoring actions - uncomment if you find you need them
+          -- null_ls.builtins.code_actions.refactoring,
+
+          -- ESLint code actions - now handled by native eslint LSP (fast!)
+          -- Use <space>1 for ESLint auto-fix instead
+          -- require("none-ls.code_actions.eslint"),
+
+          -- KEEP: ESLint formatting (this is fast and works on save)
+          -- require("none-ls.formatting.eslint"),
+
           -- null_ls.builtins.completion.spell,
           -- require("none-ls.diagnostics.eslint"),
-          -- require("none-ls.diagnostics.eslint"),
-          require("none-ls.code_actions.eslint"),
-          require("none-ls.formatting.eslint"),
           -- require("none-ls.diagnostics.eslint"),
           -- require("none-ls.code_actions.eslint"),
           -- require("none-ls.formatting.eslint"),
@@ -629,9 +653,9 @@ require("lazy").setup({
   {
     "RRethy/vim-illuminate",
     lazy = false,
-    opts = {
-      under_cursor = false,
-    },
+    config = function()
+      require("illuminate").configure({})
+    end,
   },
 
   -- ============================================================================
@@ -2154,6 +2178,9 @@ vim.cmd("source " .. vim.fn.expand("~/dotfiles/vimrc/autocommands.vim"))
 -- FINAL SETUP
 -- ============================================================================
 require("lsp_file_refs_treesitter").setup()
+require("statement_jump").setup({
+  center_on_jump = true,
+})
 require("custom_functions")
 
 vim.api.nvim_set_hl(0, "HlSearchLensNear", { link = "Substitute" })
@@ -2163,3 +2190,6 @@ vim.api.nvim_set_hl(0, "RefjumpReference", { link = "Substitute" })
 vim.api.nvim_set_hl(0, "IlluminatedWordText", { fg = "#a0d995", bg = "#444045", underline = true })
 vim.api.nvim_set_hl(0, "IlluminatedWordRead", { fg = "#a0d995", bg = "#444045", underline = true })
 vim.api.nvim_set_hl(0, "IlluminatedWordWrite", { fg = "#a0d995", bg = "#444045", underline = true })
+vim.api.nvim_set_hl(0, "IlluminatedWordCursor", { fg = "#a0d995", bg = "#444045" })
+vim.api.nvim_set_hl(0, "IlluminatedWordCursorRead", { fg = "#a0d995", bg = "#444045" })
+vim.api.nvim_set_hl(0, "IlluminatedWordCursorWrite", { fg = "#a0d995", bg = "#444045" })
