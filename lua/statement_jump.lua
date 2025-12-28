@@ -69,6 +69,47 @@ local function is_meaningful_node(node)
   end
 
   local node_type = node:type()
+  
+  -- Special case: identifier is meaningful in some contexts but not others
+  if node_type == "identifier" then
+    local parent = node:parent()
+    if not parent then
+      return false
+    end
+    
+    -- identifier is meaningful in array_pattern (tuple destructuring)
+    if parent:type() == "array_pattern" then
+      return true
+    end
+    
+    -- identifier is NOT meaningful as the object in member_expression
+    if parent:type() == "member_expression" then
+      return false
+    end
+    
+    -- identifier is NOT meaningful in other contexts
+    return false
+  end
+  
+  -- Special case: type_identifier is meaningful in some contexts but not others
+  if node_type == "type_identifier" then
+    local parent = node:parent()
+    if not parent then
+      return false
+    end
+    
+    -- type_identifier is NOT meaningful when it's a member of a union_type
+    -- (we want to navigate between union members, not individual type_identifiers)
+    if parent:type() == "union_type" then
+      return false
+    end
+    
+    -- type_identifier IS meaningful when it's the name of a type declaration
+    -- This is handled by the special check in get_node_at_cursor
+    
+    -- type_identifier is meaningful in other contexts (e.g., as a type annotation)
+    return true
+  end
 
   -- These are the types of nodes we want to jump between
   -- They represent complete "units" like statements, declarations, properties, etc.
@@ -105,12 +146,18 @@ local function is_meaningful_node(node)
 
     -- JSX/TSX
     "jsx_self_closing_element", -- Self-closing JSX like <div />
+    "jsx_element", -- JSX elements like <div>...</div>
     "jsx_attribute", -- JSX attributes like visible={true}
-    -- Note: jsx_element is NOT included as it's a container node
 
     -- Destructuring
     "shorthand_property_identifier_pattern", -- For destructured properties like `{ tab, setTab }`
     "pair_pattern", -- For renamed destructured properties like `{ currentTab: tab }`
+    -- Note: identifier is handled specially in is_meaningful_node()
+    
+    -- Type annotations
+    "type_parameter", -- For generic type parameters like <T, U, V>
+    "literal_type", -- For union type members like "pending" | "success" | "error"
+    -- Note: type_identifier is handled specially in is_meaningful_node()
 
     -- Python
     "function_definition",
@@ -229,6 +276,45 @@ local function get_node_at_cursor(bufnr)
   -- a complete unit we want to jump between (like a property_signature, statement, etc.)
   local current = node
   while current do
+    -- Special case: if current is a type_identifier inside a type_alias_declaration or interface_declaration,
+    -- use the declaration as the navigation unit (not the type_identifier)
+    if current:type() == "type_identifier" then
+      local parent = current:parent()
+      if parent and (parent:type() == "type_alias_declaration" or parent:type() == "interface_declaration") then
+        -- We're the name of a type declaration, use the declaration for navigation
+        return parent, parent:parent()
+      end
+    end
+  
+    -- Special case: if current is an identifier inside a JSX element,
+    -- walk up to find the jsx_self_closing_element or jsx_element
+    if current:type() == "identifier" then
+      local parent = current:parent()
+      
+      -- JSX tag name - walk up to find the jsx element
+      if parent and (parent:type() == "jsx_self_closing_element" or parent:type() == "jsx_opening_element") then
+        -- We're a JSX tag name, walk up to find the jsx element
+        if parent:type() == "jsx_opening_element" then
+          -- jsx_opening_element's parent is jsx_element
+          local grandparent = parent:parent()
+          if grandparent and grandparent:type() == "jsx_element" then
+            local great_grandparent = grandparent:parent()
+            if great_grandparent and great_grandparent:type() == "jsx_element" then
+              -- We're in a JSX fragment, navigate between children
+              return grandparent, great_grandparent
+            end
+          end
+        elseif parent:type() == "jsx_self_closing_element" then
+          -- jsx_self_closing_element might be directly in a fragment
+          local grandparent = parent:parent()
+          if grandparent and grandparent:type() == "jsx_element" then
+            -- We're in a JSX fragment, navigate between children
+            return parent, grandparent
+          end
+        end
+      end
+    end
+  
     -- Special case: if current is jsx_opening_element or jsx_closing_element,
     -- use the parent jsx_element instead
     if current:type() == "jsx_opening_element" or current:type() == "jsx_closing_element" then
@@ -279,11 +365,24 @@ local function get_node_at_cursor(bufnr)
       ["arguments"] = true,
       ["formal_parameters"] = true,
       ["named_imports"] = true,
+      ["array_pattern"] = true, -- For tuple destructuring: [first, second, third]
+      ["type_parameters"] = true, -- For generic types: <T, U, V>
+      ["union_type"] = true, -- For union types: A | B | C
     }
 
     while check_node do
       local parent = check_node:parent()
       if parent and list_containers[parent:type()] then
+        -- Special case for union_type: walk up to find the outermost union_type
+        -- since union types can be nested (A | B | C is parsed as nested unions)
+        if parent:type() == "union_type" then
+          local outermost = parent
+          while outermost:parent() and outermost:parent():type() == "union_type" do
+            outermost = outermost:parent()
+          end
+          parent = outermost
+        end
+        
         -- Before using list container navigation, check if we're inside a statement_block
         -- with meaningful siblings. If so, prefer statement-level navigation.
         -- Example: inside an arrow function with multiple statements, navigate between
@@ -329,6 +428,18 @@ local function get_node_at_cursor(bufnr)
       end
       check_node = parent
     end
+    
+    -- Special case: if we're inside a jsx_self_closing_element or jsx_element,
+    -- and its parent is also a jsx_element (i.e., we're in a JSX fragment <>...</>),
+    -- then use the jsx_self_closing_element/jsx_element as the navigation unit
+    -- This must come BEFORE is_meaningful_node check to handle JSX fragments correctly
+    if current:type() == "jsx_self_closing_element" or current:type() == "jsx_element" then
+      local parent = current:parent()
+      if parent and parent:type() == "jsx_element" then
+        -- We're inside a fragment, navigate between JSX children
+        return current, parent
+      end
+    end
 
     if is_meaningful_node(current) then
       return current, current:parent()
@@ -349,6 +460,24 @@ local function get_node_at_cursor(bufnr)
   return nil, "No valid node found at cursor"
 end
 
+-- Recursively collect all union type members from a nested union_type structure
+local function collect_union_members(union_node, members)
+  members = members or {}
+  
+  for child in union_node:iter_children() do
+    if child:type() == "union_type" then
+      -- Recursively collect from nested union
+      collect_union_members(child, members)
+    elseif child:type() == "type_identifier" or child:type() == "literal_type" or child:type() == "object_type" then
+      -- This is an actual union member
+      table.insert(members, child)
+    end
+    -- Skip | operators and other punctuation
+  end
+  
+  return members
+end
+
 -- Get all non-skippable children of a parent node
 local function get_sibling_nodes(parent)
   if not parent then
@@ -356,6 +485,12 @@ local function get_sibling_nodes(parent)
   end
 
   local parent_type = parent:type()
+  
+  -- Special case: for union_type, collect all members recursively
+  if parent_type == "union_type" then
+    return collect_union_members(parent)
+  end
+  
   local siblings = {}
   for child in parent:iter_children() do
     if not is_skippable_node(child) then

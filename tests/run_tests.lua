@@ -612,5 +612,199 @@ test("Nested contexts: statements inside function in array", function()
   assert_eq(21, pos[1], "Should jump to const b within same function")
 end)
 
+-- ============================================================================
+-- GENERIC TYPES TESTS
+-- ============================================================================
+
+test("Generic types: forward navigation", function()
+  vim.cmd("edit tests/fixtures/generic_types.ts")
+  vim.api.nvim_win_set_cursor(0, {5, 14})  -- On 'T' in Generic1<T, U, V>
+  
+  statement_jump.jump_to_sibling({ forward = true })
+  local pos = vim.api.nvim_win_get_cursor(0)
+  assert_eq(5, pos[1], "Should stay on same line")
+  assert_eq(17, pos[2], "Should jump from T to U")
+end)
+
+test("Generic types: backward navigation", function()
+  vim.cmd("edit tests/fixtures/generic_types.ts")
+  vim.api.nvim_win_set_cursor(0, {5, 17})  -- On 'U' in Generic1<T, U, V>
+  
+  statement_jump.jump_to_sibling({ forward = false })
+  local pos = vim.api.nvim_win_get_cursor(0)
+  assert_eq(5, pos[1], "Should stay on same line")
+  assert_eq(14, pos[2], "Should jump from U to T")
+end)
+
+test("Generic types: no-op at boundaries", function()
+  vim.cmd("edit tests/fixtures/generic_types.ts")
+  vim.api.nvim_win_set_cursor(0, {5, 14})  -- On 'T' in Generic1<T, U, V>
+  
+  statement_jump.jump_to_sibling({ forward = false })
+  local pos = vim.api.nvim_win_get_cursor(0)
+  assert_eq(14, pos[2], "Should not move backward from first parameter")
+  
+  vim.api.nvim_win_set_cursor(0, {5, 20})  -- On 'V'
+  statement_jump.jump_to_sibling({ forward = true })
+  pos = vim.api.nvim_win_get_cursor(0)
+  assert_eq(20, pos[2], "Should not move forward from last parameter")
+end)
+
+test("Generic types: function generics", function()
+  vim.cmd("edit tests/fixtures/generic_types.ts")
+  vim.api.nvim_win_set_cursor(0, {12, 18})  -- On 'A' in identity<A, B, C>
+  
+  statement_jump.jump_to_sibling({ forward = true })
+  local pos = vim.api.nvim_win_get_cursor(0)
+  assert_eq(12, pos[1], "Should stay on same line")
+  assert_eq(21, pos[2], "Should jump from A to B")
+end)
+
+test("Generic types: class generics", function()
+  vim.cmd("edit tests/fixtures/generic_types.ts")
+  vim.api.nvim_win_set_cursor(0, {32, 14})  -- On 'Alpha' in MyClass<Alpha, Beta, Gamma>
+  
+  statement_jump.jump_to_sibling({ forward = true })
+  local pos = vim.api.nvim_win_get_cursor(0)
+  assert_eq(32, pos[1], "Should stay on same line")
+  assert_eq(21, pos[2], "Should jump from Alpha to Beta")
+  
+  statement_jump.jump_to_sibling({ forward = true })
+  pos = vim.api.nvim_win_get_cursor(0)
+  assert_eq(27, pos[2], "Should jump from Beta to Gamma")
+end)
+
+-- ============================================================================
+-- UNION TYPES TESTS
+-- ============================================================================
+
+test("Union types: forward navigation simple", function()
+  vim.cmd("edit tests/fixtures/union_types.ts")
+  vim.api.nvim_win_set_cursor(0, {5, 16})  -- On '"pending"' in Status
+  
+  statement_jump.jump_to_sibling({ forward = true })
+  local pos = vim.api.nvim_win_get_cursor(0)
+  assert_eq(5, pos[1], "Should stay on same line")
+  -- Position should be at "success"
+end)
+
+test("Union types: backward navigation simple", function()
+  vim.cmd("edit tests/fixtures/union_types.ts")
+  vim.api.nvim_win_set_cursor(0, {5, 30})  -- On '"success"'
+  
+  statement_jump.jump_to_sibling({ forward = false })
+  local pos = vim.api.nvim_win_get_cursor(0)
+  assert_eq(5, pos[1], "Should stay on same line")
+  -- Position should be at "pending"
+end)
+
+test("Union types: multiline forward navigation", function()
+  vim.cmd("edit tests/fixtures/union_types.ts")
+  vim.api.nvim_win_set_cursor(0, {25, 4})  -- On 'Circle' in Shape multiline union
+  
+  statement_jump.jump_to_sibling({ forward = true })
+  local pos = vim.api.nvim_win_get_cursor(0)
+  assert_eq(26, pos[1], "Should jump from Circle to Square")
+end)
+
+test("Union types: multiline backward navigation", function()
+  vim.cmd("edit tests/fixtures/union_types.ts")
+  vim.api.nvim_win_set_cursor(0, {26, 4})  -- On 'Square'
+  
+  statement_jump.jump_to_sibling({ forward = false })
+  local pos = vim.api.nvim_win_get_cursor(0)
+  assert_eq(25, pos[1], "Should jump from Square to Circle")
+end)
+
+test("Union types: no-op at boundaries", function()
+  vim.cmd("edit tests/fixtures/union_types.ts")
+  vim.api.nvim_win_set_cursor(0, {25, 4})  -- On 'Circle' (first)
+  
+  statement_jump.jump_to_sibling({ forward = false })
+  local pos = vim.api.nvim_win_get_cursor(0)
+  assert_eq(25, pos[1], "Should not move backward from first union member")
+  
+  vim.api.nvim_win_set_cursor(0, {28, 4})  -- On 'Rectangle' (last)
+  statement_jump.jump_to_sibling({ forward = true })
+  pos = vim.api.nvim_win_get_cursor(0)
+  assert_eq(28, pos[1], "Should not move forward from last union member")
+end)
+
+test("Union types: discriminated union", function()
+  vim.cmd("edit tests/fixtures/union_types.ts")
+  vim.api.nvim_win_set_cursor(0, {52, 4})  -- On first action type (object type)
+  
+  statement_jump.jump_to_sibling({ forward = true })
+  local pos = vim.api.nvim_win_get_cursor(0)
+  assert_eq(53, pos[1], "Should jump to next action type")
+end)
+
+-- ============================================================================
+-- TUPLE DESTRUCTURING TESTS
+-- ============================================================================
+
+test("Tuple destructuring: forward navigation", function()
+  vim.cmd("edit tests/fixtures/tuple_destructuring.ts")
+  vim.api.nvim_win_set_cursor(0, {5, 7})  -- On 'first' in [first, second, third]
+  
+  statement_jump.jump_to_sibling({ forward = true })
+  local pos = vim.api.nvim_win_get_cursor(0)
+  assert_eq(5, pos[1], "Should stay on same line")
+  assert_eq(14, pos[2], "Should jump from first to second")
+end)
+
+test("Tuple destructuring: backward navigation", function()
+  vim.cmd("edit tests/fixtures/tuple_destructuring.ts")
+  vim.api.nvim_win_set_cursor(0, {5, 14})  -- On 'second'
+  
+  statement_jump.jump_to_sibling({ forward = false })
+  local pos = vim.api.nvim_win_get_cursor(0)
+  assert_eq(5, pos[1], "Should stay on same line")
+  assert_eq(7, pos[2], "Should jump from second to first")
+end)
+
+test("Tuple destructuring: no-op at boundaries", function()
+  vim.cmd("edit tests/fixtures/tuple_destructuring.ts")
+  vim.api.nvim_win_set_cursor(0, {5, 7})  -- On 'first'
+  
+  statement_jump.jump_to_sibling({ forward = false })
+  local pos = vim.api.nvim_win_get_cursor(0)
+  assert_eq(7, pos[2], "Should not move backward from first element")
+  
+  vim.api.nvim_win_set_cursor(0, {5, 23})  -- On 'third'
+  statement_jump.jump_to_sibling({ forward = true })
+  pos = vim.api.nvim_win_get_cursor(0)
+  assert_eq(23, pos[2], "Should not move forward from last element")
+end)
+
+test("Tuple destructuring: nested tuples", function()
+  vim.cmd("edit tests/fixtures/tuple_destructuring.ts")
+  vim.api.nvim_win_set_cursor(0, {11, 8})  -- On 'a' in [[a, b], [c, d]]
+  
+  statement_jump.jump_to_sibling({ forward = true })
+  local pos = vim.api.nvim_win_get_cursor(0)
+  assert_eq(11, pos[1], "Should stay on same line")
+  assert_eq(11, pos[2], "Should jump from a to b")
+end)
+
+test("Tuple destructuring: React hooks style", function()
+  vim.cmd("edit tests/fixtures/tuple_destructuring.ts")
+  vim.api.nvim_win_set_cursor(0, {30, 7})  -- On 'count' in [count, setCount]
+  
+  statement_jump.jump_to_sibling({ forward = true })
+  local pos = vim.api.nvim_win_get_cursor(0)
+  assert_eq(30, pos[1], "Should stay on same line")
+  assert_eq(14, pos[2], "Should jump from count to setCount")
+end)
+
+test("Tuple destructuring: multiline", function()
+  vim.cmd("edit tests/fixtures/tuple_destructuring.ts")
+  vim.api.nvim_win_set_cursor(0, {61, 2})  -- On 'promise1' in multiline tuple
+  
+  statement_jump.jump_to_sibling({ forward = true })
+  local pos = vim.api.nvim_win_get_cursor(0)
+  assert_eq(62, pos[1], "Should jump from promise1 to promise2")
+end)
+
 -- Run all tests
 run_tests()

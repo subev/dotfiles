@@ -12,6 +12,8 @@ Smart, context-aware navigation for Neovim using treesitter. Navigate between si
 
 ## 🎯 What Can You Navigate?
 
+Supports **11 different contexts** for intelligent sibling navigation:
+
 ### Method Chains
 ```typescript
 obj
@@ -71,6 +73,41 @@ import {
   <Content />       // <C-j>
   <Footer />        // destination
 </>
+```
+
+### Generic Type Parameters
+```typescript
+type Generic<T, U, V> = {
+//           ^  ^  ^
+//           Navigate between type parameters
+};
+
+function identity<A, B, C>(a: A, b: B, c: C) {}
+//                ^  ^  ^
+//                Navigate between generic parameters
+```
+
+### Union Types
+```typescript
+type Status = "pending" | "success" | "error";
+//            ^           ^           ^
+//            Navigate between union members
+
+type Shape =
+  | Circle      // <C-j>
+  | Square      // <C-j>
+  | Triangle    // destination
+```
+
+### Tuple Destructuring
+```typescript
+const [first, second, third] = getTuple();
+//     ^      ^       ^
+//     Navigate between tuple elements
+
+const [count, setCount] = useState(0);
+//     ^      ^
+//     Navigate between destructured values
 ```
 
 ### Regular Statements
