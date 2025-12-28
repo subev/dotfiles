@@ -881,5 +881,142 @@ test("Function param destructuring: mixed shorthand and renamed", function()
   assert_eq(31, pos[1], "Should jump from bar:renamedBar (L30) to baz (L31)")
 end)
 
+-- ============================================================================
+-- IF-ELSE-IF CHAIN TESTS
+-- ============================================================================
+
+test("If-else chains: full chain forward navigation", function()
+  vim.cmd("edit tests/fixtures/if_else_chains.ts")
+  
+  -- Start at if (line 7)
+  vim.api.nvim_win_set_cursor(0, {7, 2})
+  
+  -- Jump to first else if (line 9)
+  statement_jump.jump_to_sibling({ forward = true })
+  local pos = vim.api.nvim_win_get_cursor(0)
+  assert_eq(9, pos[1], "Should jump from if (L7) to first else if (L9)")
+  
+  -- Jump to second else if (line 11)
+  statement_jump.jump_to_sibling({ forward = true })
+  pos = vim.api.nvim_win_get_cursor(0)
+  assert_eq(11, pos[1], "Should jump from first else if (L9) to second else if (L11)")
+  
+  -- Jump to final else (line 13)
+  statement_jump.jump_to_sibling({ forward = true })
+  pos = vim.api.nvim_win_get_cursor(0)
+  assert_eq(13, pos[1], "Should jump from second else if (L11) to else (L13)")
+  
+  -- Jump to next statement (line 17)
+  statement_jump.jump_to_sibling({ forward = true })
+  pos = vim.api.nvim_win_get_cursor(0)
+  assert_eq(17, pos[1], "Should jump from else (L13) to const after (L17)")
+end)
+
+test("If-else chains: full chain backward navigation", function()
+  vim.cmd("edit tests/fixtures/if_else_chains.ts")
+  
+  -- Start at const after (line 17)
+  vim.api.nvim_win_set_cursor(0, {17, 2})
+  
+  -- Jump to else (line 13)
+  statement_jump.jump_to_sibling({ forward = false })
+  local pos = vim.api.nvim_win_get_cursor(0)
+  assert_eq(13, pos[1], "Should jump from const after (L17) to else (L13)")
+  
+  -- Jump to second else if (line 11)
+  statement_jump.jump_to_sibling({ forward = false })
+  pos = vim.api.nvim_win_get_cursor(0)
+  assert_eq(11, pos[1], "Should jump from else (L13) to second else if (L11)")
+  
+  -- Jump to first else if (line 9)
+  statement_jump.jump_to_sibling({ forward = false })
+  pos = vim.api.nvim_win_get_cursor(0)
+  assert_eq(9, pos[1], "Should jump from second else if (L11) to first else if (L9)")
+  
+  -- Jump to if (line 7)
+  statement_jump.jump_to_sibling({ forward = false })
+  pos = vim.api.nvim_win_get_cursor(0)
+  assert_eq(7, pos[1], "Should jump from first else if (L9) to if (L7)")
+  
+  -- Jump to const before (line 5)
+  statement_jump.jump_to_sibling({ forward = false })
+  pos = vim.api.nvim_win_get_cursor(0)
+  assert_eq(5, pos[1], "Should jump from if (L7) to const before (L5)")
+end)
+
+test("If-else chains: cursor on 'e' of else", function()
+  vim.cmd("edit tests/fixtures/if_else_chains.ts")
+  
+  -- Start at if (line 7)
+  vim.api.nvim_win_set_cursor(0, {7, 2})
+  
+  -- Jump to first else if (line 9)
+  statement_jump.jump_to_sibling({ forward = true })
+  local pos = vim.api.nvim_win_get_cursor(0)
+  
+  -- Check that cursor is on 'e' of 'else'
+  local line = vim.api.nvim_buf_get_lines(0, pos[1] - 1, pos[1], false)[1]
+  local char_at_cursor = line:sub(pos[2] + 1, pos[2] + 1)
+  assert_eq("e", char_at_cursor, "Cursor should be on 'e' of 'else'")
+end)
+
+test("If-else chains: if with only else", function()
+  vim.cmd("edit tests/fixtures/if_else_chains.ts")
+  
+  -- Start at if (line 24)
+  vim.api.nvim_win_set_cursor(0, {24, 2})
+  
+  -- Jump to else (line 26)
+  statement_jump.jump_to_sibling({ forward = true })
+  local pos = vim.api.nvim_win_get_cursor(0)
+  assert_eq(26, pos[1], "Should jump from if (L24) to else (L26)")
+  
+  -- Jump to next statement (line 30)
+  statement_jump.jump_to_sibling({ forward = true })
+  pos = vim.api.nvim_win_get_cursor(0)
+  assert_eq(30, pos[1], "Should jump from else (L26) to const after (L30)")
+end)
+
+test("If-else chains: if with no else skips to next statement", function()
+  vim.cmd("edit tests/fixtures/if_else_chains.ts")
+  
+  -- Start at if (line 37)
+  vim.api.nvim_win_set_cursor(0, {37, 2})
+  
+  -- Jump should skip to next statement (line 41)
+  statement_jump.jump_to_sibling({ forward = true })
+  local pos = vim.api.nvim_win_get_cursor(0)
+  assert_eq(41, pos[1], "Should jump from if (L37) to const after (L41)")
+end)
+
+test("If-else chains: single else-if", function()
+  vim.cmd("edit tests/fixtures/if_else_chains.ts")
+  
+  -- Start at if (line 48)
+  vim.api.nvim_win_set_cursor(0, {48, 2})
+  
+  -- Jump to else if (line 50)
+  statement_jump.jump_to_sibling({ forward = true })
+  local pos = vim.api.nvim_win_get_cursor(0)
+  assert_eq(50, pos[1], "Should jump from if (L48) to else if (L50)")
+  
+  -- Jump to next statement (line 54) - no final else
+  statement_jump.jump_to_sibling({ forward = true })
+  pos = vim.api.nvim_win_get_cursor(0)
+  assert_eq(54, pos[1], "Should jump from else if (L50) to const after (L54)")
+end)
+
+test("If-else chains: nested if inside block uses regular navigation", function()
+  vim.cmd("edit tests/fixtures/if_else_chains.ts")
+  
+  -- Start inside the outer if block at innerBefore (line 62)
+  vim.api.nvim_win_set_cursor(0, {62, 4})
+  
+  -- Jump should go to inner if (line 64), not outer else
+  statement_jump.jump_to_sibling({ forward = true })
+  local pos = vim.api.nvim_win_get_cursor(0)
+  assert_eq(64, pos[1], "Should jump to inner if (L64), not exit to outer else")
+end)
+
 -- Run all tests
 run_tests()

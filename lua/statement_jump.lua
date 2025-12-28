@@ -678,6 +678,227 @@ local function navigate_method_chain(property_node, forward)
   return nil
 end
 
+-- Collect all else clauses in an if-else-if chain
+-- Returns: list of else_clause nodes (in order from first to last)
+local function collect_else_clauses(if_node)
+  local clauses = {}
+  local current_if = if_node
+  
+  while current_if and current_if:type() == "if_statement" do
+    -- Look for else_clause in this if_statement
+    local found_else = false
+    for i = 0, current_if:child_count() - 1 do
+      local child = current_if:child(i)
+      if child:type() == "else_clause" then
+        found_else = true
+        table.insert(clauses, child)
+        
+        -- Check if this else clause contains another if_statement (else if)
+        -- or a statement_block (final else)
+        for j = 0, child:child_count() - 1 do
+          local grandchild = child:child(j)
+          if grandchild:type() == "if_statement" then
+            -- This is an else if, continue with the nested if_statement
+            current_if = grandchild
+            break
+          elseif grandchild:type() == "statement_block" then
+            -- This is the final else, no more to traverse
+            current_if = nil
+            break
+          end
+        end
+        break
+      end
+    end
+    
+    if not found_else then
+      break
+    end
+  end
+  
+  return clauses
+end
+
+-- Get position of 'else' keyword within else_clause
+-- Returns: row, col (pointing to 'e' of 'else')
+local function get_else_keyword_position(else_clause_node)
+  if not else_clause_node or else_clause_node:type() ~= "else_clause" then
+    return nil, nil
+  end
+  
+  -- Find the 'else' keyword child
+  for i = 0, else_clause_node:child_count() - 1 do
+    local child = else_clause_node:child(i)
+    if child:type() == "else" then
+      return child:start()
+    end
+  end
+  
+  -- Fallback to else_clause start position
+  return else_clause_node:start()
+end
+
+-- Detect if we're on an if statement with else clauses
+-- Returns: has_else_clauses (boolean), if_statement_node, current_position_index
+-- current_position_index: 0 = on main if, 1+ = on else clause (1-based)
+local function is_in_if_else_chain(node)
+  if not node then
+    return false, nil, 0
+  end
+  
+  -- Walk up to find if_statement or else_clause
+  -- We want to find the OUTERMOST if_statement that contains the cursor
+  local current = node
+  local depth = 0
+  local found_if = nil
+  local found_else_clause = nil
+  
+  while current and depth < 20 do
+    if current:type() == "if_statement" then
+      -- Found an if_statement, but continue looking for outer ones
+      found_if = current
+      current = current:parent()
+      depth = depth + 1
+    elseif current:type() == "else_clause" then
+      found_else_clause = current
+      -- Continue walking up to find the parent if_statement
+      current = current:parent()
+      depth = depth + 1
+    else
+      current = current:parent()
+      depth = depth + 1
+    end
+    
+    -- Stop if we've gone too far up
+    if current and (current:type() == "statement_block" or current:type() == "program") then
+      break
+    end
+  end
+  
+  -- If we found an if_statement but it's nested inside an else_clause,
+  -- walk up to find the outermost if_statement in the chain
+  if found_if then
+    local test_parent = found_if:parent()
+    while test_parent and test_parent:type() == "else_clause" do
+      local outer_if = test_parent:parent()
+      if outer_if and outer_if:type() == "if_statement" then
+        found_if = outer_if
+        test_parent = outer_if:parent()
+      else
+        break
+      end
+    end
+  end
+  
+  if not found_if then
+    return false, nil, 0
+  end
+  
+  -- Check if this if_statement has else clauses
+  local else_clauses = collect_else_clauses(found_if)
+  if #else_clauses == 0 then
+    return false, nil, 0
+  end
+  
+  -- Determine current position: are we on the main if or on an else clause?
+  local cursor = vim.api.nvim_win_get_cursor(0)
+  local cursor_row = cursor[1] - 1 -- Convert to 0-indexed
+  
+  -- Check if cursor is on one of the else clauses (compare by position, not object identity)
+  -- Since else clauses can be nested, we want the LAST (innermost) match
+  local matched_position = nil
+  for i, clause in ipairs(else_clauses) do
+    local clause_start_row = clause:start()
+    local clause_end_row = select(3, clause:range())
+    
+    if cursor_row >= clause_start_row and cursor_row <= clause_end_row then
+      matched_position = i
+    end
+  end
+  
+  if matched_position then
+    return true, found_if, matched_position
+  end
+  
+  -- Check if cursor is on the main if (not on any else clause)
+  local if_start_row = found_if:start()
+  local first_else_row = else_clauses[1]:start()
+  
+  if cursor_row >= if_start_row and cursor_row < first_else_row then
+    -- Cursor is on the main if part (before any else)
+    return true, found_if, 0
+  end
+  
+  return false, nil, 0
+end
+
+-- Navigate forward/backward in an if-else-if chain
+-- Returns: target node (if_statement or else_clause), target_row, target_col, or nil
+local function navigate_if_else_chain(if_node, current_pos, forward)
+  local else_clauses = collect_else_clauses(if_node)
+  
+  if forward then
+    -- Forward navigation: if (pos=0) → else if (pos=1) → else if (pos=2) → else (pos=N) → next statement
+    if current_pos == 0 then
+      -- On main if, jump to first else clause
+      if #else_clauses > 0 then
+        local target_row, target_col = get_else_keyword_position(else_clauses[1])
+        return else_clauses[1], target_row, target_col
+      else
+        -- No else clauses, jump to next sibling of if_statement
+        local parent = if_node:parent()
+        if parent then
+          local sibling = get_sibling_node(if_node, parent, true)
+          if sibling then
+            local target_row, target_col = sibling:start()
+            return sibling, target_row, target_col
+          end
+        end
+        return nil, nil, nil
+      end
+    elseif current_pos < #else_clauses then
+      -- On an else clause, jump to next else clause
+      local next_clause = else_clauses[current_pos + 1]
+      local target_row, target_col = get_else_keyword_position(next_clause)
+      return next_clause, target_row, target_col
+    else
+      -- On last else clause, jump to next sibling of if_statement
+      local parent = if_node:parent()
+      if parent then
+        local sibling = get_sibling_node(if_node, parent, true)
+        if sibling then
+          local target_row, target_col = sibling:start()
+          return sibling, target_row, target_col
+        end
+      end
+      return nil, nil, nil
+    end
+  else
+    -- Backward navigation: next statement → else (pos=N) → else if (pos=2) → else if (pos=1) → if (pos=0) → prev statement
+    if current_pos == 0 then
+      -- On main if, jump to previous sibling of if_statement
+      local parent = if_node:parent()
+      if parent then
+        local sibling = get_sibling_node(if_node, parent, false)
+        if sibling then
+          local target_row, target_col = sibling:start()
+          return sibling, target_row, target_col
+        end
+      end
+      return nil, nil, nil
+    elseif current_pos == 1 then
+      -- On first else clause, jump back to main if
+      local target_row, target_col = if_node:start()
+      return if_node, target_row, target_col
+    else
+      -- On an else clause, jump to previous else clause
+      local prev_clause = else_clauses[current_pos - 1]
+      local target_row, target_col = get_else_keyword_position(prev_clause)
+      return prev_clause, target_row, target_col
+    end
+  end
+end
+
 -- Adjust cursor position for JSX elements to land on tag name instead of '<'
 local function get_jsx_tag_position(node)
   local node_type = node:type()
@@ -752,6 +973,23 @@ function M.jump_to_sibling(opts)
                 return
               end
             end
+            
+            -- SECOND: Check if we're in an if-else-if chain
+            local in_if_else, if_node, current_pos = is_in_if_else_chain(node)
+            if in_if_else then
+              local target_node, target_row, target_col = navigate_if_else_chain(if_node, current_pos, forward)
+              if target_node then
+                -- Successfully found target in if-else chain
+                vim.cmd("normal! m'")
+                vim.api.nvim_win_set_cursor(0, { target_row + 1, target_col })
+                if config.center_on_jump then
+                  vim.cmd("normal! zz")
+                end
+                -- Continue to next iteration for count support
+                goto continue
+              end
+              -- At boundary of chain, fall through to regular navigation
+            end
           end
         end
       end
@@ -796,11 +1034,26 @@ function M.jump_to_sibling(opts)
 
     -- Jump to target or do nothing (no notification)
     if target_node then
+      -- Special case: if target is an if_statement with else clauses and we're going backward,
+      -- jump to the last else clause instead of the if
+      if not forward and target_node:type() == "if_statement" then
+        local else_clauses = collect_else_clauses(target_node)
+        if #else_clauses > 0 then
+          -- Jump to the last else clause
+          local last_else = else_clauses[#else_clauses]
+          target_node = last_else
+          target_row, target_col = get_else_keyword_position(last_else)
+        end
+      end
+      
       -- Add current position to jump list before moving
       vim.cmd("normal! m'")
 
       -- Get the appropriate cursor position (adjusted for JSX elements)
-      local target_row, target_col = get_jsx_tag_position(target_node)
+      local target_row, target_col
+      if not target_row then
+        target_row, target_col = get_jsx_tag_position(target_node)
+      end
       vim.api.nvim_win_set_cursor(0, { target_row + 1, target_col }) -- Convert back to 1-indexed
 
       -- Center the screen on the new position (if enabled)
