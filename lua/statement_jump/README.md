@@ -12,7 +12,7 @@ Smart, context-aware navigation for Neovim using treesitter. Navigate between si
 
 ## 🎯 What Can You Navigate?
 
-Supports **11 different contexts** for intelligent sibling navigation:
+Supports **13 different contexts** for intelligent sibling navigation:
 
 ### Method Chains
 ```typescript
@@ -108,6 +108,38 @@ const [first, second, third] = getTuple();
 const [count, setCount] = useState(0);
 //     ^      ^
 //     Navigate between destructured values
+```
+
+### Function Parameter Destructuring
+```typescript
+function process({
+  userId,        // <C-j>
+  timestamp,     // <C-j>
+  metadata,      // destination
+}: {
+  userId: string;      // Type properties navigable separately
+  timestamp: number;   // <C-j> between these as well
+  metadata: object;
+}) {
+  // ...
+}
+```
+
+### If-Else-If Chains
+```typescript
+if (condition1) {
+  console.log('first');
+} else if (condition2) {    // <C-j> from if lands here
+  console.log('second');
+} else if (condition3) {    // <C-j> again
+  console.log('third');
+} else {                    // <C-j> again
+  console.log('default');
+}
+const after = 1;            // <C-j> continues to next statement
+
+// Backward navigation works too!
+// From 'const after', <C-k> jumps to the LAST else clause
 ```
 
 ### Regular Statements
@@ -213,6 +245,26 @@ Cursor lands on the tag name (not the angle bracket):
 <Footer />   // Cursor on 'F', not '<'
 ```
 
+### If-Else Chain Navigation
+
+Navigate through entire if-else-if-else chains:
+
+```typescript
+if (a) {
+  // code
+} else if (b) {    // <C-j> from if → cursor on 'e' of else
+  // code
+} else if (c) {    // <C-j> again
+  // code  
+} else {           // <C-j> again → final else
+  // code
+}
+const next = 1;    // <C-j> → continues to next statement
+
+// Jumping backward from statements after the chain
+// goes to the LAST else clause, not the if!
+```
+
 ## 🎨 Supported Languages
 
 Works with any language that has a treesitter parser:
@@ -249,12 +301,14 @@ cd /path/to/dotfiles
 bash tests/test_runner.sh
 ```
 
-**55 tests covering:**
+**86 tests covering:**
 - Basic navigation (forward/backward)
 - Boundary conditions (first/last/single)
-- All navigation contexts
+- All 13 navigation contexts
 - Nested structures
-- Edge cases
+- Function parameter destructuring with inline types
+- If-else-if-else chain navigation
+- Edge cases and special scenarios
 
 ## 💡 Tips & Tricks
 
@@ -289,6 +343,18 @@ api
   .get("/users")      // <C-j>
   .then(parseJSON)    // <C-j>
   .catch(handleError) // Review chain structure
+```
+
+### Navigate If-Else Chains
+```typescript
+// Quickly review all branches of conditional logic
+if (isValid) {
+  // <C-j> from here
+} else if (isWarning) {
+  // lands here, <C-j> again
+} else {
+  // lands here
+}
 ```
 
 ## 🤝 Contributing
