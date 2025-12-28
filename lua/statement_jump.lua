@@ -349,6 +349,25 @@ local function get_node_at_cursor(bufnr)
             return nil, "Single property in object - would exit context"
           end
         end
+      elseif parent and parent:type() == "property_signature" then
+        -- Similar handling for property_signature in type definitions
+        -- Example: type Foo = { bar: string; baz: number } - navigate between bar and baz
+        local grandparent = parent:parent()
+        if grandparent and grandparent:type() == "object_type" then
+          -- Count how many property_signature siblings exist
+          local prop_count = 0
+          for child in grandparent:iter_children() do
+            if child:type() == "property_signature" then
+              prop_count = prop_count + 1
+            end
+          end
+          -- If there are multiple properties, navigate between them
+          if prop_count > 1 then
+            return parent, grandparent -- Return the property_signature and the object_type
+          else
+            return nil, "Single property in object_type - would exit context"
+          end
+        end
       end
     end
 
@@ -366,6 +385,7 @@ local function get_node_at_cursor(bufnr)
       ["formal_parameters"] = true,
       ["named_imports"] = true,
       ["array_pattern"] = true, -- For tuple destructuring: [first, second, third]
+      ["object_pattern"] = true, -- For object destructuring: { foo, bar }
       ["type_parameters"] = true, -- For generic types: <T, U, V>
       ["union_type"] = true, -- For union types: A | B | C
     }

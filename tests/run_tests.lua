@@ -806,5 +806,80 @@ test("Tuple destructuring: multiline", function()
   assert_eq(62, pos[1], "Should jump from promise1 to promise2")
 end)
 
+-- ============================================================================
+-- FUNCTION PARAMETER DESTRUCTURING TESTS
+-- ============================================================================
+
+test("Function param destructuring: forward navigation", function()
+  vim.cmd("edit tests/fixtures/function_param_destructuring.ts")
+  vim.api.nvim_win_set_cursor(0, {5, 4})  -- On 'dateOfLastReminder' parameter name
+  
+  statement_jump.jump_to_sibling({ forward = true })
+  local pos = vim.api.nvim_win_get_cursor(0)
+  assert_eq(6, pos[1], "Should jump from dateOfLastReminder (L5) to context (L6)")
+end)
+
+test("Function param destructuring: backward navigation", function()
+  vim.cmd("edit tests/fixtures/function_param_destructuring.ts")
+  vim.api.nvim_win_set_cursor(0, {6, 4})  -- On 'context' parameter name
+  
+  statement_jump.jump_to_sibling({ forward = false })
+  local pos = vim.api.nvim_win_get_cursor(0)
+  assert_eq(5, pos[1], "Should jump from context (L6) to dateOfLastReminder (L5)")
+end)
+
+test("Function param destructuring: no-op at first parameter", function()
+  vim.cmd("edit tests/fixtures/function_param_destructuring.ts")
+  vim.api.nvim_win_set_cursor(0, {5, 4})  -- On first parameter
+  
+  statement_jump.jump_to_sibling({ forward = false })
+  local pos = vim.api.nvim_win_get_cursor(0)
+  assert_eq(5, pos[1], "Should not move from first parameter")
+end)
+
+test("Function param destructuring: no-op at last parameter", function()
+  vim.cmd("edit tests/fixtures/function_param_destructuring.ts")
+  vim.api.nvim_win_set_cursor(0, {6, 4})  -- On last parameter
+  
+  statement_jump.jump_to_sibling({ forward = true })
+  local pos = vim.api.nvim_win_get_cursor(0)
+  assert_eq(6, pos[1], "Should not move from last parameter (should not jump to type properties)")
+end)
+
+test("Function param destructuring: type properties navigation", function()
+  vim.cmd("edit tests/fixtures/function_param_destructuring.ts")
+  vim.api.nvim_win_set_cursor(0, {8, 4})  -- On 'dateOfLastReminder' type property
+  
+  statement_jump.jump_to_sibling({ forward = true })
+  local pos = vim.api.nvim_win_get_cursor(0)
+  assert_eq(9, pos[1], "Should jump from dateOfLastReminder type (L8) to context type (L9)")
+end)
+
+test("Function param destructuring: multiple parameters", function()
+  vim.cmd("edit tests/fixtures/function_param_destructuring.ts")
+  vim.api.nvim_win_set_cursor(0, {16, 4})  -- On 'userId' parameter
+  
+  statement_jump.jump_to_sibling({ forward = true })
+  local pos = vim.api.nvim_win_get_cursor(0)
+  assert_eq(17, pos[1], "Should jump from userId (L16) to timestamp (L17)")
+  
+  statement_jump.jump_to_sibling({ forward = true })
+  pos = vim.api.nvim_win_get_cursor(0)
+  assert_eq(18, pos[1], "Should jump from timestamp (L17) to metadata (L18)")
+end)
+
+test("Function param destructuring: mixed shorthand and renamed", function()
+  vim.cmd("edit tests/fixtures/function_param_destructuring.ts")
+  vim.api.nvim_win_set_cursor(0, {29, 4})  -- On 'foo' (shorthand)
+  
+  statement_jump.jump_to_sibling({ forward = true })
+  local pos = vim.api.nvim_win_get_cursor(0)
+  assert_eq(30, pos[1], "Should jump from foo (L29) to bar:renamedBar (L30)")
+  
+  statement_jump.jump_to_sibling({ forward = true })
+  pos = vim.api.nvim_win_get_cursor(0)
+  assert_eq(31, pos[1], "Should jump from bar:renamedBar (L30) to baz (L31)")
+end)
+
 -- Run all tests
 run_tests()
