@@ -231,6 +231,98 @@ local function get_node_at_cursor(bufnr)
       end
     end
     
+    -- Special case: if we're on a property_identifier inside a pair (object property key),
+    -- use the pair as the meaningful node to navigate between properties in the object.
+    -- But only if the pair is NOT the only property (would exit the context).
+    -- Example: { foo: value, bar: value } - when on "foo", navigate to "bar"
+    if current:type() == "property_identifier" then
+      local parent = current:parent()
+      if parent and parent:type() == "pair" then
+        local grandparent = parent:parent()
+        -- Check if this pair is inside an object (not a top-level pair)
+        if grandparent and grandparent:type() == "object" then
+          -- Count how many pair siblings exist
+          local pair_count = 0
+          for child in grandparent:iter_children() do
+            if child:type() == "pair" then
+              pair_count = pair_count + 1
+            end
+          end
+          -- If there are multiple pairs, navigate between them
+          -- If only one pair, it would jump outside the context (no-op)
+          if pair_count > 1 then
+            return parent, grandparent  -- Return the pair and the object
+          else
+            return nil, "Single property in object - would exit context"
+          end
+        end
+      end
+    end
+    
+    -- Special case: if we're inside a list-like structure (array, arguments, parameters),
+    -- use the direct child as the meaningful node for navigation
+    -- This allows navigation between elements while staying within the container boundary
+    -- Examples: 
+    --   [element1, element2] - navigate between array elements
+    --   func(arg1, arg2) - navigate between function call arguments
+    --   (param1: type, param2: type) - navigate between function parameters
+    local check_node = current
+    local list_containers = {
+      ["array"] = true,
+      ["arguments"] = true,
+      ["formal_parameters"] = true,
+      ["named_imports"] = true,
+    }
+    
+    while check_node do
+      local parent = check_node:parent()
+      if parent and list_containers[parent:type()] then
+        -- Before using list container navigation, check if we're inside a statement_block
+        -- with meaningful siblings. If so, prefer statement-level navigation.
+        -- Example: inside an arrow function with multiple statements, navigate between
+        -- statements, not between function arguments.
+        
+        -- Walk up from current node to find if there's a meaningful node in a statement_block
+        local test_node = current
+        while test_node and test_node ~= check_node do
+          if is_meaningful_node(test_node) then
+            local test_parent = test_node:parent()
+            if test_parent and test_parent:type() == "statement_block" then
+              -- Count meaningful children in the statement block
+              local meaningful_count = 0
+              for child in test_parent:iter_children() do
+                if is_meaningful_node(child) then
+                  meaningful_count = meaningful_count + 1
+                end
+              end
+              -- If there are multiple meaningful statements, prefer statement navigation
+              if meaningful_count > 1 then
+                return test_node, test_parent
+              end
+            end
+          end
+          test_node = test_node:parent()
+        end
+        
+        -- check_node is a direct child of a list container
+        local element = check_node
+        -- Count non-skippable siblings in the container
+        local element_count = 0
+        for child in parent:iter_children() do
+          if not is_skippable_node(child) then
+            element_count = element_count + 1
+          end
+        end
+        -- If multiple elements, allow navigation
+        if element_count > 1 then
+          return element, parent
+        else
+          return nil, "Single element in list - would exit context"
+        end
+      end
+      check_node = parent
+    end
+    
     if is_meaningful_node(current) then
       return current, current:parent()
     end
@@ -310,6 +402,118 @@ local function get_sibling_node(node, parent, forward)
   return siblings[next_index]
 end
 
+-- Detect if we're on a method call in a chain (e.g., obj.foo().bar().baz())
+-- Returns: in_chain (boolean), property_node (the property_identifier node)
+local function is_in_method_chain(node)
+  -- Walk up from cursor to find if we're on/in a property_identifier
+  local current = node
+  local depth = 0
+  while current and depth < 10 do
+    if current:type() == "property_identifier" then
+      break
+    end
+    -- Stop if we've gone too far up
+    if current:type() == "statement_block" or current:type() == "program" then
+      return false
+    end
+    current = current:parent()
+    depth = depth + 1
+  end
+  
+  if not current or current:type() ~= "property_identifier" then
+    return false
+  end
+  
+  -- Structure for a method call in a chain:
+  -- property_identifier (method name like "bar")
+  --   └─ member_expression (the .bar part)
+  --       └─ call_expression (the .bar() call)
+  --           └─ member_expression (container for next method)
+  --               └─ call_expression (previous .foo() in chain)
+  
+  local property_node = current
+  local member_expr = property_node:parent()
+  if not member_expr or member_expr:type() ~= "member_expression" then
+    return false
+  end
+  
+  -- Check that this member_expression is the function being called
+  -- (child[0] of a call_expression)
+  local call_expr = member_expr:parent()
+  if not call_expr or call_expr:type() ~= "call_expression" then
+    return false
+  end
+  
+  -- Verify the member_expression is the function part (child[0])
+  if call_expr:child(0) ~= member_expr then
+    return false
+  end
+  
+  -- Now check if this call is part of a chain
+  -- A method call is in a chain if:
+  -- 1. Its parent is a member_expression (there's a method call after it), OR
+  -- 2. The object being called on is itself a call_expression (there's a method call before it)
+  
+  local has_next = call_expr:parent() and call_expr:parent():type() == "member_expression"
+  
+  local member_object = call_expr:child(0)  -- The .method part
+  local has_prev = false
+  if member_object and member_object:type() == "member_expression" then
+    local obj = member_object:child(0)  -- The object before the dot
+    has_prev = obj and obj:type() == "call_expression"
+  end
+  
+  -- It's a chain if there's a next or previous method call
+  if has_next or has_prev then
+    return true, property_node
+  end
+  
+  return false
+end
+
+-- Navigate forward/backward in a method chain
+-- Returns: the property_identifier node of the target method, or nil
+local function navigate_method_chain(property_node, forward)
+  local member_expr = property_node:parent()
+  local call_expr = member_expr:parent()
+  
+  if forward then
+    -- Navigate DOWN the chain: .bar() → .baz()
+    -- Structure: call_expression (.bar())
+    --              └─ parent: member_expression (.baz container)
+    --                  └─ child[2]: property_identifier (baz)
+    local next_member = call_expr:parent()
+    if next_member and next_member:type() == "member_expression" then
+      local next_prop = next_member:child(2)  -- child[0] = call, child[1] = ".", child[2] = property
+      if next_prop and next_prop:type() == "property_identifier" then
+        return next_prop
+      end
+    end
+  else
+    -- Navigate UP the chain: .baz() → .bar()
+    -- Structure: call_expression (.baz())
+    --              └─ child[0]: member_expression (.baz)
+    --                  └─ child[0]: call_expression (.bar())
+    --                      └─ child[0]: member_expression (.bar)
+    --                          └─ child[2]: property_identifier (bar)
+    local current_member = call_expr:child(0)  -- .baz member expression
+    if current_member and current_member:type() == "member_expression" then
+      local prev_call = current_member:child(0)  -- .bar() call
+      if prev_call and prev_call:type() == "call_expression" then
+        local prev_member = prev_call:child(0)  -- .bar member expression
+        if prev_member and prev_member:type() == "member_expression" then
+          local prev_prop = prev_member:child(2)  -- bar identifier
+          if prev_prop and prev_prop:type() == "property_identifier" then
+            return prev_prop
+          end
+        end
+      end
+    end
+  end
+  
+  return nil
+end
+
 -- Adjust cursor position for JSX elements to land on tag name instead of '<'
 local function get_jsx_tag_position(node)
   local node_type = node:type()
@@ -349,6 +553,47 @@ function M.jump_to_sibling(opts)
   
   -- Repeat for count
   for _ = 1, vim.v.count1 do
+    -- Get cursor position for chain detection
+    local cursor = vim.api.nvim_win_get_cursor(0)
+    local row = cursor[1] - 1
+    local col = cursor[2]
+    
+    -- Get tree and node for chain detection
+    local lang = vim.treesitter.language.get_lang(vim.bo[bufnr].filetype)
+    if lang then
+      local ok, parser = pcall(vim.treesitter.get_parser, bufnr, lang)
+      if ok and parser then
+        local tree = parser:parse()[1]
+        if tree then
+          local root = tree:root()
+          local node = root:descendant_for_range(row, col, row, col)
+          
+          -- FIRST: Check if we're in a method chain
+          if node then
+            local in_chain, property_node = is_in_method_chain(node)
+            if in_chain then
+              local target_prop = navigate_method_chain(property_node, forward)
+              if target_prop then
+                -- Successfully found target in chain
+                vim.cmd("normal! m'")
+                local target_row, target_col = target_prop:start()
+                vim.api.nvim_win_set_cursor(0, { target_row + 1, target_col })
+                if config.center_on_jump then
+                  vim.cmd("normal! zz")
+                end
+                -- Continue to next iteration for count support
+                goto continue
+              else
+                -- At boundary of chain, do nothing (no-op)
+                return
+              end
+            end
+          end
+        end
+      end
+    end
+    
+    -- FALLBACK: Use regular sibling/whitespace navigation
     local current_node, parent = get_node_at_cursor(bufnr)
     
     if not current_node then
@@ -402,6 +647,8 @@ function M.jump_to_sibling(opts)
       -- No sibling found - just stop silently (no-op)
       return
     end
+    
+    ::continue::
   end
 end
 

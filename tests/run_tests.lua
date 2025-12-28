@@ -278,6 +278,78 @@ test("JSX cursor position: lands on tag name not angle bracket", function()
   assert_eq("H", char_at_cursor, "Cursor should be on 'H' of Header, not '<'")
 end)
 
+test("Method chains: forward navigation", function()
+  vim.cmd("edit tests/fixtures/method_chains.ts")
+  vim.api.nvim_win_set_cursor(0, {5, 3})  -- On methodA
+  
+  statement_jump.jump_to_sibling({ forward = true })
+  local pos = vim.api.nvim_win_get_cursor(0)
+  assert_eq(6, pos[1], "Should jump from methodA to methodB")
+  
+  -- Check cursor is on 'm' of methodB
+  local line = vim.api.nvim_buf_get_lines(0, pos[1] - 1, pos[1], false)[1]
+  assert_eq("m", line:sub(pos[2] + 1, pos[2] + 1), "Cursor should be on 'm' of methodB")
+end)
+
+test("Method chains: backward navigation", function()
+  vim.cmd("edit tests/fixtures/method_chains.ts")
+  vim.api.nvim_win_set_cursor(0, {6, 3})  -- On methodB
+  
+  statement_jump.jump_to_sibling({ forward = false })
+  local pos = vim.api.nvim_win_get_cursor(0)
+  assert_eq(5, pos[1], "Should jump from methodB to methodA")
+end)
+
+test("Method chains: no-op at start", function()
+  vim.cmd("edit tests/fixtures/method_chains.ts")
+  vim.api.nvim_win_set_cursor(0, {5, 3})  -- On methodA (first in chain)
+  
+  statement_jump.jump_to_sibling({ forward = false })
+  local pos = vim.api.nvim_win_get_cursor(0)
+  assert_eq(5, pos[1], "Should not move from first method in chain")
+end)
+
+test("Method chains: no-op at end", function()
+  vim.cmd("edit tests/fixtures/method_chains.ts")
+  vim.api.nvim_win_set_cursor(0, {7, 3})  -- On methodC (last in chain)
+  
+  statement_jump.jump_to_sibling({ forward = true })
+  local pos = vim.api.nvim_win_get_cursor(0)
+  assert_eq(7, pos[1], "Should not move from last method in chain")
+end)
+
+test("Method chains: inline chain navigation", function()
+  vim.cmd("edit tests/fixtures/method_chains.ts")
+  vim.api.nvim_win_set_cursor(0, {10, 19})  -- On foo in obj.foo().bar().baz()
+  
+  statement_jump.jump_to_sibling({ forward = true })
+  local pos = vim.api.nvim_win_get_cursor(0)
+  assert_eq(10, pos[1], "Should stay on same line")
+  assert_eq(25, pos[2], "Should jump to bar")
+  
+  statement_jump.jump_to_sibling({ forward = true })
+  pos = vim.api.nvim_win_get_cursor(0)
+  assert_eq(31, pos[2], "Should jump to baz")
+end)
+
+test("Method chains: single method uses regular navigation", function()
+  vim.cmd("edit tests/fixtures/method_chains.ts")
+  vim.api.nvim_win_set_cursor(0, {13, 22})  -- On method in obj.method()
+  
+  statement_jump.jump_to_sibling({ forward = true })
+  local pos = vim.api.nvim_win_get_cursor(0)
+  assert_eq(16, pos[1], "Should use regular navigation to next statement")
+end)
+
+test("Method chains: starting identifier uses regular navigation", function()
+  vim.cmd("edit tests/fixtures/method_chains.ts")
+  vim.api.nvim_win_set_cursor(0, {4, 15})  -- On obj identifier before .methodA()
+  
+  statement_jump.jump_to_sibling({ forward = true })
+  local pos = vim.api.nvim_win_get_cursor(0)
+  assert_eq(10, pos[1], "Should use regular navigation to next statement, not enter chain")
+end)
+
 test("JSX cursor position: non-self-closing element", function()
   vim.cmd("edit tests/fixtures/jsx_elements.tsx")
   vim.api.nvim_win_set_cursor(0, {9, 7})  -- On Header
@@ -292,6 +364,252 @@ test("JSX cursor position: non-self-closing element", function()
   local line = vim.api.nvim_buf_get_lines(0, pos[1] - 1, pos[1], false)[1]
   local char_at_cursor = line:sub(pos[2] + 1, pos[2] + 1)
   assert_eq("P", char_at_cursor, "Cursor should be on 'P' of PersistentTabContainer, not '<'")
+end)
+
+test("Context boundaries: navigate between object properties", function()
+  vim.cmd("edit tests/fixtures/object_properties.ts")
+  vim.api.nvim_win_set_cursor(0, {12, 2})  -- On "getPosts" property key
+  
+  -- Forward should jump to next property within the object
+  statement_jump.jump_to_sibling({ forward = true })
+  local pos = vim.api.nvim_win_get_cursor(0)
+  assert_eq(17, pos[1], "Should jump to getUsers property within same object")
+  
+  -- Backward should jump back to getPosts
+  statement_jump.jump_to_sibling({ forward = false })
+  pos = vim.api.nvim_win_get_cursor(0)
+  assert_eq(12, pos[1], "Should jump back to getPosts property")
+end)
+
+test("Context boundaries: single property is no-op", function()
+  vim.cmd("edit tests/fixtures/object_properties.ts")
+  vim.api.nvim_win_set_cursor(0, {25, 2})  -- On "outer" property (only property in nested object)
+  
+  -- Should be no-op (only one property, jumping would exit context)
+  statement_jump.jump_to_sibling({ forward = true })
+  local pos = vim.api.nvim_win_get_cursor(0)
+  assert_eq(25, pos[1], "Should not move when only one property in object")
+end)
+
+test("Context boundaries: inside method chain value works", function()
+  vim.cmd("edit tests/fixtures/object_properties.ts")
+  vim.api.nvim_win_set_cursor(0, {13, 5})  -- On .input in the method chain value
+  
+  -- Should navigate within the method chain
+  statement_jump.jump_to_sibling({ forward = true })
+  local pos = vim.api.nvim_win_get_cursor(0)
+  assert_eq(14, pos[1], "Should navigate within method chain value")
+end)
+
+test("Arrays: forward navigation", function()
+  vim.cmd("edit tests/fixtures/arrays.ts")
+  vim.api.nvim_win_set_cursor(0, {4, 17})  -- On first number (1)
+  
+  statement_jump.jump_to_sibling({ forward = true })
+  local pos = vim.api.nvim_win_get_cursor(0)
+  assert_eq(4, pos[1], "Should stay on same line")
+  assert_eq(20, pos[2], "Should jump to second element (2)")
+end)
+
+test("Arrays: backward navigation", function()
+  vim.cmd("edit tests/fixtures/arrays.ts")
+  vim.api.nvim_win_set_cursor(0, {4, 20})  -- On second number (2)
+  
+  statement_jump.jump_to_sibling({ forward = false })
+  local pos = vim.api.nvim_win_get_cursor(0)
+  assert_eq(4, pos[1], "Should stay on same line")
+  assert_eq(17, pos[2], "Should jump to first element (1)")
+end)
+
+test("Arrays: no-op at start", function()
+  vim.cmd("edit tests/fixtures/arrays.ts")
+  vim.api.nvim_win_set_cursor(0, {4, 17})  -- On first element
+  
+  statement_jump.jump_to_sibling({ forward = false })
+  local pos = vim.api.nvim_win_get_cursor(0)
+  assert_eq(17, pos[2], "Should not move from first element")
+end)
+
+test("Arrays: no-op at end", function()
+  vim.cmd("edit tests/fixtures/arrays.ts")
+  vim.api.nvim_win_set_cursor(0, {4, 29})  -- On last element (5)
+  
+  statement_jump.jump_to_sibling({ forward = true })
+  local pos = vim.api.nvim_win_get_cursor(0)
+  assert_eq(29, pos[2], "Should not move from last element")
+end)
+
+test("Arrays: navigate between objects", function()
+  vim.cmd("edit tests/fixtures/arrays.ts")
+  vim.api.nvim_win_set_cursor(0, {8, 2})  -- On first object (on the { brace)
+  
+  statement_jump.jump_to_sibling({ forward = true })
+  local pos = vim.api.nvim_win_get_cursor(0)
+  assert_eq(9, pos[1], "Should jump to second object")
+end)
+
+test("Arrays: single element is no-op", function()
+  vim.cmd("edit tests/fixtures/arrays.ts")
+  vim.api.nvim_win_set_cursor(0, {19, 16})  -- On single element array
+  
+  statement_jump.jump_to_sibling({ forward = true })
+  local pos = vim.api.nvim_win_get_cursor(0)
+  assert_eq(19, pos[1], "Should not move from single element")
+end)
+
+test("Function params: forward navigation", function()
+  vim.cmd("edit tests/fixtures/function_params.ts")
+  vim.api.nvim_win_set_cursor(0, {4, 14})  -- On first parameter 'a'
+  
+  statement_jump.jump_to_sibling({ forward = true })
+  local pos = vim.api.nvim_win_get_cursor(0)
+  assert_eq(4, pos[1], "Should stay on same line")
+  -- Should jump to 'b' parameter (around C24)
+  assert_eq(true, pos[2] > 20 and pos[2] < 30, "Should jump to second parameter")
+end)
+
+test("Function params: backward navigation", function()
+  vim.cmd("edit tests/fixtures/function_params.ts")
+  vim.api.nvim_win_set_cursor(0, {4, 36})  -- On third parameter 'c'
+  
+  statement_jump.jump_to_sibling({ forward = false })
+  local pos = vim.api.nvim_win_get_cursor(0)
+  assert_eq(4, pos[1], "Should stay on same line")
+  -- Should jump to 'b' parameter
+  assert_eq(true, pos[2] > 20 and pos[2] < 30, "Should jump to second parameter")
+end)
+
+test("Function params: no-op at boundaries", function()
+  vim.cmd("edit tests/fixtures/function_params.ts")
+  vim.api.nvim_win_set_cursor(0, {4, 14})  -- On first parameter
+  
+  statement_jump.jump_to_sibling({ forward = false })
+  local pos = vim.api.nvim_win_get_cursor(0)
+  assert_eq(14, pos[2], "Should not move from first parameter")
+end)
+
+test("Function args: forward navigation", function()
+  vim.cmd("edit tests/fixtures/function_params.ts")
+  vim.api.nvim_win_set_cursor(0, {7, 4})  -- On first argument '1'
+  
+  statement_jump.jump_to_sibling({ forward = true })
+  local pos = vim.api.nvim_win_get_cursor(0)
+  assert_eq(7, pos[1], "Should stay on same line")
+  -- Should jump to second argument '2'
+  assert_eq(7, pos[2], "Should jump to second argument")
+end)
+
+test("Function args: backward navigation", function()
+  vim.cmd("edit tests/fixtures/function_params.ts")
+  vim.api.nvim_win_set_cursor(0, {7, 10})  -- On third argument '3'
+  
+  statement_jump.jump_to_sibling({ forward = false })
+  local pos = vim.api.nvim_win_get_cursor(0)
+  assert_eq(7, pos[1], "Should stay on same line")
+  -- Should jump to second argument '2'
+  assert_eq(7, pos[2], "Should jump to second argument")
+end)
+
+test("Function params: single parameter is no-op", function()
+  vim.cmd("edit tests/fixtures/function_params.ts")
+  vim.api.nvim_win_set_cursor(0, {10, 16})  -- On single parameter 'x'
+  
+  statement_jump.jump_to_sibling({ forward = true })
+  local pos = vim.api.nvim_win_get_cursor(0)
+  assert_eq(10, pos[1], "Should not move from single parameter")
+end)
+
+test("Function params: multi-line navigation", function()
+  vim.cmd("edit tests/fixtures/function_params.ts")
+  vim.api.nvim_win_set_cursor(0, {17, 2})  -- On first parameter 'first'
+  
+  statement_jump.jump_to_sibling({ forward = true })
+  local pos = vim.api.nvim_win_get_cursor(0)
+  assert_eq(18, pos[1], "Should jump to next line (second parameter)")
+  
+  statement_jump.jump_to_sibling({ forward = true })
+  pos = vim.api.nvim_win_get_cursor(0)
+  assert_eq(19, pos[1], "Should jump to third parameter")
+end)
+
+test("Imports: multi-line forward navigation", function()
+  vim.cmd("edit tests/fixtures/imports.ts")
+  vim.api.nvim_win_set_cursor(0, {5, 2})  -- On UserRepository
+  
+  statement_jump.jump_to_sibling({ forward = true })
+  local pos = vim.api.nvim_win_get_cursor(0)
+  assert_eq(6, pos[1], "Should jump to timezone")
+  
+  statement_jump.jump_to_sibling({ forward = true })
+  pos = vim.api.nvim_win_get_cursor(0)
+  assert_eq(7, pos[1], "Should jump to username")
+end)
+
+test("Imports: multi-line backward navigation", function()
+  vim.cmd("edit tests/fixtures/imports.ts")
+  vim.api.nvim_win_set_cursor(0, {8, 2})  -- On UserLifecycleService (last)
+  
+  statement_jump.jump_to_sibling({ forward = false })
+  local pos = vim.api.nvim_win_get_cursor(0)
+  assert_eq(7, pos[1], "Should jump to username")
+end)
+
+test("Imports: no-op at boundaries", function()
+  vim.cmd("edit tests/fixtures/imports.ts")
+  vim.api.nvim_win_set_cursor(0, {5, 2})  -- On first import
+  
+  statement_jump.jump_to_sibling({ forward = false })
+  local pos = vim.api.nvim_win_get_cursor(0)
+  assert_eq(5, pos[1], "Should not move from first import")
+  
+  -- Jump to last
+  vim.api.nvim_win_set_cursor(0, {8, 2})
+  statement_jump.jump_to_sibling({ forward = true })
+  pos = vim.api.nvim_win_get_cursor(0)
+  assert_eq(8, pos[1], "Should not move from last import")
+end)
+
+test("Imports: single line navigation", function()
+  vim.cmd("edit tests/fixtures/imports.ts")
+  vim.api.nvim_win_set_cursor(0, {12, 9})  -- On 'foo' in single line import
+  
+  statement_jump.jump_to_sibling({ forward = true })
+  local pos = vim.api.nvim_win_get_cursor(0)
+  assert_eq(12, pos[1], "Should stay on same line")
+  -- Should jump to 'bar'
+  assert_eq(true, pos[2] > 10, "Should have moved to next import")
+end)
+
+test("Imports: single import is no-op", function()
+  vim.cmd("edit tests/fixtures/imports.ts")
+  vim.api.nvim_win_set_cursor(0, {15, 9})  -- On 'single' (only import)
+  
+  statement_jump.jump_to_sibling({ forward = true })
+  local pos = vim.api.nvim_win_get_cursor(0)
+  assert_eq(15, pos[1], "Should not move from single import")
+end)
+
+test("Nested contexts: statements inside arrow function in arguments", function()
+  vim.cmd("edit tests/fixtures/nested_contexts.ts")
+  vim.api.nvim_win_set_cursor(0, {6, 4})  -- On 'const parsed' inside arrow function
+  
+  -- Should navigate to next statement in same function, not jump to next argument
+  statement_jump.jump_to_sibling({ forward = true })
+  local pos = vim.api.nvim_win_get_cursor(0)
+  assert_eq(7, pos[1], "Should jump to if statement, not exit to next argument")
+  
+  statement_jump.jump_to_sibling({ forward = true })
+  pos = vim.api.nvim_win_get_cursor(0)
+  assert_eq(10, pos[1], "Should jump to return statement")
+end)
+
+test("Nested contexts: statements inside function in array", function()
+  vim.cmd("edit tests/fixtures/nested_contexts.ts")
+  vim.api.nvim_win_set_cursor(0, {20, 4})  -- On 'const a' inside first function
+  
+  statement_jump.jump_to_sibling({ forward = true })
+  local pos = vim.api.nvim_win_get_cursor(0)
+  assert_eq(21, pos[1], "Should jump to const b within same function")
 end)
 
 -- Run all tests
