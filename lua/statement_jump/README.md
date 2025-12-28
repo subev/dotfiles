@@ -267,14 +267,55 @@ const next = 1;    // <C-j> → continues to next statement
 
 ## 🎨 Supported Languages
 
-Works with any language that has a treesitter parser:
-- ✅ TypeScript/JavaScript
-- ✅ TSX/JSX
+Works with any language that has a treesitter parser. Extensively tested with:
+
+### ✅ JavaScript (20 tests, 100% pass rate)
+All universal features work perfectly:
+- If-else-if-else chains
+- Method chains
+- Object properties & arrays
+- Function parameters & arguments
+- Destructuring patterns
+- JSX/JSX elements & attributes
+- Nested contexts
+- Regular statements
+
+### ✅ TypeScript (86 tests, 100% pass rate)
+All JavaScript features PLUS:
+- Generic type parameters (`<T, U, V>`)
+- Union types (`A | B | C`)
+- Type declarations (`type`, `interface`)
+- Type annotations (`: Type`)
+- Function parameter destructuring with inline types
+
+### 🎯 Other Languages
+The plugin works with any language that has a treesitter parser:
 - ✅ Python
 - ✅ Lua
 - ✅ Rust
 - ✅ Go
 - ✅ And more...
+
+**Note:** TypeScript-specific features (generics, type annotations, union types) are only available in `.ts`/`.tsx` files.
+
+### 📊 Feature Compatibility Matrix
+
+| Feature | JavaScript | TypeScript |
+|---------|-----------|-----------|
+| If-else-if-else chains | ✅ | ✅ |
+| Method chains | ✅ | ✅ |
+| Object properties | ✅ | ✅ |
+| Arrays | ✅ | ✅ |
+| Function parameters | ✅ | ✅ |
+| Destructuring | ✅ | ✅ |
+| JSX elements & attributes | ✅ | ✅ |
+| Import statements | ✅ | ✅ |
+| Nested contexts | ✅ | ✅ |
+| Regular statements | ✅ | ✅ |
+| Generic type parameters | ❌ | ✅ |
+| Union types | ❌ | ✅ |
+| Type declarations | ❌ | ✅ |
+| Function param inline types | ❌ | ✅ |
 
 ## 🔧 How It Works
 
@@ -297,18 +338,31 @@ Navigation is **always safe**:
 The plugin includes comprehensive test coverage:
 
 ```bash
+# Run TypeScript tests (86 tests)
 cd /path/to/dotfiles
 bash tests/test_runner.sh
+
+# Run JavaScript tests (20 tests)
+nvim --headless -c "luafile tests/run_js_tests.lua"
 ```
 
-**86 tests covering:**
+**TypeScript: 86 tests (100% pass)**
+- All 13 navigation contexts
 - Basic navigation (forward/backward)
 - Boundary conditions (first/last/single)
-- All 13 navigation contexts
 - Nested structures
 - Function parameter destructuring with inline types
 - If-else-if-else chain navigation
+- Generic types, union types, type annotations
 - Edge cases and special scenarios
+
+**JavaScript: 20 tests (100% pass)**
+- All universal navigation contexts
+- If-else chains, method chains, object properties
+- Arrays, function parameters, destructuring
+- JSX elements & attributes
+- Nested contexts
+- Regular statements
 
 ## 💡 Tips & Tricks
 
