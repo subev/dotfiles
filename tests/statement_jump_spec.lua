@@ -261,4 +261,109 @@ describe("statement_jump", function()
       eq(3, pos[1], "Should jump from const b (L4) to const a (L3)")
     end)
   end)
+
+  describe("Function parameter destructuring with inline types", function()
+    it("jumps between destructured parameter names (not type properties)", function()
+      local fixture_path = vim.fn.expand("/Users/petur/dotfiles/tests/fixtures/function_param_destructuring.ts")
+      vim.cmd("edit " .. fixture_path)
+
+      -- Start at dateOfLastReminder parameter name (line 5)
+      vim.api.nvim_win_set_cursor(0, { 5, 4 })
+
+      -- Jump forward to context parameter name (line 6)
+      statement_jump.jump_to_sibling({ forward = true })
+      local pos = vim.api.nvim_win_get_cursor(0)
+      eq(6, pos[1], "Should jump from dateOfLastReminder (L5) to context (L6)")
+    end)
+
+    it("jumps backward between destructured parameter names", function()
+      local fixture_path = vim.fn.expand("/Users/petur/dotfiles/tests/fixtures/function_param_destructuring.ts")
+      vim.cmd("edit " .. fixture_path)
+
+      -- Start at context parameter name (line 6)
+      vim.api.nvim_win_set_cursor(0, { 6, 4 })
+
+      -- Jump backward to dateOfLastReminder parameter name (line 5)
+      statement_jump.jump_to_sibling({ forward = false })
+      local pos = vim.api.nvim_win_get_cursor(0)
+      eq(5, pos[1], "Should jump from context (L6) to dateOfLastReminder (L5)")
+    end)
+
+    it("stays at first parameter when jumping backward", function()
+      local fixture_path = vim.fn.expand("/Users/petur/dotfiles/tests/fixtures/function_param_destructuring.ts")
+      vim.cmd("edit " .. fixture_path)
+
+      -- Start at dateOfLastReminder (first parameter, line 5)
+      vim.api.nvim_win_set_cursor(0, { 5, 4 })
+      local initial_pos = vim.api.nvim_win_get_cursor(0)
+
+      -- Try to jump backward (should be no-op)
+      statement_jump.jump_to_sibling({ forward = false })
+      local pos = vim.api.nvim_win_get_cursor(0)
+      eq(initial_pos[1], pos[1], "Should not move from first parameter")
+    end)
+
+    it("stays at last parameter when jumping forward", function()
+      local fixture_path = vim.fn.expand("/Users/petur/dotfiles/tests/fixtures/function_param_destructuring.ts")
+      vim.cmd("edit " .. fixture_path)
+
+      -- Start at context (last parameter, line 6)
+      vim.api.nvim_win_set_cursor(0, { 6, 4 })
+      local initial_pos = vim.api.nvim_win_get_cursor(0)
+
+      -- Try to jump forward (should be no-op, not jump to type properties)
+      statement_jump.jump_to_sibling({ forward = true })
+      local pos = vim.api.nvim_win_get_cursor(0)
+      eq(initial_pos[1], pos[1], "Should not move from last parameter (should not jump to type properties)")
+    end)
+
+    it("navigates between type properties separately from parameters", function()
+      local fixture_path = vim.fn.expand("/Users/petur/dotfiles/tests/fixtures/function_param_destructuring.ts")
+      vim.cmd("edit " .. fixture_path)
+
+      -- Start at dateOfLastReminder type property (line 8)
+      vim.api.nvim_win_set_cursor(0, { 8, 4 })
+
+      -- Jump forward to context type property (line 9)
+      statement_jump.jump_to_sibling({ forward = true })
+      local pos = vim.api.nvim_win_get_cursor(0)
+      eq(9, pos[1], "Should jump from dateOfLastReminder type (L8) to context type (L9)")
+    end)
+
+    it("handles multiple parameters correctly", function()
+      local fixture_path = vim.fn.expand("/Users/petur/dotfiles/tests/fixtures/function_param_destructuring.ts")
+      vim.cmd("edit " .. fixture_path)
+
+      -- Start at userId parameter (line 16)
+      vim.api.nvim_win_set_cursor(0, { 16, 4 })
+
+      -- Jump to timestamp
+      statement_jump.jump_to_sibling({ forward = true })
+      local pos = vim.api.nvim_win_get_cursor(0)
+      eq(17, pos[1], "Should jump from userId (L16) to timestamp (L17)")
+
+      -- Jump to metadata
+      statement_jump.jump_to_sibling({ forward = true })
+      pos = vim.api.nvim_win_get_cursor(0)
+      eq(18, pos[1], "Should jump from timestamp (L17) to metadata (L18)")
+    end)
+
+    it("handles mixed shorthand and renamed parameters", function()
+      local fixture_path = vim.fn.expand("/Users/petur/dotfiles/tests/fixtures/function_param_destructuring.ts")
+      vim.cmd("edit " .. fixture_path)
+
+      -- Start at foo (shorthand, line 29)
+      vim.api.nvim_win_set_cursor(0, { 29, 4 })
+
+      -- Jump to bar: renamedBar (renamed, line 30)
+      statement_jump.jump_to_sibling({ forward = true })
+      local pos = vim.api.nvim_win_get_cursor(0)
+      eq(30, pos[1], "Should jump from foo (L29) to bar:renamedBar (L30)")
+
+      -- Jump to baz (shorthand, line 31)
+      statement_jump.jump_to_sibling({ forward = true })
+      pos = vim.api.nvim_win_get_cursor(0)
+      eq(31, pos[1], "Should jump from bar:renamedBar (L30) to baz (L31)")
+    end)
+  end)
 end)
