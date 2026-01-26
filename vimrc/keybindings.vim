@@ -119,12 +119,8 @@
 
   nnoremap <f5> :e!<CR>
   " preview current file with Google Chrome
-  nnoremap <space>7 :silent ! open -a 'Google Chrome' %:p<cr>
-  "nnoremap <space>g y:silent ! open -a 'Google Chrome' 'http://google.com/search?q='<left>
-  vnoremap <space>g y:silent ! open -a 'Google Chrome' 'http://google.com/search?q=<c-r>"'<CR>
-  " add a breakpoint above the current line and test just current file with node
-  " nnoremap <space>td Odebugger<esc>:w<cr>:! open -a 'Google Chrome' 'chrome://inspect/'<CR>:!node --inspect-brk node_modules/.bin/jest --runInBand --no-cache --config jest.config.js -- %<CR>
-  " update snapshot of current file
+  nnoremap <space>7 :silent ! open -a 'Brave Browser' %:p<cr>
+
   nnoremap <space>tu :!npm run test:unit -- -u %<CR>
 
   "execute current buffer or current selection in via ts-node (ignoring erros)
@@ -174,9 +170,9 @@
 
   nnoremap ,o <c-w>\|
   nnoremap ,O <c-w>o
-  nnoremap ,t <c-w>v:term<cr>i
+  nnoremap ,t <c-w>v<c-w>\|:term<cr>i
   nnoremap ,T <c-w>v:term<cr>inpm run typecheck<cr>
-  nnoremap ,gl <c-w>v:term<cr>igit ls<cr>
+  nnoremap ,gl <c-w>v<c-w>\|:term<cr>igit ls<cr>
   nnoremap ,gP :lua git_log_patches()<CR>()<CR>
   nnoremap ,gL :lua git_log_file()<CR>()<CR>
   " starts a terminal with with the command `gitco` which is located inside ~/dotfiles/workflows.sh

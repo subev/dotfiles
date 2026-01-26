@@ -1,6 +1,6 @@
   " LSP related keybindings
   nnoremap ,r :lua vim.lsp.buf.rename()<CR>
-  nnoremap <silent> <F7> :LspRestart<CR>
+  " F7 keybinding moved to lua/custom_functions.lua (uses _typescript.reloadProjects)
   nnoremap <silent> <space><space> <cmd>lua vim.lsp.buf.hover()<CR>
 
   "settings for 'michaeljsmith/vim-indent-object'

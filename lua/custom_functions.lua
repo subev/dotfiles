@@ -50,7 +50,7 @@ end
 
 -- noremap ,gp :lua Git_Show_Log_Patches()<cr>
 function Git_Show_Log_Patches()
-  local git_command = "GIT_EXTERNAL_DIFF=difft git ls -p"
+  local git_command = "GIT_EXTERNAL_DIFF=difft git ls -p --ext-diff"
   vim.cmd("tabnew")
   vim.cmd("terminal " .. git_command)
   vim.cmd("startinsert")
@@ -105,3 +105,35 @@ _G.git_log_file = GiT_Log_CurrentFile_With_External_Diff_Inside_New_Terminal
 _G.git_diff_main = Git_Show_Diff_Against_Main_Or_Master
 _G.git_log_patches = Git_Show_Log_Patches
 _G.visual_selection_to_node = VisualSelectionToNode
+
+-- Refresh all buffers + LSP Restart (F7)
+vim.keymap.set("n", "<F7>", function()
+  -- Reload ALL buffers that changed on disk
+  vim.cmd("bufdo checktime")
+
+  local clients = vim.lsp.get_clients({ bufnr = 0 })
+  if #clients == 0 then
+    vim.notify("All buffers refreshed, no LSP attached", vim.log.levels.INFO)
+    return
+  end
+
+  local names = {}
+  for _, client in ipairs(clients) do
+    table.insert(names, client.name)
+  end
+
+  vim.cmd("lsp restart")
+  vim.notify("Refreshed all buffers, restarting: " .. table.concat(names, ", "), vim.log.levels.INFO)
+end, { silent = true, desc = "Refresh all buffers + Restart LSP" })
+
+-- Brave Search visual selection (<space>g)
+vim.keymap.set("v", "<space>g", function()
+  -- Yank selection to register z (avoid clobbering default register)
+  vim.cmd('normal! "zy')
+  local query = vim.fn.getreg("z")
+  -- URL encode the query using Neovim's built-in function (rfc2396 encodes &, =, etc.)
+  local encoded = vim.uri_encode(query, "rfc2396")
+  -- Open in Brave Search
+  local url = "https://search.brave.com/search?q=" .. encoded
+  vim.fn.system({ "open", "-a", "Brave Browser", url })
+end, { silent = true, desc = "Search selection in Brave" })
