@@ -203,7 +203,7 @@ require("lazy").setup({
       -- ESLint LSP Setup - Using modern Neovim 0.11+ framework
       -- This automatically creates the LspEslintFixAll command
       -- Note: Requires eslint.config.js or .eslintrc* file in your project
-      vim.lsp.enable('eslint')
+      vim.lsp.enable("eslint")
 
       -- ESLint auto-fix keybinding: <space>1
       -- Fixes all auto-fixable ESLint issues, removes unused imports, etc.
@@ -583,6 +583,15 @@ require("lazy").setup({
   -- CODE NAVIGATION
   -- ============================================================================
   {
+    "subev/sibling-jump.nvim",
+    opts = {
+      next_key = "<C-j>",
+      prev_key = "<C-k>",
+      center_on_jump = true,
+      filetypes = { "typescript", "javascript", "typescriptreact", "javascriptreact" },
+    },
+  },
+  {
     "rmagatti/goto-preview",
     opts = {
       width = 100,
@@ -605,7 +614,8 @@ require("lazy").setup({
     },
   },
   {
-    "mawkler/refjump.nvim",
+    "subev/refjump.nvim",
+    branch = "all-feat",
     event = "LspAttach", -- Uncomment to lazy load
     opts = {
       keymaps = {
@@ -618,6 +628,10 @@ require("lazy").setup({
         auto_clear = true, -- Automatically clear highlights when cursor moves
         clear_on_escape = true, -- Listen for escape/ctrl-c to clear highlights (non-intrusive)
       },
+      counter = {
+        enable = true, -- Enable virtual text counter at end of line
+      },
+      loop = false, -- Don't loop back to first/last reference when reaching the end
     },
   },
   {
@@ -651,7 +665,8 @@ require("lazy").setup({
     },
   },
   {
-    "RRethy/vim-illuminate",
+    "subev/vim-illuminate",
+    branch = "feat/cursor-highlight-groups",
     lazy = false,
     config = function()
       require("illuminate").configure({})
@@ -690,7 +705,7 @@ require("lazy").setup({
   },
   {
     "zbirenbaum/copilot.lua",
-    lazy = false,
+    event = { "BufReadPost", "BufNewFile" },
     opts = {
       panel = {
         enabled = false,
@@ -1439,6 +1454,8 @@ require("lazy").setup({
       })
 
       local kopts = { noremap = true, silent = true }
+
+      -- Keep traditional n/N with hlslens
       vim.api.nvim_set_keymap(
         "n",
         "n",
@@ -1451,12 +1468,29 @@ require("lazy").setup({
         [[<Cmd>execute('normal! ' . v:count1 . 'N')<CR><Cmd>lua require('hlslens').start()<CR>]],
         kopts
       )
+
+      -- Keep traditional search operators with hlslens
       vim.api.nvim_set_keymap("n", "*", [[*<Cmd>lua require('hlslens').start()<CR>]], kopts)
       vim.api.nvim_set_keymap("n", "#", [[#<Cmd>lua require('hlslens').start()<CR>]], kopts)
       vim.api.nvim_set_keymap("n", "g*", [[g*<Cmd>lua require('hlslens').start()<CR>]], kopts)
       vim.api.nvim_set_keymap("n", "g#", [[g#<Cmd>lua require('hlslens').start()<CR>]], kopts)
 
       vim.api.nvim_set_keymap("n", "<Leader>l", "<Cmd>noh<CR>", kopts)
+
+      -- CR to toggle refjump highlights (without jumping)
+      vim.keymap.set("n", "<CR>", function()
+        local refjump = require("refjump")
+        if vim.v.hlsearch == 1 then
+          -- Clear traditional search highlights
+          vim.cmd("nohlsearch")
+        elseif refjump.is_highlight_active() then
+          -- Clear refjump highlights
+          refjump.clear_highlights()
+        else
+          -- Trigger refjump highlight (no jump)
+          smart_search_under_cursor()
+        end
+      end, { noremap = true, silent = true, desc = "Toggle refjump highlights or clear hlsearch" })
     end,
   },
 
@@ -2178,9 +2212,10 @@ vim.cmd("source " .. vim.fn.expand("~/dotfiles/vimrc/autocommands.vim"))
 -- FINAL SETUP
 -- ============================================================================
 require("lsp_file_refs_treesitter").setup()
-require("statement_jump").setup({
-  center_on_jump = true,
-})
+-- NOTE: statement_jump is now installed as sibling-jump.nvim plugin (see CODE NAVIGATION section)
+-- require("statement_jump").setup({
+--   center_on_jump = true,
+-- })
 require("custom_functions")
 
 vim.api.nvim_set_hl(0, "HlSearchLensNear", { link = "Substitute" })
