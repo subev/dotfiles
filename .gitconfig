@@ -73,6 +73,25 @@
   rom = !git fetch && git rebase origin/master
   puf = push -f
 
+  # === Squash-merge rebase helpers ===
+  #
+  # When branch A gets squash-merged into main, and you have branch B that was
+  # forked from A, GitHub shows conflicts because it tries to re-apply A's commits.
+  #
+  # Workflow:
+  #   1. git parent-candidates              # Find which branch B was forked from
+  #   2. git commits-on-top-of branch-a     # Verify which commits are yours
+  #   3. git rebase-excluding branch-a      # Rebase only your commits onto main
+  #
+  # commits-on-top-of <branch>: Show commits unique to HEAD after diverging from <branch>
+  commits-on-top-of = "!f() { git log --oneline $(git merge-base origin/$1 HEAD)..HEAD; }; f"
+
+  # rebase-excluding <branch>: Rebase onto main, excluding commits from <branch>
+  rebase-excluding = "!f() { git rebase --onto origin/main $(git merge-base origin/$1 HEAD); }; f"
+
+  # parent-candidates: Find local branches that diverged between main and HEAD
+  parent-candidates = "!f() { main_base=$(git merge-base origin/main HEAD); for branch in $(git for-each-ref --format='%(refname:short)' refs/heads/ | grep -v \"^$(git rev-parse --abbrev-ref HEAD)$\"); do branch_base=$(git merge-base $branch HEAD 2>/dev/null); if [ -n \"$branch_base\" ] && [ \"$branch_base\" != \"$main_base\" ] && [ \"$branch_base\" != \"$(git rev-parse HEAD)\" ] && git merge-base --is-ancestor $main_base $branch_base 2>/dev/null && git merge-base --is-ancestor $branch_base HEAD 2>/dev/null; then echo \"$branch (diverged at $(git log -1 --format='%h %s' $branch_base))\"; fi; done; }; f"
+
 [filter "lfs"]
   clean = git-lfs clean -- %f
   smudge = git-lfs smudge -- %f
@@ -85,7 +104,7 @@
   conflictstyle = zdiff3
   prompt = false
 [rerere]
-  enabled = true
+  enabled = false
 [status]
 [mergetool "sourcetree"]
   cmd = /Applications/Sourcetree.app/Contents/Resources/opendiff-w.sh \"$LOCAL\" \"$REMOTE\" -ancestor \"$BASE\" -merge \"$MERGED\"
