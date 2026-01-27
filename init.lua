@@ -192,6 +192,8 @@ require("lazy").setup({
           -- "vtsls",
           "tailwindcss",
           "lua_ls",
+          "ruff",
+          "pyright",
         },
         automatic_enable = true,
       })
@@ -200,13 +202,33 @@ require("lazy").setup({
   {
     "neovim/nvim-lspconfig",
     config = function()
-      -- ESLint LSP Setup - Using modern Neovim 0.11+ framework
-      -- This automatically creates the LspEslintFixAll command
-      -- Note: Requires eslint.config.js or .eslintrc* file in your project
+      vim.lsp.config("pyright", {
+        settings = {
+          pyright = {
+            disableOrganizeImports = true,
+          },
+          python = {
+            analysis = {
+              ignore = { "*" },
+            },
+          },
+        },
+      })
+
+      vim.lsp.config("ruff", {
+        init_options = {
+          settings = {
+            lint = {
+              enable = true,
+            },
+          },
+        },
+      })
+
+      vim.lsp.enable("pyright")
+      vim.lsp.enable("ruff")
       vim.lsp.enable("eslint")
 
-      -- ESLint auto-fix keybinding: <space>1
-      -- Fixes all auto-fixable ESLint issues, removes unused imports, etc.
       vim.keymap.set("n", "<space>1", "<cmd>LspEslintFixAll<cr>", {
         noremap = true,
         silent = true,
@@ -364,7 +386,7 @@ require("lazy").setup({
       formatters_by_ft = {
         lua = { "stylua" },
         -- Conform will run multiple formatters sequentially
-        python = { "isort", "black" },
+        python = { "ruff_format" },
         -- You can customize some of the format options for the filetype (:help conform.format)
         rust = { "rustfmt", lsp_format = "fallback" },
         markdown = { "prettierd", "prettier", stop_after_first = true },
@@ -588,7 +610,21 @@ require("lazy").setup({
       next_key = "<C-j>",
       prev_key = "<C-k>",
       center_on_jump = true,
-      filetypes = { "typescript", "javascript", "typescriptreact", "javascriptreact" },
+      filetypes = { "typescript", "javascript", "typescriptreact", "javascriptreact", "lua", "python" },
+      block_loop_key = "Z", -- Cycle through block boundaries (if/else, functions, objects, arrays)
+      block_loop_key_visual = "z", -- Visual mode keybinding for block-loop
+      block_loop_center_on_jump = false, -- Don't center screen for block-loop (only for sibling-jump)
+    },
+  },
+  {
+    "aaronik/treewalker.nvim",
+    opts = {},
+    keys = {
+      -- movement
+      { "<C-S-k>", "<cmd>Treewalker Up<cr>", mode = { "n", "v" }, silent = true },
+      { "<C-S-j>", "<cmd>Treewalker Down<cr>", mode = { "n", "v" }, silent = true },
+      { "<C-h>", "<cmd>Treewalker Left<cr>", mode = { "n", "v" }, silent = true },
+      { "<C-l>", "<cmd>Treewalker Right<cr>", mode = { "n", "v" }, silent = true },
     },
   },
   {
@@ -615,7 +651,8 @@ require("lazy").setup({
   },
   {
     "subev/refjump.nvim",
-    branch = "all-feat",
+    -- branch = "all-feat",
+    branch = "main",
     event = "LspAttach", -- Uncomment to lazy load
     opts = {
       keymaps = {
@@ -991,7 +1028,6 @@ require("lazy").setup({
       vim.keymap.set("n", "gb", ":G blame --date=relative<cr>", { noremap = true, silent = true, desc = "Git blame" })
       vim.keymap.set("v", "gb", ":GBrowse<cr>", { noremap = true, silent = true, desc = "Git browse" })
       vim.keymap.set("n", ",g", ":G<CR>", { noremap = true, silent = true, desc = "Git status" })
-      vim.keymap.set("n", ",g<space>", ":G<space>", { noremap = true, silent = true, desc = "Git status with args" })
       vim.keymap.set("n", ",gg", ":G<CR><c-w>H", { noremap = true, silent = true, desc = "Git status in left pane" })
       vim.keymap.set(
         "n",
@@ -1049,24 +1085,24 @@ require("lazy").setup({
         },
         file_panel = {
           q = "<Cmd>DiffviewClose<CR>",
-          {
-            "n",
-            "<up>",
-            function()
-              print("scrolling up, fix me")
-              require("diffview.actions").scroll_view(-10)
-            end,
-            { desc = "Scroll the view up" },
-          },
-          {
-            "n",
-            "<down>",
-            function()
-              print("scrolling down, fix me")
-              require("diffview.actions").scroll_view(10)
-            end,
-            { desc = "Scroll the view down" },
-          },
+          -- {
+          --   "n",
+          --   "<up>",
+          --   function()
+          --     print("scrolling up, fix me")
+          --     require("diffview.actions").scroll_view(-10)
+          --   end,
+          --   { desc = "Scroll the view up" },
+          -- },
+          -- {
+          --   "n",
+          --   "<down>",
+          --   function()
+          --     print("scrolling down, fix me")
+          --     require("diffview.actions").scroll_view(10)
+          --   end,
+          --   { desc = "Scroll the view down" },
+          -- },
         },
         file_history_panel = {
           q = "<Cmd>DiffviewClose<CR>",
@@ -1094,6 +1130,29 @@ require("lazy").setup({
         desc = "Git Diffview Open with master",
       },
     },
+  },
+  {
+    dir = "~/repos/difftastic.nvim",
+    dependencies = { "MunifTanjim/nui.nvim" },
+    config = function()
+      require("difftastic-nvim").setup({
+        vcs = "git",
+        hunk_wrap_file = true,
+        scroll_to_first_hunk = true,
+        keymaps = {
+          next_hunk = "<Tab>",
+          prev_hunk = "<S-Tab>",
+          focus_tree = false,
+          focus_diff = false,
+        },
+      })
+    end,
+    keys = {
+      { ",gD", "<cmd>:Difft<cr>", desc = "Difftastic Open" },
+      { ",GM", "<cmd>:Difft origin/main..HEAD<cr>", desc = "Difftastic Open" },
+      { ",gC", "<cmd>:DifftFileHistory <cr>", desc = "Difftastic File History" },
+    },
+    cmd = { "Difft" },
   },
   -- Enables :GBrowse from fugitive.vim to open GitHub URLs
   "tpope/vim-rhubarb",
@@ -1206,6 +1265,17 @@ require("lazy").setup({
 
       vim.keymap.set("n", "<space>e", "<Cmd>Neotree reveal<CR>")
     end,
+  },
+  {
+    "folke/snacks.nvim",
+    ---@type snacks.Config
+    opts = {
+      image = {
+        -- your image configuration comes here
+        -- or leave it empty to use the default settings
+        -- refer to the configuration section below
+      },
+    },
   },
   {
     "hedyhli/outline.nvim",
@@ -1649,7 +1719,17 @@ require("lazy").setup({
     config = function()
       require("neotest").setup({
         adapters = {
-          require("neotest-vitest"),
+          require("neotest-vitest")({
+            vitestConfigFile = function(path)
+              if path:match("/app/.*%.test%.tsx$") then
+                return vim.fn.getcwd() .. "/vitest.config.browser.ts"
+              end
+              if path:match("/test/client/") then
+                return vim.fn.getcwd() .. "/vitest.config.client.ts"
+              end
+              return nil
+            end,
+          }),
         },
       })
       vim.keymap.set("n", "<space>tt", function()
@@ -1836,7 +1916,22 @@ require("lazy").setup({
               path = 1,
             },
           },
-          lualine_x = { "filetype" },
+          lualine_x = {
+            {
+              function()
+                local ok, refjump = pcall(require, "refjump")
+                if not ok then
+                  return ""
+                end
+                local info = refjump.get_reference_info()
+                if info.index then
+                  return string.format("[%d/%d]", info.index, info.total)
+                end
+                return ""
+              end,
+            },
+            "filetype",
+          },
           lualine_y = { "progress" },
           lualine_z = { "location" },
         },
