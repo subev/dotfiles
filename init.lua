@@ -1758,7 +1758,9 @@ require("lazy").setup({
       })
       local function run_and_expand()
         require("neotest").run.run()
-        require("neotest").summary.open()
+        vim.schedule(function()
+          require("neotest").summary.open()
+        end)
       end
 
       vim.keymap.set("n", "<space>tt", run_and_expand, { desc = "Run nearest test" })
