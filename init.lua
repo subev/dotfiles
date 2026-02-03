@@ -1760,6 +1760,7 @@ require("lazy").setup({
         require("neotest").run.run()
         vim.schedule(function()
           require("neotest").summary.open()
+          vim.cmd("doautocmd CursorHold")
         end)
       end
 
