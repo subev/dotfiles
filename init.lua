@@ -1720,6 +1720,7 @@ require("lazy").setup({
     },
     config = function()
       require("neotest").setup({
+
         adapters = {
           require("neotest-vitest")({
             is_test_file = function(file_path)
@@ -1755,21 +1756,21 @@ require("lazy").setup({
           require("neotest-playwright-e2e")(),
         },
       })
-      vim.keymap.set("n", "<space>tt", function()
+      local function run_and_expand()
         local file = vim.fn.expand("%:p")
         require("neotest").run.run()
         require("neotest").summary.open()
         local function try_expand(attempts)
           if attempts <= 0 then return end
           vim.defer_fn(function()
-            local ok = pcall(require("neotest").summary.expand, file)
-            if not ok then
-              try_expand(attempts - 1)
-            end
+            pcall(require("neotest").summary.expand, file)
+            try_expand(attempts - 1)
           end, 100)
         end
         try_expand(5)
-      end, { desc = "Run nearest test" })
+      end
+
+      vim.keymap.set("n", "<space>tt", run_and_expand, { desc = "Run nearest test" })
 
       vim.keymap.set("n", "<space>ts", function()
         require("neotest").run.stop()
