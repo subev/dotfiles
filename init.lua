@@ -1720,7 +1720,6 @@ require("lazy").setup({
     },
     config = function()
       require("neotest").setup({
-
         adapters = {
           require("neotest-vitest")({
             is_test_file = function(file_path)
@@ -1756,25 +1755,31 @@ require("lazy").setup({
           require("neotest-playwright-e2e")(),
         },
       })
-      local function run_and_expand()
-        require("neotest").run.run()
+
+      local function run_and_open_summary(run_arg)
+        if run_arg then
+          require("neotest").run.run(run_arg)
+        else
+          require("neotest").run.run()
+        end
+        vim.cmd("doautocmd BufEnter")
         vim.schedule(function()
           require("neotest").summary.open()
-          vim.cmd("doautocmd CursorHold")
         end)
       end
 
-      vim.keymap.set("n", "<space>tt", run_and_expand, { desc = "Run nearest test" })
+      vim.keymap.set("n", "<space>tt", function()
+        run_and_open_summary()
+      end, { desc = "Run nearest test" })
+
+      vim.keymap.set("n", "<space>ta", function()
+        run_and_open_summary(vim.fn.expand("%"))
+      end, { desc = "Run current file tests" })
 
       vim.keymap.set("n", "<space>ts", function()
         require("neotest").run.stop()
         require("neotest").summary.close()
       end, { desc = "Stop nearest test" })
-
-      vim.keymap.set("n", "<space>ta", function()
-        require("neotest").run.run(vim.fn.expand("%"))
-        require("neotest").summary.open()
-      end, { desc = "Run current file tests" })
 
       vim.keymap.set("n", "<space>to", function()
         require("neotest").output.open({ enter = true })
@@ -2322,6 +2327,7 @@ vim.api.nvim_create_autocmd("LspAttach", {
 })
 
 vim.o.undofile = true
+vim.o.updatetime = 300
 
 -- ============================================================================
 -- EXTERNAL VIM CONFIGURATION FILES
