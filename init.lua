@@ -1757,17 +1757,8 @@ require("lazy").setup({
         },
       })
       local function run_and_expand()
-        local file = vim.fn.expand("%:p")
         require("neotest").run.run()
         require("neotest").summary.open()
-        local function try_expand(attempts)
-          if attempts <= 0 then return end
-          vim.defer_fn(function()
-            pcall(require("neotest").summary.expand, file)
-            try_expand(attempts - 1)
-          end, 100)
-        end
-        try_expand(5)
       end
 
       vim.keymap.set("n", "<space>tt", run_and_expand, { desc = "Run nearest test" })
