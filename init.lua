@@ -1710,31 +1710,65 @@ require("lazy").setup({
   -- ============================================================================
   {
     "nvim-neotest/neotest",
+    lazy = false,
     dependencies = {
       "nvim-neotest/nvim-nio",
       "nvim-lua/plenary.nvim",
       "nvim-treesitter/nvim-treesitter",
       "marilari88/neotest-vitest",
+      "subev/neotest-playwright-e2e",
     },
     config = function()
       require("neotest").setup({
         adapters = {
           require("neotest-vitest")({
-            vitestConfigFile = function(path)
+            is_test_file = function(file_path)
+              if not file_path then
+                return false
+              end
+              if file_path:find("/e2e/") then
+                return false
+              end
+              return file_path:match("%.test%.[tj]sx?$") ~= nil
+                  or file_path:match("%.spec%.[tj]sx?$") ~= nil
+            end,
+            vitestCommand = function(path)
               if path:match("/app/.*%.test%.tsx$") then
-                return vim.fn.getcwd() .. "/vitest.config.browser.ts"
+                return "npx vitest --browser.headless"
+              end
+              return "npx vitest"
+            end,
+            vitestConfigFile = function(path)
+              local root = vim.fs.root(path, "package.json")
+              if not root then
+                return nil
+              end
+              if path:match("/app/.*%.test%.tsx$") then
+                return root .. "/vitest.config.browser.ts"
               end
               if path:match("/test/client/") then
-                return vim.fn.getcwd() .. "/vitest.config.client.ts"
+                return root .. "/vitest.config.client.ts"
               end
               return nil
             end,
           }),
+          require("neotest-playwright-e2e")(),
         },
       })
       vim.keymap.set("n", "<space>tt", function()
+        local file = vim.fn.expand("%:p")
         require("neotest").run.run()
         require("neotest").summary.open()
+        local function try_expand(attempts)
+          if attempts <= 0 then return end
+          vim.defer_fn(function()
+            local ok = pcall(require("neotest").summary.expand, file)
+            if not ok then
+              try_expand(attempts - 1)
+            end
+          end, 100)
+        end
+        try_expand(5)
       end, { desc = "Run nearest test" })
 
       vim.keymap.set("n", "<space>ts", function()
@@ -1758,6 +1792,7 @@ require("lazy").setup({
       vim.keymap.set("n", "<space>twa", function()
         require("neotest").run.run({ vim.fn.expand("%"), vitestCommand = "vitest --watch", suite = false })
       end, { desc = "Run and Watch File" })
+
     end,
   },
   "mfussenegger/nvim-dap",
