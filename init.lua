@@ -605,7 +605,7 @@ require("lazy").setup({
   -- CODE NAVIGATION
   -- ============================================================================
   {
-    "subev/sibling-jump.nvim",
+    dir = "~/repos/sibling-jump", -- Use local development version
     opts = {
       next_key = "<C-j>",
       prev_key = "<C-k>",
@@ -618,7 +618,9 @@ require("lazy").setup({
   },
   {
     "aaronik/treewalker.nvim",
-    opts = {},
+    opts = {
+      scope_confined = true,
+    },
     keys = {
       -- movement
       { "<C-S-k>", "<cmd>Treewalker Up<cr>", mode = { "n", "v" }, silent = true },
@@ -1315,54 +1317,19 @@ require("lazy").setup({
   -- ============================================================================
   { "junegunn/fzf", build = "./install --bin" },
   {
-    "junegunn/fzf.vim",
-    config = function()
-      -- this whole plugin is for just that one mapping, still can't find better
-      vim.keymap.set(
-        "n",
-        "<space>s",
-        "<cmd>Rg<cr>",
-        { noremap = true, silent = true, desc = "Search with FZF Ripgrep" }
-      )
-      -- vim.keymap.set("v", "<space>s", 'y:Rg <C-r>"<CR>', {
-      --   noremap = true,
-      --   silent = true,
-      --   desc = "Search selection with FZF Ripgrep",
-      -- })
-    end,
-  },
-  {
     "ibhagwan/fzf-lua",
-    -- optional for icon support
     dependencies = { "nvim-tree/nvim-web-devicons" },
-    -- or if using mini.icons/mini.nvim
-    -- dependencies = { "nvim-mini/mini.icons" },
     opts = {},
     config = function()
-      -- maps F1 to open help tags
       local fzf = require("fzf-lua")
       vim.keymap.set("n", "<F1>", fzf.help_tags, { noremap = true, silent = true, desc = "FZF help tags" })
-      -- maps <space>s to :Rg (search in files)
-      vim.keymap.set(
-        "n",
-        ",s",
-        fzf.grep_project,
-        { noremap = true, silent = true, desc = "FZF live grep the whole project" }
-      )
+      vim.keymap.set("n", "<space>s", function()
+        fzf.grep_project({ fzf_opts = { ["--nth"] = false } })
+      end, { noremap = true, silent = true, desc = "FZF grep (path + content)" })
+      vim.keymap.set("n", ",s", fzf.grep_project, { noremap = true, silent = true, desc = "FZF grep (content only)" })
       vim.keymap.set("n", ",S", fzf.resume, { noremap = true, silent = true, desc = "FZF resume" })
-      vim.keymap.set(
-        "v",
-        "<space>s",
-        fzf.grep_visual,
-        { noremap = true, silent = true, desc = "FZF live grep the selection" }
-      )
-      vim.keymap.set(
-        "v",
-        ",s",
-        fzf.grep_visual,
-        { noremap = true, silent = true, desc = "FZF live grep the selection" }
-      )
-      -- open buffers with ,b
+      vim.keymap.set("v", "<space>s", fzf.grep_visual, { noremap = true, silent = true, desc = "FZF grep selection" })
+      vim.keymap.set("v", ",s", fzf.grep_visual, { noremap = true, silent = true, desc = "FZF grep selection" })
       vim.keymap.set("n", ",b", fzf.buffers, { noremap = true, silent = true, desc = "FZF buffers" })
       vim.keymap.set(
         "n",
@@ -1729,8 +1696,7 @@ require("lazy").setup({
               if file_path:find("/e2e/") then
                 return false
               end
-              return file_path:match("%.test%.[tj]sx?$") ~= nil
-                  or file_path:match("%.spec%.[tj]sx?$") ~= nil
+              return file_path:match("%.test%.[tj]sx?$") ~= nil or file_path:match("%.spec%.[tj]sx?$") ~= nil
             end,
             vitestCommand = function(path)
               if path:match("/app/.*%.test%.tsx$") then
@@ -1792,7 +1758,6 @@ require("lazy").setup({
       vim.keymap.set("n", "<space>twa", function()
         require("neotest").run.run({ vim.fn.expand("%"), vitestCommand = "vitest --watch", suite = false })
       end, { desc = "Run and Watch File" })
-
     end,
   },
   "mfussenegger/nvim-dap",
