@@ -64,3 +64,25 @@ git clone --depth 1 https://github.com/wbthomason/packer.nvim\
 
 :PackerInstall
 ```
+
+## OpenCode setup
+
+Keep OpenCode config in this repo and symlink it into `~/.config/opencode`.
+
+```bash
+mkdir -p "$HOME/.config/opencode"
+
+# backup existing files once
+ts="$(date +%Y%m%d-%H%M%S)"
+mkdir -p "$HOME/.config/opencode/backup-$ts"
+cp -v "$HOME/.config/opencode/opencode.json" "$HOME/.config/opencode/backup-$ts/" 2>/dev/null || true
+cp -v "$HOME/.config/opencode/AGENTS.md" "$HOME/.config/opencode/backup-$ts/" 2>/dev/null || true
+
+ln -sfn "$HOME/dotfiles/opencode/opencode.json" "$HOME/.config/opencode/opencode.json"
+ln -sfn "$HOME/dotfiles/opencode/AGENTS.md" "$HOME/.config/opencode/AGENTS.md"
+ln -sfn "$HOME/dotfiles/opencode/agents" "$HOME/.config/opencode/agents"
+```
+
+Notes:
+- Credentials remain in `~/.local/share/opencode/auth.json` (not in git).
+- Export `CONTEXT7_API_KEY` in your shell before running OpenCode.
