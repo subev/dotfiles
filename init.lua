@@ -569,7 +569,7 @@ require("lazy").setup({
         desc = "Buffer Diagnostics (Trouble)",
       },
       {
-        "<space>O",
+        "<leader>vO",
         "<cmd>Trouble symbols toggle focus=true win.position=bottom auto_close=true<cr>",
         desc = "Symbols (Trouble)",
       },
@@ -1284,7 +1284,7 @@ require("lazy").setup({
     lazy = true,
     cmd = { "Outline", "OutlineOpen" },
     keys = { -- Example mapping to toggle outline
-      { "<space>o", "<cmd>Outline<CR>", desc = "Toggle outline" },
+      { "<leader>vo", "<cmd>Outline<CR>", desc = "Toggle outline" },
     },
     opts = {
       -- Your setup opts here
@@ -1317,15 +1317,32 @@ require("lazy").setup({
   -- ============================================================================
   { "junegunn/fzf", build = "./install --bin" },
   {
+    "junegunn/fzf.vim",
+    config = function()
+      -- this whole plugin is for just that one mapping, still can't find better
+      vim.keymap.set(
+        "n",
+        "<space>s",
+        "<cmd>Rg<cr>",
+        { noremap = true, silent = true, desc = "Search with FZF Ripgrep" }
+      )
+      -- vim.keymap.set("v", "<space>s", 'y:Rg <C-r>"<CR>', {
+      --   noremap = true,
+      --   silent = true,
+      --   desc = "Search selection with FZF Ripgrep",
+      -- })
+    end,
+  },
+  {
     "ibhagwan/fzf-lua",
     dependencies = { "nvim-tree/nvim-web-devicons" },
     opts = {},
     config = function()
       local fzf = require("fzf-lua")
       vim.keymap.set("n", "<F1>", fzf.help_tags, { noremap = true, silent = true, desc = "FZF help tags" })
-      vim.keymap.set("n", "<space>s", function()
-        fzf.grep_project({ fzf_opts = { ["--nth"] = false } })
-      end, { noremap = true, silent = true, desc = "FZF grep (path + content)" })
+      -- vim.keymap.set("n", "<space>s", function()
+      --   fzf.grep_project({ fzf_opts = { ["--nth"] = false } })
+      -- end, { noremap = true, silent = true, desc = "FZF grep (path + content)" })
       vim.keymap.set("n", ",s", fzf.grep_project, { noremap = true, silent = true, desc = "FZF grep (content only)" })
       vim.keymap.set("n", ",S", fzf.resume, { noremap = true, silent = true, desc = "FZF resume" })
       vim.keymap.set("v", "<space>s", fzf.grep_visual, { noremap = true, silent = true, desc = "FZF grep selection" })
@@ -1376,6 +1393,8 @@ require("lazy").setup({
       vim.keymap.set("n", "<space>db", builtin.buffers, { desc = "Telescope buffers" })
       vim.keymap.set("n", "<space>dh", builtin.help_tags, { desc = "Telescope help tags" })
       vim.keymap.set("n", "<space>de", builtin.builtin, { desc = "Telescope builtins" })
+      vim.keymap.set("n", "<space>o", builtin.lsp_document_symbols, { desc = "Telescope document symbols" })
+      vim.keymap.set("n", "<space>O", builtin.lsp_dynamic_workspace_symbols, { desc = "Telescope document symbols" })
     end,
     dependencies = {
       "nvim-lua/plenary.nvim",
@@ -1699,9 +1718,21 @@ require("lazy").setup({
               return file_path:match("%.test%.[tj]sx?$") ~= nil or file_path:match("%.spec%.[tj]sx?$") ~= nil
             end,
             vitestCommand = function(path)
-              if path:match("/app/.*%.test%.tsx$") then
+              local root = vim.fs.root(path, "package.json")
+              if not root then
+                return "npx vitest"
+              end
+              local rel = path:sub(#root + 2)
+
+              -- server/vitest.config.browser.ts → app/**/*.test.tsx
+              if rel:match("^app/") then
                 return "npx vitest --browser.headless"
               end
+              -- management-console-client/vitest.config.browser.ts → src/**/*.test.tsx
+              if rel:match("^src/.*%.test%.tsx$") then
+                return "npx vitest --browser.headless"
+              end
+
               return "npx vitest"
             end,
             vitestConfigFile = function(path)
@@ -1709,12 +1740,26 @@ require("lazy").setup({
               if not root then
                 return nil
               end
-              if path:match("/app/.*%.test%.tsx$") then
-                return root .. "/vitest.config.browser.ts"
-              end
-              if path:match("/test/client/") then
+              local rel = path:sub(#root + 2)
+
+              -- server/vitest.config.client.ts → test/client/**/*.test.ts
+              if rel:match("^test/client/") then
                 return root .. "/vitest.config.client.ts"
               end
+              -- server/vitest.config.llm.ts → test/llm/**/*.test.ts
+              if rel:match("^test/llm/") then
+                return root .. "/vitest.config.llm.ts"
+              end
+              -- server/vitest.config.browser.ts → app/**/*.test.tsx
+              if rel:match("^app/") then
+                return root .. "/vitest.config.browser.ts"
+              end
+              -- management-console-client/vitest.config.browser.ts → src/**/*.test.tsx
+              if rel:match("^src/.*%.test%.tsx$") then
+                return root .. "/vitest.config.browser.ts"
+              end
+
+              -- packages/common/vitest.config.ts, server/vitest.config.ts → default
               return nil
             end,
           }),
@@ -2240,7 +2285,7 @@ require("lazy").setup({
     opts = {
       preview = {
         filetypes = { "markdown", "codecompanion" },
-        ignore_buftypes = {},
+        ignore_buftypes = { "nofile" },
       },
     },
   },
@@ -2313,6 +2358,7 @@ require("lsp_file_refs_treesitter").setup()
 --   center_on_jump = true,
 -- })
 require("custom_functions")
+require("search_context").setup({ context_lines = 3 })
 
 vim.api.nvim_set_hl(0, "HlSearchLensNear", { link = "Substitute" })
 

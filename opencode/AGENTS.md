@@ -130,26 +130,7 @@ When working with Drizzle ORM or similar migration-based database tools:
 
 ### Merge/Rebase Strategy for Migration Conflicts
 
-When merging or rebasing branches with migration conflicts:
-
-```bash
-# 1. Accept incoming changes for generated migration files
-git checkout --theirs drizzle/meta/*.json
-
-# 2. Resolve any code conflicts manually (keep your schema.ts changes)
-
-# 3. Remove duplicate migration SQL files (keep incoming, remove yours)
-git rm drizzle/XXXX_your_old_migration.sql  # if you had a conflicting migration number
-
-# 4. Stage resolved conflicts
-git add .
-
-# 5. Generate fresh migration from your schema changes
-pnpm db:generate  # or npx drizzle-kit generate
-
-# 6. Add new migration and complete merge
-git add drizzle/ && git commit
-```
+When bumping a branch to be up to date with the base branch with a merge use the pnpm db:resolve-migration-conflicts within /server
 
 **Key points:**
 
