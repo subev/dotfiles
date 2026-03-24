@@ -1,8 +1,6 @@
 " General variables set {{{
 
   set background=dark    " Setting dark mode
-  set termguicolors
-
   " hides formatting symbols, might be overriden
   set conceallevel=0
 
