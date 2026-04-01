@@ -111,7 +111,6 @@ ZSH_THEME_RANDOM_CANDIDATES=("agnoster")
 # Add wisely, as too many plugins slow down shell startup.
 plugins=(
   git
-  nvm
   fzf
   zsh-autosuggestions
   zsh-syntax-highlighting
@@ -185,9 +184,7 @@ fi
 [ -f ~/.fzf.zsh ] && source ~/.fzf.zsh
 [ -f ~/dotfiles/workflows.sh ] && source ~/dotfiles/workflows.sh
 
-export NVM_DIR="$HOME/.nvm"
-[ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"  # This loads nvm
-[ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"  # This loads nvm bash_completion
+eval "$(fnm env --use-on-cd --shell zsh)"
 export EDITOR=/usr/bin/nvim
 
 # To customize prompt, run `p10k configure` or edit ~/.p10k.zsh.

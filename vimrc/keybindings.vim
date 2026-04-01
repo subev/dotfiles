@@ -170,7 +170,8 @@
 
   nnoremap ,o <c-w>\|
   nnoremap ,O <c-w>o
-  nnoremap ,t <c-w>v<c-w>\|:term<cr>i
+  " nnoremap ,t <c-w>v<c-w>\|:term<cr>i
+  nnoremap ,t <C-w>v:execute 'vertical resize ' . (&columns / 2)<CR>:term<CR>i
   nnoremap ,T <c-w>v:term<cr>inpm run typecheck<cr>
   nnoremap ,gl <c-w>v<c-w>\|:term<cr>igit ls<cr>
   nnoremap ,gP :lua git_log_patches()<CR>()<CR>

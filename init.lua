@@ -195,6 +195,7 @@ require("lazy").setup({
           "lua_ls",
           "ruff",
           "pyright",
+          "oxlint",
         },
         automatic_enable = true,
       })
@@ -203,6 +204,52 @@ require("lazy").setup({
   {
     "neovim/nvim-lspconfig",
     config = function()
+      local function find_workspace_root(startpath)
+        if not startpath or startpath == "" then
+          return nil
+        end
+
+        local markers = { "pnpm-workspace.yaml", ".git" }
+        local found = vim.fs.find(markers, {
+          path = startpath,
+          upward = true,
+          stop = vim.loop.os_homedir(),
+          limit = 1,
+        })[1]
+
+        if not found then
+          return nil
+        end
+
+        return vim.fs.dirname(found)
+      end
+
+      vim.lsp.config("oxlint", {
+        cmd = function(dispatchers, config)
+          local candidates = {}
+          local root_dir = (config or {}).root_dir
+
+          if root_dir then
+            table.insert(candidates, vim.fs.joinpath(root_dir, "node_modules", ".bin", "oxlint"))
+
+            local workspace_root = find_workspace_root(root_dir)
+            if workspace_root and workspace_root ~= root_dir then
+              table.insert(candidates, vim.fs.joinpath(workspace_root, "node_modules", ".bin", "oxlint"))
+            end
+          end
+
+          local cmd = "oxlint"
+          for _, candidate in ipairs(candidates) do
+            if vim.fn.executable(candidate) == 1 then
+              cmd = candidate
+              break
+            end
+          end
+
+          return vim.lsp.rpc.start({ cmd, "--lsp" }, dispatchers)
+        end,
+      })
+
       vim.lsp.config("pyright", {
         settings = {
           pyright = {
@@ -229,11 +276,32 @@ require("lazy").setup({
       vim.lsp.enable("pyright")
       vim.lsp.enable("ruff")
       vim.lsp.enable("eslint")
+      vim.lsp.enable("oxlint")
 
-      vim.keymap.set("n", "<space>1", "<cmd>LspEslintFixAll<cr>", {
+      vim.keymap.set("n", "<space>1", function()
+        local bufnr = vim.api.nvim_get_current_buf()
+
+        if #vim.lsp.get_clients({ bufnr = bufnr, name = "oxlint" }) > 0 then
+          vim.cmd("LspOxlintFixAll")
+          return
+        end
+
+        if #vim.lsp.get_clients({ bufnr = bufnr, name = "eslint" }) > 0 then
+          vim.cmd("LspEslintFixAll")
+          return
+        end
+
+        vim.lsp.buf.code_action({
+          apply = true,
+          context = {
+            only = { "source.fixAll" },
+            diagnostics = vim.diagnostic.get(bufnr),
+          },
+        })
+      end, {
         noremap = true,
         silent = true,
-        desc = "ESLint: Fix all auto-fixable issues",
+        desc = "Fix all auto-fixable issues",
       })
     end,
   },
@@ -1220,6 +1288,8 @@ require("lazy").setup({
     },
     lazy = false, -- neo-tree will lazily load itself
     config = function()
+      local neo_tree_width = 40
+
       require("neo-tree").setup({
         event_handlers = {
           {
@@ -1229,6 +1299,24 @@ require("lazy").setup({
               -- vim.cmd("Neotree close")
               -- OR
               require("neo-tree.command").execute({ action = "close" })
+            end,
+          },
+          {
+            event = "neo_tree_window_before_close",
+            handler = function(args)
+              local winid = args.winid
+              if winid and vim.api.nvim_win_is_valid(winid) then
+                neo_tree_width = vim.api.nvim_win_get_width(winid)
+              end
+            end,
+          },
+          {
+            event = "neo_tree_window_after_open",
+            handler = function(args)
+              local winid = args.winid
+              if winid and vim.api.nvim_win_is_valid(winid) then
+                vim.api.nvim_win_set_width(winid, neo_tree_width)
+              end
             end,
           },
         },
