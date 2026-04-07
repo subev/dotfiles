@@ -97,11 +97,8 @@ require("lazy").setup({
     },
     config = function()
       require("nvim-treesitter").setup({})
-      -- Install parsers if missing
-      require("nvim-treesitter").install({
-        "lua", "typescript", "tsx", "javascript", "python", "json", "markdown",
-        "html", "css", "bash", "regex", "vim", "vimdoc",
-      })
+      -- Install all parsers (lazy-loaded, no perf impact)
+      require("nvim-treesitter").install("all")
       -- Enable treesitter highlighting for all filetypes
       vim.api.nvim_create_autocmd("FileType", {
         callback = function()
@@ -1709,6 +1706,8 @@ require("lazy").setup({
           "snacks_picker_input",
           "snacks_picker_list",
           "snacks_picker_preview",
+          "TelescopePrompt",
+          "fzf",
         },
         callback = function()
           vim.b.autopairs_loaded = 1
@@ -2439,33 +2438,6 @@ require("lazy").setup({
   },
 })
 
-local original_open_floating_preview = vim.lsp.util.open_floating_preview
-vim.lsp.util.open_floating_preview = function(contents, syntax, opts)
-  if syntax ~= "markdown" then
-    return original_open_floating_preview(contents, syntax, opts)
-  end
-
-  -- Neovim HEAD currently crashes in markdown hover Treesitter conceal handling.
-  -- Fall back to the legacy markdown stylizer so fenced code blocks still get
-  -- syntax highlighting without starting Treesitter in the floating preview.
-  local old_syntax_on = vim.g.syntax_on
-  vim.g.syntax_on = nil
-  local ok, bufnr, winid = pcall(original_open_floating_preview, contents, syntax, opts)
-  vim.g.syntax_on = old_syntax_on
-
-  if not ok then
-    error(bufnr)
-  end
-
-  vim.bo[bufnr].modifiable = true
-  local original_deprecate = vim.deprecate
-  vim.deprecate = function() end
-  vim.lsp.util.stylize_markdown(bufnr, contents, opts or {})
-  vim.deprecate = original_deprecate
-  vim.bo[bufnr].modifiable = false
-
-  return bufnr, winid
-end
 
 -- ============================================================================
 -- LSP CONFIGURATION
