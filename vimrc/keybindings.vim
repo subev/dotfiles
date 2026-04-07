@@ -132,7 +132,6 @@
 
   " delete trailing whitespace
   nnoremap <silent> <leader>q :let _s=@/<Bar>:%s/\s\+$//e<Bar>:let @/=_s<Bar>:nohl<CR>
-
   " quick-paste last yanked text
   noremap ; "0p
   vmap gp <c-n>\\CP<esc>
@@ -171,7 +170,7 @@
   nnoremap ,o <c-w>\|
   nnoremap ,O <c-w>o
   " nnoremap ,t <c-w>v<c-w>\|:term<cr>i
-  nnoremap ,t <C-w>v:execute 'vertical resize ' . (&columns / 2)<CR>:term<CR>i
+  nnoremap ,t :lua open_project_zellij_terminal()<CR>
   nnoremap ,T <c-w>v:term<cr>inpm run typecheck<cr>
   nnoremap ,gl <c-w>v<c-w>\|:term<cr>igit ls<cr>
   nnoremap ,gP :lua git_log_patches()<CR>()<CR>

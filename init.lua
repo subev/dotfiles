@@ -12,6 +12,70 @@ end
 vim.opt.rtp:prepend(lazypath)
 vim.opt.termguicolors = true
 
+local function find_textclub_root(startpath)
+  local path = startpath or vim.fn.expand("%:p:h")
+  if path == "" then
+    path = vim.fn.getcwd()
+  end
+
+  local root_marker = vim.fs.find({ "pnpm-workspace.yaml", ".git" }, {
+    path = path,
+    upward = true,
+    stop = vim.loop.os_homedir(),
+    limit = 1,
+  })[1]
+
+  if not root_marker then
+    return nil
+  end
+
+  local root = vim.fs.dirname(root_marker)
+  if vim.fs.basename(root) ~= "textclub" then
+    return nil
+  end
+
+  return root
+end
+
+local function run_textclub_overseer_task(script_name)
+  local root = find_textclub_root()
+  if not root then
+    vim.notify("Not inside the textclub workspace", vim.log.levels.WARN)
+    return
+  end
+
+  local overseer = require("overseer")
+  local task = overseer.new_task({
+    name = "pnpm run " .. script_name,
+    cmd = { "pnpm", "run", script_name },
+    cwd = root,
+    components = {
+      { "unique", replace = false },
+      "default",
+    },
+  })
+
+  task:start()
+  task:open_output("vertical")
+end
+
+local function open_recent_overseer_output()
+  local overseer = require("overseer")
+  local tasks = overseer.list_tasks({})
+  if vim.tbl_isempty(tasks) then
+    vim.notify("No Overseer tasks found", vim.log.levels.WARN)
+    return
+  end
+
+  table.sort(tasks, function(a, b)
+    local a_time = a.time_start or a.time_end or 0
+    local b_time = b.time_start or b.time_end or 0
+    return a_time > b_time
+  end)
+
+  tasks[1]:open_output("float")
+end
+
 require("lazy").setup({
   -- ============================================================================
   -- COLORSCHEMES
@@ -24,150 +88,71 @@ require("lazy").setup({
   -- ============================================================================
   {
     "nvim-treesitter/nvim-treesitter",
-    branch = "master",
+    branch = "main",
     lazy = false,
     build = ":TSUpdate",
     dependencies = {
-      "nvim-treesitter/nvim-treesitter-textobjects",
       -- shows wrapping function signature if it is outside of the view
       "nvim-treesitter/nvim-treesitter-context",
     },
     config = function()
-      require("nvim-treesitter.configs").setup({
-        modules = {}, -- Add modules if needed
-        sync_install = false, -- Install parsers asynchronously (recommended)
-        ensure_installed = { "lua", "typescript", "python", "json", "markdown" }, -- Add your desired languages
-        ignore_install = {}, -- Parsers to ignore
-        auto_install = true, -- Automatically install missing parsers
-
-        highlight = {
-          enable = true, -- false will disable the whole extension
-          -- disable = { "elixir" },  -- list of language that will be disabled
-          -- Setting this to true will run `:h syntax` and tree-sitter at the same time.
-          -- Set this to `true` if you depend on 'syntax' being enabled (like for indentation).
-          -- Using this option may slow down your editor, and you may see some duplicate highlights.
-          -- Instead of true it can also be a list of languages
-          -- additional_vim_regex_highlighting = false,
-        },
-        textobjects = {
-          select = {
-            enable = true,
-
-            -- Automatically jump forward to textobj, similar to targets.vim
-            lookahead = true,
-
-            keymaps = {
-              -- You can use the capture groups defined in textobjects.scm
-              ["af"] = "@function.outer",
-              ["if"] = "@function.inner",
-              ["ac"] = "@class.outer",
-              -- You can optionally set descriptions to the mappings (used in the desc parameter of
-              -- nvim_buf_set_keymap) which plugins like which-key display
-              ["ic"] = { query = "@class.inner", desc = "Select inner part of a class region" },
-              -- You can also use captures from other query groups like `locals.scm`
-              ["as"] = { query = "@local.scope", query_group = "locals", desc = "Select language scope" },
-              -- selects the return statement without the return keyword
-              ["ir"] = { query = "@return.inner", desc = "Select inner part of a return statement" },
-              ["ar"] = { query = "@return.outer", desc = "Select outer part of a return statement" },
-            },
-            -- You can choose the select mode (default is charwise 'v')
-            --
-            -- Can also be a function which gets passed a table with the keys
-            -- * query_string: eg '@function.inner'
-            -- * method: eg 'v' or 'o'
-            -- and should return the mode ('v', 'V', or '<c-v>') or a table
-            -- mapping query_strings to modes.
-            selection_modes = {
-              ["@parameter.outer"] = "v", -- charwise
-              ["@function.outer"] = "V", -- linewise
-              ["@class.outer"] = "<c-v>", -- blockwise
-            },
-            -- If you set this to `true` (default is `false`) then any textobject is
-            -- extended to include preceding or succeeding whitespace. Succeeding
-            -- whitespace has priority in order to act similarly to eg the built-in
-            -- `ap`.
-            --
-            -- Can also be a function which gets passed a table with the keys
-            -- * query_string: eg '@function.inner'
-            -- * selection_mode: eg 'v'
-            -- and should return true or false
-            include_surrounding_whitespace = false,
-          },
-          move = {
-            enable = true,
-            set_jumps = true, -- whether to set jumps in the jumplist
-            goto_next_start = {
-              ["]m"] = "@function.outer",
-              -- ["]]"] = { query = "@class.outer", desc = "Next class start" },
-              --
-              -- You can use regex matching (i.e. lua pattern) and/or pass a list in a "query" key to group multiple queries.
-              -- ["]o"] = "@loop.*",
-              -- ["]o"] = { query = { "@loop.inner", "@loop.outer" } }
-              --
-              -- You can pass a query group to use query from `queries/<lang>/<query_group>.scm file in your runtime path.
-              -- Below example nvim-treesitter's `locals.scm` and `folds.scm`. They also provide highlights.scm and indent.scm.
-              ["]s"] = { query = "@local.scope", query_group = "locals", desc = "Next scope" },
-              -- uses shift down arrow to go to next statement (more granular than function)
-              -- ["J"] = "@statement.outer",
-            },
-            goto_next_end = {
-              ["]M"] = "@function.outer",
-              ["]["] = "@class.outer",
-            },
-            goto_previous_start = {
-              ["[m"] = "@function.outer",
-              -- ["[["] = "@class.outer",
-              -- ["K"] = "@statement.outer",
-            },
-            goto_previous_end = {
-              ["[M"] = "@function.outer",
-              ["[]"] = "@class.outer",
-            },
-            -- Below will go to either the start or the end, whichever is closer.
-            -- Use if you want more granular movements
-            -- Make it even more gradual by adding multiple queries and regex.
-            goto_next = {
-              ["]d"] = "@conditional.outer",
-            },
-            goto_previous = {
-              ["[d"] = "@conditional.outer",
-            },
-          },
-        },
-        textsubjects = {
-          enable = true,
-          keymaps = {
-            [">"] = "textsubjects-smart",
-            ["+"] = "textsubjects-container-outer",
-          },
-        },
-        playground = {
-          enable = true,
-          disable = {},
-          updatetime = 25, -- Debounced time for highlighting nodes in the playground from source code
-          persist_queries = false, -- Whether the query persists across vim sessions
-          keybindings = {
-            toggle_query_editor = "o",
-            toggle_hl_groups = "i",
-            toggle_injected_languages = "t",
-            toggle_anonymous_nodes = "a",
-            toggle_language_display = "I",
-            focus_language = "f",
-            unfocus_language = "F",
-            update = "R",
-            goto_node = "<cr>",
-            show_help = "?",
-          },
-        },
+      require("nvim-treesitter").setup({})
+      -- Install parsers if missing
+      require("nvim-treesitter").install({
+        "lua", "typescript", "tsx", "javascript", "python", "json", "markdown",
+        "html", "css", "bash", "regex", "vim", "vimdoc",
+      })
+      -- Enable treesitter highlighting for all filetypes
+      vim.api.nvim_create_autocmd("FileType", {
+        callback = function()
+          pcall(vim.treesitter.start)
+        end,
       })
     end,
   },
   {
-    "nvim-treesitter/playground",
-    lazy = true,
-    cmd = {
-      "TSPlaygroundToggle",
-    },
+    "nvim-treesitter/nvim-treesitter-textobjects",
+    branch = "main",
+    lazy = false,
+    config = function()
+      require("nvim-treesitter-textobjects").setup({
+        select = {
+          lookahead = true,
+          selection_modes = {
+            ["@parameter.outer"] = "v",
+            ["@function.outer"] = "V",
+            ["@class.outer"] = "<c-v>",
+          },
+          include_surrounding_whitespace = false,
+        },
+        move = {
+          set_jumps = true,
+        },
+      })
+
+      local select_textobject = require("nvim-treesitter-textobjects.select").select_textobject
+      local move = require("nvim-treesitter-textobjects.move")
+
+      -- Select textobjects
+      vim.keymap.set({ "x", "o" }, "af", function() select_textobject("@function.outer", "textobjects") end)
+      vim.keymap.set({ "x", "o" }, "if", function() select_textobject("@function.inner", "textobjects") end)
+      vim.keymap.set({ "x", "o" }, "ac", function() select_textobject("@class.outer", "textobjects") end)
+      vim.keymap.set({ "x", "o" }, "ic", function() select_textobject("@class.inner", "textobjects") end)
+      vim.keymap.set({ "x", "o" }, "as", function() select_textobject("@local.scope", "locals") end)
+      vim.keymap.set({ "x", "o" }, "ir", function() select_textobject("@return.inner", "textobjects") end)
+      vim.keymap.set({ "x", "o" }, "ar", function() select_textobject("@return.outer", "textobjects") end)
+
+      -- Move textobjects
+      vim.keymap.set({ "n", "x", "o" }, "]m", function() move.goto_next_start("@function.outer", "textobjects") end)
+      vim.keymap.set({ "n", "x", "o" }, "]s", function() move.goto_next_start("@local.scope", "locals") end)
+      vim.keymap.set({ "n", "x", "o" }, "]M", function() move.goto_next_end("@function.outer", "textobjects") end)
+      vim.keymap.set({ "n", "x", "o" }, "][", function() move.goto_next_end("@class.outer", "textobjects") end)
+      vim.keymap.set({ "n", "x", "o" }, "[m", function() move.goto_previous_start("@function.outer", "textobjects") end)
+      vim.keymap.set({ "n", "x", "o" }, "[M", function() move.goto_previous_end("@function.outer", "textobjects") end)
+      vim.keymap.set({ "n", "x", "o" }, "[]", function() move.goto_previous_end("@class.outer", "textobjects") end)
+      vim.keymap.set({ "n", "x", "o" }, "]d", function() move.goto_next("@conditional.outer", "textobjects") end)
+      vim.keymap.set({ "n", "x", "o" }, "[d", function() move.goto_previous("@conditional.outer", "textobjects") end)
+    end,
   },
   "HiPhish/rainbow-delimiters.nvim",
 
@@ -1366,6 +1351,9 @@ require("lazy").setup({
         -- or leave it empty to use the default settings
         -- refer to the configuration section below
       },
+      picker = {
+        enabled = true,
+      },
     },
   },
   {
@@ -1713,6 +1701,20 @@ require("lazy").setup({
     config = function()
       vim.g.AutoPairsShortcutBackInsert = "<C-b>"
       vim.g.AutoPairsShortcutFastWrap = "<C-e>"
+
+      vim.api.nvim_create_autocmd("FileType", {
+        pattern = {
+          "snacks_input",
+          "snacks_layout_box",
+          "snacks_picker_input",
+          "snacks_picker_list",
+          "snacks_picker_preview",
+        },
+        callback = function()
+          vim.b.autopairs_loaded = 1
+          vim.b.autopairs_enabled = 0
+        end,
+      })
     end,
   },
   {
@@ -2378,7 +2380,92 @@ require("lazy").setup({
       },
     },
   },
+  -- Overseer is for non-persistent project tasks you want to inspect inside Neovim.
+  --
+  -- Usage:
+  --   ,cc  toggle the task list dock on the left
+  --   ,cr  open OverseerRun through the current `vim.ui.select` backend (Snacks picker)
+  --   ,ck  run textclub's root-level `pnpm run checks` and open its output
+  --   ,ct  run textclub's root-level `pnpm run typecheck:watch` and open its output
+  --   ,co  reopen the most recent Overseer task output in a float
+  --
+  -- `,ck` and `,ct` are just opinionated shortcuts for the root textclub scripts you are likely
+  -- to want often. These tasks are not persistent: quitting Neovim stops them. For persistent
+  -- shells or dev servers, use the zellij-backed terminal flow on `,t` instead.
+  {
+    "stevearc/overseer.nvim",
+    keys = {
+      {
+        ",cc",
+        function()
+          require("overseer").toggle({ enter = false, direction = "left" })
+        end,
+        desc = "Overseer: toggle task list",
+      },
+      {
+        ",cr",
+        "<cmd>OverseerRun<CR>",
+        desc = "Overseer: run task",
+      },
+      {
+        ",ck",
+        function()
+          run_textclub_overseer_task("checks")
+        end,
+        desc = "Overseer: textclub checks",
+      },
+      {
+        ",ct",
+        function()
+          run_textclub_overseer_task("typecheck:watch")
+        end,
+        desc = "Overseer: textclub typecheck watch",
+      },
+      {
+        ",co",
+        function()
+          open_recent_overseer_output()
+        end,
+        desc = "Overseer: open recent output",
+      },
+    },
+    opts = {
+      task_list = {
+        direction = "left",
+        min_width = { 40, 0.2 },
+        max_width = 0.5,
+      },
+    },
+  },
 })
+
+local original_open_floating_preview = vim.lsp.util.open_floating_preview
+vim.lsp.util.open_floating_preview = function(contents, syntax, opts)
+  if syntax ~= "markdown" then
+    return original_open_floating_preview(contents, syntax, opts)
+  end
+
+  -- Neovim HEAD currently crashes in markdown hover Treesitter conceal handling.
+  -- Fall back to the legacy markdown stylizer so fenced code blocks still get
+  -- syntax highlighting without starting Treesitter in the floating preview.
+  local old_syntax_on = vim.g.syntax_on
+  vim.g.syntax_on = nil
+  local ok, bufnr, winid = pcall(original_open_floating_preview, contents, syntax, opts)
+  vim.g.syntax_on = old_syntax_on
+
+  if not ok then
+    error(bufnr)
+  end
+
+  vim.bo[bufnr].modifiable = true
+  local original_deprecate = vim.deprecate
+  vim.deprecate = function() end
+  vim.lsp.util.stylize_markdown(bufnr, contents, opts or {})
+  vim.deprecate = original_deprecate
+  vim.bo[bufnr].modifiable = false
+
+  return bufnr, winid
+end
 
 -- ============================================================================
 -- LSP CONFIGURATION

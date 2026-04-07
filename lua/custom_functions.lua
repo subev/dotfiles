@@ -99,11 +99,47 @@ function VisualSelectionToNode()
   print(output)
 end
 
+local function project_zellij_session_name()
+  local cwd = vim.fn.getcwd()
+  local git_root = vim.fn.systemlist({ "git", "-C", cwd, "rev-parse", "--show-toplevel" })
+
+  local base
+  if vim.v.shell_error == 0 and git_root[1] and git_root[1] ~= "" then
+    base = vim.fs.basename(git_root[1])
+  else
+    base = vim.fs.basename(cwd)
+  end
+
+  local session = base:gsub("[^%w%-_]", "-"):gsub("%-+", "-"):gsub("^%-", ""):gsub("%-$", "")
+
+  if session == "" then
+    session = "shell"
+  end
+
+  return session
+end
+
+function Open_Project_Zellij_Terminal()
+  vim.cmd("vsplit")
+  vim.cmd("vertical resize " .. math.floor(vim.o.columns / 2))
+  vim.cmd("enew")
+
+  if vim.env.ZELLIJ and vim.env.ZELLIJ ~= "" then
+    vim.cmd("terminal")
+  else
+    local session = project_zellij_session_name()
+    vim.fn.termopen({ "zellij", "attach", "-c", session })
+  end
+
+  vim.cmd("startinsert")
+end
+
 -- Add the function to the global namespace if you want to call it from command mode or a keybinding
 _G.unique_buffers = Unique_Buffers
 _G.git_log_file = GiT_Log_CurrentFile_With_External_Diff_Inside_New_Terminal
 _G.git_diff_main = Git_Show_Diff_Against_Main_Or_Master
 _G.git_log_patches = Git_Show_Log_Patches
+_G.open_project_zellij_terminal = Open_Project_Zellij_Terminal
 _G.visual_selection_to_node = VisualSelectionToNode
 
 -- Refresh all buffers + LSP Restart (F7)
