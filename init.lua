@@ -131,24 +131,56 @@ require("lazy").setup({
       local move = require("nvim-treesitter-textobjects.move")
 
       -- Select textobjects
-      vim.keymap.set({ "x", "o" }, "af", function() select_textobject("@function.outer", "textobjects") end)
-      vim.keymap.set({ "x", "o" }, "if", function() select_textobject("@function.inner", "textobjects") end)
-      vim.keymap.set({ "x", "o" }, "ac", function() select_textobject("@class.outer", "textobjects") end)
-      vim.keymap.set({ "x", "o" }, "ic", function() select_textobject("@class.inner", "textobjects") end)
-      vim.keymap.set({ "x", "o" }, "as", function() select_textobject("@local.scope", "locals") end)
-      vim.keymap.set({ "x", "o" }, "ir", function() select_textobject("@return.inner", "textobjects") end)
-      vim.keymap.set({ "x", "o" }, "ar", function() select_textobject("@return.outer", "textobjects") end)
+      vim.keymap.set({ "x", "o" }, "af", function()
+        select_textobject("@function.outer", "textobjects")
+      end)
+      vim.keymap.set({ "x", "o" }, "if", function()
+        select_textobject("@function.inner", "textobjects")
+      end)
+      vim.keymap.set({ "x", "o" }, "ac", function()
+        select_textobject("@class.outer", "textobjects")
+      end)
+      vim.keymap.set({ "x", "o" }, "ic", function()
+        select_textobject("@class.inner", "textobjects")
+      end)
+      vim.keymap.set({ "x", "o" }, "as", function()
+        select_textobject("@local.scope", "locals")
+      end)
+      vim.keymap.set({ "x", "o" }, "ir", function()
+        select_textobject("@return.inner", "textobjects")
+      end)
+      vim.keymap.set({ "x", "o" }, "ar", function()
+        select_textobject("@return.outer", "textobjects")
+      end)
 
       -- Move textobjects
-      vim.keymap.set({ "n", "x", "o" }, "]m", function() move.goto_next_start("@function.outer", "textobjects") end)
-      vim.keymap.set({ "n", "x", "o" }, "]s", function() move.goto_next_start("@local.scope", "locals") end)
-      vim.keymap.set({ "n", "x", "o" }, "]M", function() move.goto_next_end("@function.outer", "textobjects") end)
-      vim.keymap.set({ "n", "x", "o" }, "][", function() move.goto_next_end("@class.outer", "textobjects") end)
-      vim.keymap.set({ "n", "x", "o" }, "[m", function() move.goto_previous_start("@function.outer", "textobjects") end)
-      vim.keymap.set({ "n", "x", "o" }, "[M", function() move.goto_previous_end("@function.outer", "textobjects") end)
-      vim.keymap.set({ "n", "x", "o" }, "[]", function() move.goto_previous_end("@class.outer", "textobjects") end)
-      vim.keymap.set({ "n", "x", "o" }, "]d", function() move.goto_next("@conditional.outer", "textobjects") end)
-      vim.keymap.set({ "n", "x", "o" }, "[d", function() move.goto_previous("@conditional.outer", "textobjects") end)
+      vim.keymap.set({ "n", "x", "o" }, "]m", function()
+        move.goto_next_start("@function.outer", "textobjects")
+      end)
+      vim.keymap.set({ "n", "x", "o" }, "]s", function()
+        move.goto_next_start("@local.scope", "locals")
+      end)
+      vim.keymap.set({ "n", "x", "o" }, "]M", function()
+        move.goto_next_end("@function.outer", "textobjects")
+      end)
+      vim.keymap.set({ "n", "x", "o" }, "][", function()
+        move.goto_next_end("@class.outer", "textobjects")
+      end)
+      vim.keymap.set({ "n", "x", "o" }, "[m", function()
+        move.goto_previous_start("@function.outer", "textobjects")
+      end)
+      vim.keymap.set({ "n", "x", "o" }, "[M", function()
+        move.goto_previous_end("@function.outer", "textobjects")
+      end)
+      vim.keymap.set({ "n", "x", "o" }, "[]", function()
+        move.goto_previous_end("@class.outer", "textobjects")
+      end)
+      vim.keymap.set({ "n", "x", "o" }, "]d", function()
+        move.goto_next("@conditional.outer", "textobjects")
+      end)
+      vim.keymap.set({ "n", "x", "o" }, "[d", function()
+        move.goto_previous("@conditional.outer", "textobjects")
+      end)
     end,
   },
   "HiPhish/rainbow-delimiters.nvim",
@@ -1585,17 +1617,17 @@ require("lazy").setup({
 
       local kopts = { noremap = true, silent = true }
 
-      -- Keep traditional n/N with hlslens
+      -- Keep traditional n/N with hlslens, zv opens folds at search result
       vim.api.nvim_set_keymap(
         "n",
         "n",
-        [[<Cmd>execute('normal! ' . v:count1 . 'n')<CR><Cmd>lua require('hlslens').start()<CR>]],
+        [[<Cmd>execute('normal! ' . v:count1 . 'n')<CR><Cmd>lua require('hlslens').start()<CR>zv]],
         kopts
       )
       vim.api.nvim_set_keymap(
         "n",
         "N",
-        [[<Cmd>execute('normal! ' . v:count1 . 'N')<CR><Cmd>lua require('hlslens').start()<CR>]],
+        [[<Cmd>execute('normal! ' . v:count1 . 'N')<CR><Cmd>lua require('hlslens').start()<CR>zv]],
         kopts
       )
 
@@ -2229,12 +2261,54 @@ require("lazy").setup({
       vim.o.foldlevelstart = 99
       vim.o.foldenable = true
 
-      -- Using ufo provider need remap `zR` and `zM`. If Neovim is 0.6.1, remap yourself
-      vim.keymap.set("n", "zR", require("ufo").openAllFolds)
-      vim.keymap.set("n", "zM", require("ufo").closeAllFolds)
-      vim.keymap.set("n", "zf", function()
-        require("ufo").closeFoldsWith(1)
+      -- Track fold level for incremental zm/zr (ufo ignores vim's native foldlevel)
+      local ufo_fold_level = 99
+
+      -- Re-enable foldenable if it was toggled off with zi
+      local function ensure_folds()
+        if not vim.wo.foldenable then vim.wo.foldenable = true end
+      end
+
+      -- zR: open all folds
+      vim.keymap.set("n", "zR", function()
+        ensure_folds()
+        ufo_fold_level = 99
+        require("ufo").openAllFolds()
       end)
+
+      -- zM: close all folds
+      vim.keymap.set("n", "zM", function()
+        ensure_folds()
+        ufo_fold_level = 0
+        require("ufo").closeAllFolds()
+      end)
+
+      -- zm: close one fold level
+      vim.keymap.set("n", "zm", function()
+        ensure_folds()
+        ufo_fold_level = math.max(0, ufo_fold_level - 1)
+        require("ufo").closeFoldsWith(ufo_fold_level)
+      end)
+
+      -- zr: open one fold level
+      vim.keymap.set("n", "zr", function()
+        ensure_folds()
+        ufo_fold_level = ufo_fold_level + 1
+        require("ufo").closeFoldsWith(ufo_fold_level)
+      end)
+
+      -- Fold level presets — jump to a specific fold depth
+      -- zf/z0: close everything (same as zM but consistent with z1-z4)
+      -- z1: top-level only (modules, classes) — maximum overview
+      -- z2: + methods/functions inside top-level items
+      -- z3: + nested blocks (if/for/try inside methods)
+      -- z4: + deeply nested logic (callbacks, inner functions)
+      vim.keymap.set("n", "zf", function() ensure_folds(); ufo_fold_level = 0; require("ufo").closeAllFolds() end)
+      vim.keymap.set("n", "z0", function() ensure_folds(); ufo_fold_level = 0; require("ufo").closeAllFolds() end)
+      vim.keymap.set("n", "z1", function() ensure_folds(); ufo_fold_level = 1; require("ufo").closeFoldsWith(1) end)
+      vim.keymap.set("n", "z2", function() ensure_folds(); ufo_fold_level = 2; require("ufo").closeFoldsWith(2) end)
+      vim.keymap.set("n", "z3", function() ensure_folds(); ufo_fold_level = 3; require("ufo").closeFoldsWith(3) end)
+      vim.keymap.set("n", "z4", function() ensure_folds(); ufo_fold_level = 4; require("ufo").closeFoldsWith(4) end)
 
       require("ufo").setup({
         -- this is nice, but it is often too much
@@ -2293,6 +2367,12 @@ require("lazy").setup({
     opts = {
       suppressed_dirs = { "~/", "~/Projects", "~/Downloads", "/" },
       show_auto_restore_notif = false,
+      -- Preserve zi (foldenable) toggle across sessions
+      save_extra_cmds = {
+        function()
+          return "let &foldenable = " .. (vim.o.foldenable and "1" or "0")
+        end,
+      },
     },
   },
   {
@@ -2437,7 +2517,6 @@ require("lazy").setup({
     },
   },
 })
-
 
 -- ============================================================================
 -- LSP CONFIGURATION
