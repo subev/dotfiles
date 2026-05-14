@@ -2392,8 +2392,15 @@ require("lazy").setup({
       end)
 
       require("ufo").setup({
-        -- this is nice, but it is often too much
-        -- close_fold_kinds = {'imports', 'comment'},
+        close_fold_kinds_for_ft = {
+          javascript = { "imports" },
+          javascriptreact = { "imports" },
+          typescript = { "imports" },
+          typescriptreact = { "imports" },
+          python = { "imports" },
+          go = { "imports" },
+          rust = { "imports" },
+        },
         provider_selector = function()
           return { "lsp", "indent" }
         end,
