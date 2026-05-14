@@ -2325,6 +2325,28 @@ require("lazy").setup({
         end
       end
 
+      -- Re-close LSP-reported "imports" folds. ufo has no public close-by-kind
+      -- API, so read the cached ranges from its internal fold module.
+      local function refold_imports()
+        local ok, fold = pcall(require, "ufo.fold")
+        if not ok then
+          return
+        end
+        local fb = fold.get(vim.api.nvim_get_current_buf())
+        if not fb or not fb.foldRanges then
+          return
+        end
+        local cmds = {}
+        for _, range in ipairs(fb.foldRanges) do
+          if range.kind == "imports" then
+            table.insert(cmds, (range.startLine + 1) .. "foldclose")
+          end
+        end
+        if #cmds > 0 then
+          pcall(vim.cmd, table.concat(cmds, "|"))
+        end
+      end
+
       -- zR: open all folds
       vim.keymap.set("n", "zR", function()
         ensure_folds()
@@ -2344,6 +2366,7 @@ require("lazy").setup({
         ensure_folds()
         ufo_fold_level = math.max(0, ufo_fold_level - 1)
         require("ufo").closeFoldsWith(ufo_fold_level)
+        refold_imports()
       end)
 
       -- zr: open one fold level
@@ -2351,6 +2374,7 @@ require("lazy").setup({
         ensure_folds()
         ufo_fold_level = ufo_fold_level + 1
         require("ufo").closeFoldsWith(ufo_fold_level)
+        refold_imports()
       end)
 
       -- Fold level presets — jump to a specific fold depth, then zv to reveal cursor
@@ -2369,6 +2393,7 @@ require("lazy").setup({
         end
         vim.schedule(function()
           vim.cmd("normal! zv")
+          refold_imports()
         end)
       end
 
