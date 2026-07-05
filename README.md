@@ -1,8 +1,13 @@
 # dotfiles
 
-========
+My unix environment, versioned since 2013.
 
-unix settings
+- **Neovim** — Lua config (`init.lua`, `lua/`), with its own test suite in `tests/`
+- **Shell** — zsh + bash profiles, fzf, ripgrep/ag ignore rules
+- **tmux**, **karabiner** keyboard remaps, **ideavim**, **git** config
+- **OpenCode** — agent config and global AGENTS.md, symlinked into `~/.config/opencode`
+
+## Setup
 
 ```bash
 brew install coreutils python3 grip jq ripgrep git-delta autojump bat thefuck nvm
@@ -84,5 +89,6 @@ ln -sfn "$HOME/dotfiles/opencode/agents" "$HOME/.config/opencode/agents"
 ```
 
 Notes:
+
 - Credentials remain in `~/.local/share/opencode/auth.json` (not in git).
 - Export `CONTEXT7_API_KEY` in your shell before running OpenCode.
