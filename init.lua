@@ -705,9 +705,30 @@ require("lazy").setup({
       scope_confined = true,
     },
     keys = {
-      -- movement
-      { "<C-S-k>", "<cmd>Treewalker Up<cr>", mode = { "n", "v" }, silent = true },
-      { "<C-S-j>", "<cmd>Treewalker Down<cr>", mode = { "n", "v" }, silent = true },
+      -- movement; in normal mode tidy up by closing the fold we leave and
+      -- opening the one we land in. Surgical, no full-buffer redraw.
+      {
+        "<C-S-k>",
+        function()
+          vim.cmd("silent! normal! zc")
+          vim.cmd("Treewalker Up")
+          vim.cmd("silent! normal! zo")
+        end,
+        mode = "n",
+        silent = true,
+      },
+      {
+        "<C-S-j>",
+        function()
+          vim.cmd("silent! normal! zc")
+          vim.cmd("Treewalker Down")
+          vim.cmd("silent! normal! zo")
+        end,
+        mode = "n",
+        silent = true,
+      },
+      { "<C-S-k>", "<cmd>Treewalker Up<cr>", mode = "v", silent = true },
+      { "<C-S-j>", "<cmd>Treewalker Down<cr>", mode = "v", silent = true },
       { "<C-h>", "<cmd>Treewalker Left<cr>", mode = { "n", "v" }, silent = true },
       { "<C-l>", "<cmd>Treewalker Right<cr>", mode = { "n", "v" }, silent = true },
     },
@@ -1203,6 +1224,24 @@ require("lazy").setup({
           layout = "diff4_mixed",
           disable_diagnostics = true,
         },
+      },
+      hooks = {
+        -- When a diff buffer is shown in a window: expand all folds and
+        -- center the first change. Fires for each file (incl. <Tab> navigation).
+        diff_buf_win_enter = function(_, winid, _)
+          vim.api.nvim_win_call(winid, function()
+            vim.opt_local.foldenable = false -- expand the collapsed unchanged regions
+          end)
+          -- Defer the cursor jump: when this hook fires the diff hasn't been
+          -- computed yet, so ]c finds nothing. Schedule it for the next tick.
+          vim.defer_fn(function()
+            if vim.api.nvim_win_is_valid(winid) then
+              vim.api.nvim_win_call(winid, function()
+                vim.cmd("normal! gg]czz") -- jump to first change, center on screen
+              end)
+            end
+          end, 50)
+        end,
       },
     },
     lazy = false,

@@ -203,6 +203,8 @@
 
   "yank current relative path from cwd to clipboard
   nnoremap yp :let @+ = expand('%')<CR>
+  "yank current relative path with line:column coordinates to clipboard
+  nnoremap yP :let @+ = expand('%') . ':' . line('.') . ':' . col('.')<CR>
   "yank just the file name to clipboard
   nnoremap yF :let @+ = expand('%:t')<CR>
   "yank just the file name without extension to clipboard
