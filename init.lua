@@ -2623,6 +2623,27 @@ require("lazy").setup({
       },
     },
   },
+  -- Read text aloud (visual selection, paragraph, or motion).
+  --
+  -- Usage:
+  --   <leader>tp  play visual selection (or current section in normal mode)
+  --   <leader>ts  stop playback
+  --   <leader>tq / <leader>tc / <leader>tn / <leader>tN  queue add/clear/next/prev
+  --
+  -- Currently on the native macOS `say` backend. To upgrade voice quality later,
+  -- run a local Kokoro server (ghcr.io/remsky/kokoro-fastapi-cpu, port 8880) and
+  -- switch with :TTSBackend openai after filling in the openai table below.
+  {
+    "chriswritescode-dev/tts.nvim",
+    opts = {
+      backend = "macos",
+      macos = {
+        -- pre-quoted: the plugin concatenates this unescaped into `sh -c "say -v ..."`
+        voice = "'Evan (Enhanced)'",
+        rate = 260,
+      },
+    },
+  },
 })
 
 -- ============================================================================
