@@ -1626,6 +1626,31 @@ require("lazy").setup({
     },
   },
   {
+    "dmtrKovalenko/fff",
+    build = function()
+      require("fff.download").download_or_build_binary()
+    end,
+    -- eager load so the rust backend starts indexing at startup
+    lazy = false,
+    opts = {},
+    keys = {
+      {
+        ",a",
+        function()
+          -- auto-pairs' BufEnter init crashes on fff's lua <CR> mapping (maparg has no rhs)
+          local saved = vim.o.eventignore
+          vim.opt.eventignore:append("BufEnter")
+          local ok, err = pcall(require("fff").find_files)
+          vim.o.eventignore = saved
+          if not ok then
+            vim.notify(tostring(err), vim.log.levels.ERROR)
+          end
+        end,
+        desc = "FFF find files (trial vs ,f)",
+      },
+    },
+  },
+  {
     "nvim-telescope/telescope-fzf-native.nvim",
     build = "make",
     cond = function()
@@ -1860,6 +1885,10 @@ require("lazy").setup({
           "snacks_picker_preview",
           "TelescopePrompt",
           "fzf",
+          "fff_input",
+          "fff_list",
+          "fff_preview",
+          "fff_file_info",
         },
         callback = function()
           vim.b.autopairs_loaded = 1
