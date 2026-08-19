@@ -1256,6 +1256,23 @@ require("lazy").setup({
     },
   },
   {
+    "barrettruth/diffs.nvim",
+    -- must not be lazy-loaded (no keys/event/config); it lazy-loads itself
+    lazy = false,
+    init = function()
+      vim.g.diffs = {
+        integrations = {
+          fugitive = true,
+          neogit = true,
+          gitsigns = true,
+          telescope = true,
+          difftastic = true,
+        },
+      }
+      vim.keymap.set("n", ",gr", "<cmd>Diff review HEAD<cr>", { desc = "Diffs Review Uncommitted" })
+    end,
+  },
+  {
     dir = "~/repos/difftastic.nvim",
     dependencies = { "MunifTanjim/nui.nvim" },
     config = function()
