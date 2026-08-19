@@ -1236,6 +1236,7 @@ require("lazy").setup({
           -- computed yet, so ]c finds nothing. Schedule it for the next tick.
           vim.defer_fn(function()
             if vim.api.nvim_win_is_valid(winid) then
+              vim.wo[winid].winhighlight = "" -- undo diffs.nvim's &diff recoloring in diffview
               vim.api.nvim_win_call(winid, function()
                 vim.cmd("normal! gg]czz") -- jump to first change, center on screen
               end)
@@ -1267,6 +1268,15 @@ require("lazy").setup({
           gitsigns = true,
           telescope = true,
           difftastic = true,
+        },
+        highlights = {
+          -- neutralize the native &diff window recoloring so diffview looks stock
+          overrides = {
+            DiffsDiffAdd = { link = "DiffAdd" },
+            DiffsDiffDelete = { link = "DiffDelete" },
+            DiffsDiffChange = { link = "DiffChange" },
+            DiffsDiffText = { link = "DiffText" },
+          },
         },
       }
       vim.keymap.set("n", ",gr", "<cmd>Diff review HEAD<cr>", { desc = "Diffs Review Uncommitted" })
