@@ -1270,12 +1270,16 @@ require("lazy").setup({
           difftastic = true,
         },
         highlights = {
-          -- neutralize the native &diff window recoloring so diffview looks stock
           overrides = {
+            -- neutralize the native &diff window recoloring so diffview looks stock
             DiffsDiffAdd = { link = "DiffAdd" },
             DiffsDiffDelete = { link = "DiffDelete" },
             DiffsDiffChange = { link = "DiffChange" },
             DiffsDiffText = { link = "DiffText" },
+            -- sonokai's DiffAdd/DiffDelete bgs are too muted for the intra-line
+            -- word spans; use its accent green/red blended onto Normal bg instead
+            DiffsAddText = { bg = "#587847", bold = true },
+            DiffsDeleteText = { bg = "#743c4c", bold = true },
           },
         },
       }
