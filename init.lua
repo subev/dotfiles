@@ -2676,6 +2676,8 @@ require("lazy").setup({
     ft = { "markdown", "codecompanion" },
     opts = {
       file_types = { "markdown", "codecompanion" },
+      -- keep the cursor line rendered; insert mode already reveals raw text
+      anti_conceal = { enabled = false },
     },
   },
   -- Overseer is for non-persistent project tasks you want to inspect inside Neovim.
