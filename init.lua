@@ -2671,13 +2671,11 @@ require("lazy").setup({
   "junegunn/vim-easy-align",
   -- nice markdown preview
   {
-    "OXY2DEV/markview.nvim",
-    lazy = false,
+    "MeanderingProgrammer/render-markdown.nvim",
+    dependencies = { "nvim-treesitter/nvim-treesitter" },
+    ft = { "markdown", "codecompanion" },
     opts = {
-      preview = {
-        filetypes = { "markdown", "codecompanion" },
-        ignore_buftypes = { "nofile" },
-      },
+      file_types = { "markdown", "codecompanion" },
     },
   },
   -- Overseer is for non-persistent project tasks you want to inspect inside Neovim.
