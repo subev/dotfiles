@@ -1266,7 +1266,10 @@ require("lazy").setup({
           fugitive = true,
           neogit = true,
           gitsigns = true,
-          telescope = true,
+          -- built-in telescope integration replaced by the guarded autocmd below:
+          -- it attaches to every preview, and binary previews (NUL bytes) crash
+          -- its diff parser with E974 (blob passed to vim.fn.bufnr)
+          telescope = false,
           difftastic = true,
         },
         highlights = {
@@ -1284,6 +1287,18 @@ require("lazy").setup({
         },
       }
       vim.keymap.set("n", ",gr", "<cmd>Diff review HEAD<cr>", { desc = "Diffs Review Uncommitted" })
+      vim.api.nvim_create_autocmd("User", {
+        pattern = "TelescopePreviewerLoaded",
+        callback = function()
+          local buf = vim.api.nvim_get_current_buf()
+          for _, line in ipairs(vim.api.nvim_buf_get_lines(buf, 0, 50, false)) do
+            if line:find("\0", 1, true) then
+              return
+            end
+          end
+          require("diffs.runtime").attach(buf)
+        end,
+      })
     end,
   },
   {
