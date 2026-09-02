@@ -1,4 +1,5 @@
 zmodload zsh/datetime
+zmodload zsh/mathfunc
 autoload -Uz add-zsh-hook
 
 typeset -ga _th_cmd _th_at _th_dur
