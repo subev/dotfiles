@@ -118,6 +118,11 @@ plugins=(
 
 source $ZSH/oh-my-zsh.sh
 
+HISTSIZE=200000
+SAVEHIST=200000
+# fcntl locking instead of zsh's default lock dirs: safer with many concurrent tmux panes
+setopt hist_fcntl_lock
+
 # User configuration
 
 # export MANPATH="/usr/local/man:$MANPATH"
@@ -158,6 +163,9 @@ alias n=nvim
 # alias v=/Applications/neovide.app/Contents/MacOS/neovide
 alias gbrsdelete="git for-each-ref --sort=committerdate refs/heads/ --format='%(refname:short)' | xargs git br -d"
 alias heat="git log --pretty=format: --name-only | sort | uniq -c | sort -rg | head -10"
+
+h() { fc -lDi -${1:-30} }
+
 # This speeds up pasting w/ autosuggest
 # https://github.com/zsh-users/zsh-autosuggestions/issues/238
 pasteinit() {
@@ -183,6 +191,7 @@ fi
 
 [ -f ~/.fzf.zsh ] && source ~/.fzf.zsh
 [ -f ~/dotfiles/workflows.sh ] && source ~/dotfiles/workflows.sh
+[ -f ~/dotfiles/tabhist.zsh ] && source ~/dotfiles/tabhist.zsh
 
 eval "$(fnm env --use-on-cd --shell zsh)"
 export EDITOR=/usr/bin/nvim
