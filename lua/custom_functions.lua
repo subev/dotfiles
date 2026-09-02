@@ -169,7 +169,7 @@ vim.keymap.set("v", "<space>g", function()
   local query = vim.fn.getreg("z")
   -- URL encode the query using Neovim's built-in function (rfc2396 encodes &, =, etc.)
   local encoded = vim.uri_encode(query, "rfc2396")
-  -- Open in Brave Search
-  local url = "https://search.brave.com/search?q=" .. encoded
+  -- Open Google Results in Brave
+  local url = "https://www.google.com/search?q=" .. encoded
   vim.fn.system({ "open", "-a", "Brave Browser", url })
 end, { silent = true, desc = "Search selection in Brave" })
