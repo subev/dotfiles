@@ -261,6 +261,7 @@ return {
         vcs = "git",
         hunk_wrap_file = true,
         scroll_to_first_hunk = true,
+        snacks_picker = { enabled = true },
         keymaps = {
           next_hunk = "<Tab>",
           prev_hunk = "<S-Tab>",
@@ -273,8 +274,9 @@ return {
       { ",gD", "<cmd>:Difft<cr>", desc = "Difftastic Open" },
       { ",GM", "<cmd>:Difft origin/main..HEAD<cr>", desc = "Difftastic Open" },
       { ",gC", "<cmd>:DifftFileHistory <cr>", desc = "Difftastic File History" },
+      { ",gk", "<cmd>DifftPick<cr>", desc = "Difftastic Pick Commit" },
     },
-    cmd = { "Difft" },
+    cmd = { "Difft", "DifftPick", "DifftPickRange" },
   },
   -- Enables :GBrowse from fugitive.vim to open GitHub URLs
   "tpope/vim-rhubarb",
