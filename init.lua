@@ -12,13 +12,13 @@ end
 vim.opt.rtp:prepend(lazypath)
 vim.opt.termguicolors = true
 
-local function find_textclub_root(startpath)
+local function find_project_root(name, markers, startpath)
   local path = startpath or vim.fn.expand("%:p:h")
   if path == "" then
     path = vim.fn.getcwd()
   end
 
-  local root_marker = vim.fs.find({ "pnpm-workspace.yaml", ".git" }, {
+  local root_marker = vim.fs.find(markers, {
     path = path,
     upward = true,
     stop = vim.loop.os_homedir(),
@@ -30,33 +30,79 @@ local function find_textclub_root(startpath)
   end
 
   local root = vim.fs.dirname(root_marker)
-  if vim.fs.basename(root) ~= "textclub" then
+  if vim.fs.basename(root) ~= name then
     return nil
   end
 
   return root
 end
 
-local function run_textclub_overseer_task(script_name)
-  local root = find_textclub_root()
-  if not root then
-    vim.notify("Not inside the textclub workspace", vim.log.levels.WARN)
-    return
-  end
+local function find_libratory_root(startpath)
+  return find_project_root("libratory-app", { ".git" }, startpath)
+end
 
+local function start_overseer_task(name, cmd, cwd)
   local overseer = require("overseer")
   local task = overseer.new_task({
-    name = "pnpm run " .. script_name,
-    cmd = { "pnpm", "run", script_name },
-    cwd = root,
+    name = name,
+    cmd = cmd,
+    cwd = cwd,
     components = {
-      { "unique", replace = false },
+      -- the default comparator is name-only, so same-named tasks in different
+      -- packages would restart each other and dispose the task we just opened
+      {
+        "unique",
+        replace = false,
+        compare = function(a, b)
+          return a.name == b.name and a.cwd == b.cwd
+        end,
+      },
       "default",
     },
   })
 
   task:start()
   task:open_output("vertical")
+end
+
+local function run_project_checks()
+  local libratory_root = find_libratory_root()
+  if not libratory_root then
+    vim.notify("No project checks known for this workspace", vim.log.levels.WARN)
+    return
+  end
+
+  local script = vim.fs.joinpath(libratory_root, "scripts", "check.sh")
+  if vim.fn.executable(script) ~= 1 then
+    vim.notify("scripts/check.sh is missing or not executable", vim.log.levels.WARN)
+    return
+  end
+
+  start_overseer_task("./scripts/check.sh", { script }, libratory_root)
+end
+
+local function run_swift_package_tests()
+  local package = vim.fs.find("Package.swift", {
+    path = vim.fn.expand("%:p:h"),
+    upward = true,
+    stop = vim.loop.os_homedir(),
+    limit = 1,
+  })[1]
+
+  -- the app target has no Package.swift above it, but its logic all lives in LibratoryKit
+  if not package then
+    local libratory_root = find_libratory_root()
+    if libratory_root then
+      package = vim.fs.joinpath(libratory_root, "ios", "LibratoryKit", "Package.swift")
+    end
+  end
+
+  if not package or vim.fn.filereadable(package) ~= 1 then
+    vim.notify("Not inside a Swift package", vim.log.levels.WARN)
+    return
+  end
+
+  start_overseer_task("swift test", { "swift", "test" }, vim.fs.dirname(package))
 end
 
 local function open_recent_overseer_output()
@@ -287,10 +333,16 @@ require("lazy").setup({
         },
       })
 
+      -- ships inside the Xcode toolchain, so Mason never installs it
+      vim.lsp.config("sourcekit", {
+        filetypes = { "swift", "objc", "objcpp" },
+      })
+
       vim.lsp.enable("pyright")
       vim.lsp.enable("ruff")
       vim.lsp.enable("eslint")
       vim.lsp.enable("oxlint")
+      vim.lsp.enable("sourcekit")
 
       vim.keymap.set("n", "<space>1", function()
         local bufnr = vim.api.nvim_get_current_buf()
@@ -465,6 +517,22 @@ require("lazy").setup({
           -- When stdin=false, use this template to generate the temporary file that gets formatted
           tmpfile_format = ".conform.$RANDOM.$FILENAME",
         },
+        swift_format = {
+          inherit = false,
+          command = "swift",
+          -- swift-format only auto-discovers .swift-format next to the input, and conform
+          -- feeds it a temp file, so the project config has to be passed explicitly
+          args = function(_, ctx)
+            local args = { "format", "--in-place" }
+            local config = vim.fs.find(".swift-format", { path = ctx.dirname, upward = true })[1]
+            if config then
+              vim.list_extend(args, { "--configuration", config })
+            end
+            table.insert(args, "$FILENAME")
+            return args
+          end,
+          stdin = false,
+        },
       },
       formatters_by_ft = {
         lua = { "stylua" },
@@ -472,6 +540,7 @@ require("lazy").setup({
         python = { "ruff_format" },
         -- You can customize some of the format options for the filetype (:help conform.format)
         rust = { "rustfmt", lsp_format = "fallback" },
+        swift = { "swift_format" },
         markdown = { "prettierd", "prettier", stop_after_first = true },
         -- Conform will run the first available formatter
         javascript = {
@@ -693,7 +762,7 @@ require("lazy").setup({
       next_key = "<C-j>",
       prev_key = "<C-k>",
       center_on_jump = true,
-      filetypes = { "typescript", "javascript", "typescriptreact", "javascriptreact", "lua", "python" },
+      filetypes = { "typescript", "javascript", "typescriptreact", "javascriptreact", "lua", "python", "swift" },
       block_loop_key = "Z", -- Cycle through block boundaries (if/else, functions, objects, arrays)
       block_loop_key_visual = "z", -- Visual mode keybinding for block-loop
       block_loop_center_on_jump = false, -- Don't center screen for block-loop (only for sibling-jump)
@@ -894,6 +963,15 @@ require("lazy").setup({
         },
       },
     },
+    config = function(_, opts)
+      -- session id is derived from tool name + cwd, so extra names = extra parallel claudes
+      local claude = dofile(vim.api.nvim_get_runtime_file("sk/cli/claude.lua", false)[1])
+      opts.cli.tools = opts.cli.tools or {}
+      for i = 2, 5 do
+        opts.cli.tools["claude_" .. i] = vim.tbl_extend("force", claude, { is_proc = false })
+      end
+      require("sidekick").setup(opts)
+    end,
     keys = {
       {
         "1",
@@ -921,6 +999,20 @@ require("lazy").setup({
         end,
         mode = { "x", "n" },
         desc = "Send This (at cursor)",
+      },
+      {
+        "<leader>an",
+        function()
+          local State = require("sidekick.cli.state")
+          for i = 1, 5 do
+            local name = i == 1 and "claude" or ("claude_" .. i)
+            if #State.get({ name = name, started = true, cwd = true }) == 0 then
+              return require("sidekick.cli").show({ name = name, focus = true })
+            end
+          end
+          vim.notify("No free Claude slot", vim.log.levels.WARN)
+        end,
+        desc = "New Claude Session",
       },
       {
         "<leader>as",
@@ -1992,7 +2084,7 @@ require("lazy").setup({
       "nvim-lua/plenary.nvim",
       "nvim-treesitter/nvim-treesitter",
       "marilari88/neotest-vitest",
-      "subev/neotest-playwright-e2e",
+      { url = "https://codeberg.org/mmllr/neotest-swift-testing" },
     },
     config = function()
       require("neotest").setup({
@@ -2007,53 +2099,8 @@ require("lazy").setup({
               end
               return file_path:match("%.test%.[tj]sx?$") ~= nil or file_path:match("%.spec%.[tj]sx?$") ~= nil
             end,
-            vitestCommand = function(path)
-              local root = vim.fs.root(path, "package.json")
-              if not root then
-                return "npx vitest"
-              end
-              local rel = path:sub(#root + 2)
-
-              -- server/vitest.config.browser.ts → app/**/*.test.tsx
-              if rel:match("^app/") then
-                return "npx vitest --browser.headless"
-              end
-              -- management-console-client/vitest.config.browser.ts → src/**/*.test.tsx
-              if rel:match("^src/.*%.test%.tsx$") then
-                return "npx vitest --browser.headless"
-              end
-
-              return "npx vitest"
-            end,
-            vitestConfigFile = function(path)
-              local root = vim.fs.root(path, "package.json")
-              if not root then
-                return nil
-              end
-              local rel = path:sub(#root + 2)
-
-              -- server/vitest.config.client.ts → test/client/**/*.test.ts
-              if rel:match("^test/client/") then
-                return root .. "/vitest.config.client.ts"
-              end
-              -- server/vitest.config.llm.ts → test/llm/**/*.test.ts
-              if rel:match("^test/llm/") then
-                return root .. "/vitest.config.llm.ts"
-              end
-              -- server/vitest.config.browser.ts → app/**/*.test.tsx
-              if rel:match("^app/") then
-                return root .. "/vitest.config.browser.ts"
-              end
-              -- management-console-client/vitest.config.browser.ts → src/**/*.test.tsx
-              if rel:match("^src/.*%.test%.tsx$") then
-                return root .. "/vitest.config.browser.ts"
-              end
-
-              -- packages/common/vitest.config.ts, server/vitest.config.ts → default
-              return nil
-            end,
           }),
-          require("neotest-playwright-e2e")(),
+          require("neotest-swift-testing"),
         },
       })
 
@@ -2539,6 +2586,7 @@ require("lazy").setup({
           python = { "imports" },
           go = { "imports" },
           rust = { "imports" },
+          swift = { "imports" },
         },
         provider_selector = function()
           return { "lsp", "indent" }
@@ -2587,6 +2635,10 @@ require("lazy").setup({
       -- { "<leader>ws", "<cmd>SessionSave<CR>", desc = "Save session" },
       -- { "<leader>wa", "<cmd>SessionToggleAutoSave<CR>", desc = "Toggle autosave" },
     },
+
+    init = function()
+      vim.o.sessionoptions = "blank,buffers,curdir,folds,help,tabpages,winsize,winpos,localoptions"
+    end,
 
     ---enables autocomplete for opts
     ---@module "auto-session"
@@ -2685,11 +2737,11 @@ require("lazy").setup({
   -- Usage:
   --   ,cc  toggle the task list dock on the left
   --   ,cr  open OverseerRun through the current `vim.ui.select` backend (Snacks picker)
-  --   ,ck  run textclub's root-level `pnpm run checks` and open its output
-  --   ,ct  run textclub's root-level `pnpm run typecheck:watch` and open its output
+  --   ,ck  run the current project's checks (libratory-app `./scripts/check.sh`)
+  --   ,cs  run `swift test` in the enclosing Swift package (libratory-app falls back to LibratoryKit)
   --   ,co  reopen the most recent Overseer task output in a float
   --
-  -- `,ck` and `,ct` are just opinionated shortcuts for the root textclub scripts you are likely
+  -- `,ck` and `,cs` are just opinionated shortcuts for the project scripts you are likely
   -- to want often. These tasks are not persistent: quitting Neovim stops them. For persistent
   -- shells or dev servers, use the zellij-backed terminal flow on `,t` instead.
   {
@@ -2710,16 +2762,16 @@ require("lazy").setup({
       {
         ",ck",
         function()
-          run_textclub_overseer_task("checks")
+          run_project_checks()
         end,
-        desc = "Overseer: textclub checks",
+        desc = "Overseer: project checks",
       },
       {
-        ",ct",
+        ",cs",
         function()
-          run_textclub_overseer_task("typecheck:watch")
+          run_swift_package_tests()
         end,
-        desc = "Overseer: textclub typecheck watch",
+        desc = "Overseer: swift test",
       },
       {
         ",co",
