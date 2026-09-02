@@ -231,3 +231,7 @@ esac
 # pnpm end
 
 export PATH="/opt/homebrew/opt/make/libexec/gnubin:$PATH"
+
+# bun
+export BUN_INSTALL="$HOME/repos/libratory/.bun"
+export PATH="$BUN_INSTALL/bin:$PATH"
