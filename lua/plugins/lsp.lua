@@ -98,6 +98,16 @@ return {
         },
       })
 
+      -- lspconfig ranks .stylua.toml above .git, so a stray ~/.stylua.toml makes any
+      -- repo without its own .luarc.json resolve to $HOME, which lua_ls refuses to load
+      vim.lsp.config("lua_ls", {
+        root_markers = {
+          { ".emmyrc.json", ".luarc.json", ".luarc.jsonc" },
+          { ".git" },
+          { ".luacheckrc", ".stylua.toml", "stylua.toml", "selene.toml", "selene.yml" },
+        },
+      })
+
       -- ships inside the Xcode toolchain, so Mason never installs it
       vim.lsp.config("sourcekit", {
         filetypes = { "swift", "objc", "objcpp" },
