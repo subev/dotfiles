@@ -79,8 +79,8 @@ ZSH_THEME_RANDOM_CANDIDATES=("agnoster")
 # Uncomment the following line to disable colors in ls.
 # DISABLE_LS_COLORS="true"
 
-# Uncomment the following line to disable auto-setting terminal title.
-# DISABLE_AUTO_TITLE="true"
+# Terminal/tab titles are owned by ~/dotfiles/tabtitle.zsh instead.
+DISABLE_AUTO_TITLE="true"
 
 # Uncomment the following line to enable command auto-correction.
 # ENABLE_CORRECTION="true"
@@ -192,6 +192,7 @@ fi
 [ -f ~/.fzf.zsh ] && source ~/.fzf.zsh
 [ -f ~/dotfiles/workflows.sh ] && source ~/dotfiles/workflows.sh
 [ -f ~/dotfiles/tabhist.zsh ] && source ~/dotfiles/tabhist.zsh
+[ -f ~/dotfiles/tabtitle.zsh ] && source ~/dotfiles/tabtitle.zsh
 
 eval "$(fnm env --use-on-cd --shell zsh)"
 export EDITOR=/usr/bin/nvim
