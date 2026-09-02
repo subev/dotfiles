@@ -96,7 +96,7 @@ function M.open_context_buffer(selected, opts)
   local matches = {}
   for _, entry in ipairs(selected) do
     local parsed = parse_entry(entry, opts)
-    if parsed and parsed.path and parsed.line then
+    if parsed and parsed.path and parsed.line and parsed.line > 0 then
       table.insert(matches, parsed)
     end
   end
@@ -113,7 +113,7 @@ function M.open_context_buffer(selected, opts)
   local match_line_numbers = {}
 
   table.insert(buffer_lines, string.format("%d matches across %d files", #matches, #file_order))
-  table.insert(line_map, nil)
+  table.insert(line_map, false)
 
   for _, filepath in ipairs(file_order) do
     local file_matches = by_file[filepath]
@@ -124,14 +124,14 @@ function M.open_context_buffer(selected, opts)
     end
 
     table.insert(buffer_lines, "")
-    table.insert(line_map, nil)
+    table.insert(line_map, false)
     table.insert(buffer_lines, filepath .. ":")
     table.insert(line_map, { file = filepath, type = "header" })
 
     for ri, range in ipairs(ranges) do
       if ri > 1 then
         table.insert(buffer_lines, "....")
-        table.insert(line_map, nil)
+        table.insert(line_map, false)
       end
 
       local lines_data = read_file_lines(filepath, range.start_line, range.end_line)
@@ -158,11 +158,13 @@ function M.open_context_buffer(selected, opts)
   vim.api.nvim_set_option_value("bufhidden", "wipe", { buf = buf })
   vim.api.nvim_set_option_value("swapfile", false, { buf = buf })
   vim.api.nvim_set_option_value("modifiable", true, { buf = buf })
-  vim.api.nvim_buf_set_name(buf, "SearchContext://results")
+  vim.api.nvim_buf_set_name(buf, string.format("SearchContext://results/%d", buf))
   vim.api.nvim_set_option_value("filetype", "searchcontext", { buf = buf })
 
   vim.b[buf].search_context_line_map = line_map
   vim.b[buf].search_context_match_lines = match_line_numbers
+  vim.b[buf].search_context_line_count = #buffer_lines
+  vim.api.nvim_set_option_value("modified", false, { buf = buf })
 
   vim.cmd("topleft vsplit")
   local win = vim.api.nvim_get_current_win()
@@ -299,6 +301,13 @@ function M.save_changes(buf)
     return
   end
 
+  -- line_map is positional, so adding or removing a row silently retargets every
+  -- edit below it; refuse rather than write to the wrong lines
+  if #lines ~= vim.b[buf].search_context_line_count then
+    vim.notify("Lines were added or removed - refusing to save", vim.log.levels.ERROR)
+    return
+  end
+
   local changes_by_file = {}
   for i, line in ipairs(lines) do
     local info = line_map[i]
@@ -374,11 +383,18 @@ function M.setup(opts)
     end
     local entries = {}
     for _, item in ipairs(qf) do
-      local fname = vim.fn.bufname(item.bufnr)
-      if fname == "" then
-        fname = item.filename or ""
+      -- bufname(0) resolves to the *current* buffer, which would show and then
+      -- write to whatever file you happen to be editing
+      if item.valid == 1 and item.bufnr and item.bufnr > 0 and item.lnum > 0 then
+        local fname = vim.fn.bufname(item.bufnr)
+        if fname ~= "" then
+          table.insert(entries, string.format("%s:%d:%d:%s", fname, item.lnum, item.col, item.text))
+        end
       end
-      table.insert(entries, string.format("%s:%d:%d:%s", fname, item.lnum, item.col, item.text))
+    end
+    if #entries == 0 then
+      vim.notify("No quickfix entries with a resolvable file and line", vim.log.levels.WARN)
+      return
     end
     M.open_context_buffer(entries, {})
   end, { desc = "Open quickfix list in context buffer" })
