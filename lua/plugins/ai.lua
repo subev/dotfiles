@@ -65,8 +65,13 @@ return {
         layout = "right",
         tools = {
           codex = {
-            -- Raw output puts history in Zellij's scrollback; no-alt-screen alone does not.
-            cmd = { "codex", "--no-alt-screen", "-c", "tui.raw_output_mode=true" },
+            -- Zellij >= 0.44.1 preserves Codex's formatted scrollback in the main screen.
+            cmd = { "codex", "--no-alt-screen" },
+            keys = {
+              buffers = false, -- Ctrl+B belongs to Codex's editor.
+              files = false, -- Ctrl+F belongs to Codex's editor.
+              prompt = false, -- Ctrl+P belongs to Codex's history navigation.
+            },
           },
         },
         win = {
@@ -81,6 +86,8 @@ return {
             for i, line in ipairs(lines) do
               lines[i] = line:gsub("close_on_exit true", "close_on_exit false")
             end
+            -- This session has one Codex pane; let Codex receive Ctrl+T, Ctrl+G, etc.
+            lines[#lines + 1] = "keybinds clear-defaults=true {}"
             vim.fn.writefile(lines, layout)
           end,
           split = {
