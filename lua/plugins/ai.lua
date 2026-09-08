@@ -63,7 +63,26 @@ return {
       nes = { enabled = false },
       cli = {
         layout = "right",
+        tools = {
+          codex = {
+            -- Raw output puts history in Zellij's scrollback; no-alt-screen alone does not.
+            cmd = { "codex", "--no-alt-screen", "-c", "tui.raw_output_mode=true" },
+          },
+        },
         win = {
+          config = function(terminal)
+            if terminal.tool.name ~= "codex" or terminal.mux_backend ~= "zellij" then
+              return
+            end
+            -- Sidekick generates this layout before starting the terminal, with close_on_exit=true.
+            -- Let Zellij hold Codex's final output until Ctrl+C closes it or Enter runs it again.
+            local layout = require("sidekick.config").state("zellij-layout-" .. terminal.parent.sid .. ".kdl")
+            local lines = vim.fn.readfile(layout)
+            for i, line in ipairs(lines) do
+              lines[i] = line:gsub("close_on_exit true", "close_on_exit false")
+            end
+            vim.fn.writefile(lines, layout)
+          end,
           split = {
             width = 0.5,
           },
