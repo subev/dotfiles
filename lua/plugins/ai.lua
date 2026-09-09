@@ -89,6 +89,22 @@ return {
             if terminal.tool.name ~= "codex" or terminal.mux_backend ~= "zellij" then
               return
             end
+            terminal.opts.wo.wrap = true
+            terminal.opts.wo.scrolloff = 0
+            require("config.sidekick_scrollback").setup(terminal)
+            -- Zellij 0.44.1 can export ANSI history; Sidekick still disables its dump reader.
+            terminal.parent.dump = function(session)
+              local _, output = require("sidekick.util").exec({
+                "zellij",
+                "-s",
+                session.mux_session or session.sid,
+                "action",
+                "dump-screen",
+                "--full",
+                "--ansi",
+              }, { timeout = 3000 })
+              return output
+            end
             -- Sidekick generates this layout before starting the terminal, with close_on_exit=true.
             -- Let Zellij hold Codex's final output until Ctrl+C closes it or Enter runs it again.
             local layout = require("sidekick.config").state("zellij-layout-" .. terminal.parent.sid .. ".kdl")

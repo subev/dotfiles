@@ -21,15 +21,19 @@ cd /Users/petur/dotfiles
 bash tests/test_runner.sh
 ```
 
-The runner executes all three suites and stops on failure. `run_tests.lua` uses
+The runner executes all four suites and stops on failure. `run_tests.lua` uses
 `minimal_init.lua` to access installed Treesitter parsers without loading UI
 plugins or starting language servers. The other
-two suites use `-u NONE` to isolate editor state and avoid starting real servers:
+three suites use `-u NONE` to isolate editor state and avoid starting real servers:
 `navigation_spec.lua` covers parsing, asynchronous file resolution, mouse state,
-window selection, highlighting, and workspace details; `typescript_spec.lua`
+window selection, highlighting, and workspace details; `sidekick_scrollback_spec.lua`
+checks Codex's Zellij history export and failure fallback; `typescript_spec.lua`
 checks native/legacy selection, package-local installs, compiler upgrades, and
-launcher commands. The TypeScript suite reads the installed nvim-lspconfig root
-callbacks from the normal Neovim data directory.
+launcher commands. The navigation suite loads installed Visual Multi to check
+mapping conflicts and runs via `-c "luafile ..."` so the screen is initialized
+before redraw checks. The scrollback suite loads installed Sidekick. The
+TypeScript suite reads the installed nvim-lspconfig root callbacks from the
+normal Neovim data directory.
 
 Or directly:
 

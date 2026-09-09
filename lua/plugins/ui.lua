@@ -191,7 +191,7 @@ return {
         -- DevIcon will be appended to `name`
         override = {
           zsh = {
-            icon = "",
+            icon = "",
             color = "#428850",
             cterm_color = "65",
             name = "Zsh",
@@ -212,7 +212,7 @@ return {
         -- takes effect when `strict` is true
         override_by_filename = {
           [".gitignore"] = {
-            icon = "",
+            icon = "",
             color = "#f1502f",
             name = "Gitignore",
           },
@@ -221,7 +221,7 @@ return {
         -- takes effect when `strict` is true
         override_by_extension = {
           ["log"] = {
-            icon = "",
+            icon = "",
             color = "#81e043",
             name = "Log",
           },

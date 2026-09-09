@@ -1,5 +1,5 @@
 -- Run from the dotfiles root:
--- nvim --headless -u NONE -i NONE -n -l tests/navigation_spec.lua
+-- nvim --headless -u NONE -i NONE -n -c "luafile tests/navigation_spec.lua"
 vim.opt.rtp:prepend(vim.fn.getcwd())
 vim.o.lines = 80
 vim.o.hidden = true
@@ -184,6 +184,52 @@ test("references align with scrolloff and create a code window when needed", fun
   assert(marks[1][4].end_row == 180)
   vim.cmd("tabclose!")
   vim.o.scrolloff = 0
+end)
+
+test("Visual Multi loading and resetting do not replace reference clicks", function()
+  vim.opt.rtp:prepend(vim.fn.stdpath("data") .. "/lazy/vim-visual-multi")
+  for _, spec in ipairs(dofile("lua/plugins/editing.lua")) do
+    if spec[1] == "mg979/vim-visual-multi" then
+      spec.init()
+    end
+  end
+  links.setup()
+  vim.cmd("runtime plugin/visual-multi.vim")
+  assert(vim.fn.maparg("<C-LeftMouse>", "n", false, true).callback == links.mouse)
+  vim.fn["vm#maps#default"]()
+  assert(vim.fn.maparg("<C-LeftMouse>", "n", false, true).callback == links.mouse)
+  assert(vim.fn.maparg("<C-LeftMouse>", "t", false, true).callback == links.mouse)
+end)
+
+test("Ctrl-click consumes non-links in Sidekick and preserves code multicursors", function()
+  local code = vim.api.nvim_get_current_win()
+  vim.api.nvim_set_current_win(source)
+  vim.api.nvim_buf_set_lines(0, 0, -1, false, { "ordinary text" })
+  local mouse, feed, terminal = vim.fn.getmousepos, vim.api.nvim_feedkeys, package.loaded["sidekick.cli.terminal"]
+  local sent = {}
+  vim.w[source].sidekick_session_id = "test"
+  package.loaded["sidekick.cli.terminal"] = {
+    get = function()
+      return { cwd = root }
+    end,
+  }
+  vim.fn.getmousepos = function()
+    return { winid = source, line = 1, column = 3 }
+  end
+  vim.api.nvim_feedkeys = function(key, mode)
+    sent[#sent + 1] = { key, mode }
+  end
+  links.mouse()
+  vim.fn.maparg("<C-LeftRelease>", "n", false, true).callback()
+  assert(#sent == 0, "non-link click leaked into the AI input")
+  vim.fn.getmousepos = function()
+    return { winid = code, line = 1, column = 3 }
+  end
+  links.mouse()
+  assert(vim.deep_equal(sent, { { vim.keycode("<Plug>(VM-Mouse-Cursor)"), "m" } }))
+  vim.fn.getmousepos, vim.api.nvim_feedkeys = mouse, feed
+  package.loaded["sidekick.cli.terminal"] = terminal
+  vim.w[source].sidekick_session_id = nil
 end)
 
 test("a lost click release does not swallow the next unrelated release", function()

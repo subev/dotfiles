@@ -285,7 +285,18 @@ function M.mouse()
   local term = pos.winid ~= 0 and terminal(pos.winid)
   local ref = term and M.at(pos.winid, pos.line, pos.column)
   if not ref then
-    vim.api.nvim_feedkeys(vim.keycode("<C-LeftMouse>"), "n", false)
+    if term then
+      consumed_click = true
+    elseif
+      vim.fn.mode() == "n"
+      and pos.winid ~= 0
+      and code_window(pos.winid)
+      and vim.fn.maparg("<Plug>(VM-Mouse-Cursor)", "n") ~= ""
+    then
+      vim.api.nvim_feedkeys(vim.keycode("<Plug>(VM-Mouse-Cursor)"), "m", false)
+    else
+      vim.api.nvim_feedkeys(vim.keycode("<C-LeftMouse>"), "n", false)
+    end
     return
   end
   consumed_click = true

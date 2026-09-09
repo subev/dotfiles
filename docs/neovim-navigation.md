@@ -3,6 +3,37 @@
 Investigated on 2026-09-09 against the installed Neovim 0.13 development build,
 Sidekick, Zellij 0.44.1, and the Libratory project.
 
+## Neo-tree status display
+
+Ordinary file names are neutral and file-type icons use their original
+nvim-web-devicons colors. Folders have blue names and icons; Git changes override
+the name color, including changes within a directory. Tracked dotfile names are
+not dimmed just because they start with a dot.
+
+| Git state | Name/badge color | Badge |
+| --- | --- | --- |
+| Unchanged | Neutral files / blue folders | None |
+| Modified | Yellow | Pencil `` |
+| Added / untracked | Green | Plus `` / star `` |
+| Renamed | Yellow | Arrow `➜` |
+| Deleted | Red | Minus ``, when present in the selected source |
+| Ignored | Gray | None |
+| Merge conflict | Red conflict badge | Branch conflict `` beside the change |
+
+A green checkmark `` means the change is staged. Two change icons mean changes
+in both the index and working tree, in that order (for example two pencils).
+Ignored and unstaged states do not add a redundant badge. Status markers have
+one column of padding before the window edge.
+
+The symbols adapt [AstroNvim's icon set](https://docs.astronvim.com/recipes/icons/),
+using a standalone pencil, plus and minus for simpler silhouettes. The star
+means a new file that Git does not track yet; it becomes a plus after `git add`.
+
+Diagnostics use distinct shapes: a yellow warning triangle, red circled cross
+for errors, circled `i` for information, and a lightbulb for hints. These are
+independent of Git status. A yellow solid dot means unsaved buffer changes.
+The status colors are reapplied after a colorscheme change.
+
 ## Implemented: workspace information
 
 The Lualine statusline uses a folder glyph, nvim-web-devicons file icons, and a
@@ -63,6 +94,8 @@ The native launcher rejects roots that have not passed native selection.
   positioned at the top with the window's `scrolloff` context above it. The cited
   lines are highlighted until the cursor moves or the text changes.
 - Ordinary clicks, dragging, and scrolling retain their normal behavior.
+- Ctrl-click in code buffers still adds a Visual Multi cursor. Ctrl-click on
+  ordinary text in the AI pane does nothing and sends no input to the terminal.
 - Relative paths use the Sidekick session's directory. Abbreviated basenames
   are searched asynchronously with ripgrep; ambiguous matches prompt for a choice.
   Wrapped alternatives share one search. Missing ripgrep or a failed search gives
@@ -73,8 +106,10 @@ The native launcher rejects roots that have not passed native selection.
 
 The mouse press is captured before leaving terminal mode, and its release is
 consumed so it cannot be delivered to the AI process after focus changes.
-The handler is global for Ctrl-click (to support an inactive AI pane), but only
-handles references in Sidekick windows. `gf` is buffer-local to Sidekick.
+The handler is global for Ctrl-click (to support an inactive AI pane) and routes
+code-buffer clicks to Visual Multi. Visual Multi's own Ctrl-click binding is
+disabled so loading or resetting it cannot overwrite the dispatcher. `gf` is
+buffer-local to Sidekick.
 
 Verified in an isolated Neovim UI with the actual Sidekick/Zellij backend and
 synthetic AI output: both mouse modes, clicks from the inactive pane, `gf`,
@@ -100,12 +135,15 @@ See [Neovim's file navigation documentation](https://neovim.io/doc/user/editing/
 
 That global mapping is unchanged outside Sidekick.
 
-Correction to the initial investigation: Sidekick contains a separate scrollback
-implementation, but its **installed Zellij backend has `dump()` commented out**,
-so that separate buffer is not active here. After `Esc Esc`, Neovim can read the
-currently rendered Zellij terminal text directly. Older history is still
-scrolled through Zellij in terminal-input mode; the new handler does not change
-that behavior. See [Sidekick's Zellij backend](https://github.com/folke/sidekick.nvim/blob/main/lua/sidekick/cli/session/zellij.lua).
+Sidekick's installed Zellij backend has `dump()` commented out. The Codex window
+configuration supplies it using Zellij 0.44.1's `dump-screen --full --ansi`, enabling
+Sidekick's scrollback buffer with colors and blank lines preserved. Mouse scrolling
+or `Esc Esc` opens the history for normal Neovim navigation; `i` returns to live
+terminal input. File references work in that history buffer too.
+The Codex pane enables line wrapping so sideways scrolling cannot hide line
+beginnings and wider history remains readable after narrowing the pane.
+Its history view also clamps scrolling at the final screen row, accounting for
+wrapped lines, so scrolling down cannot push the transcript above an empty window.
 
 ## Options investigated
 

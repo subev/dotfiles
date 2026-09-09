@@ -27,6 +27,35 @@ return {
       local neo_tree_width = 40
 
       require("neo-tree").setup({
+        default_component_configs = {
+          container = { right_padding = 1 },
+          name = {
+            use_filtered_colors = false,
+            use_git_status_colors = true,
+          },
+          modified = { symbol = "● " },
+          diagnostics = {
+            symbols = {
+              error = "",
+              warn = "",
+              info = "",
+              hint = "",
+            },
+          },
+          git_status = {
+            symbols = {
+              added = "",
+              deleted = "",
+              modified = "",
+              renamed = "➜",
+              untracked = "",
+              ignored = "",
+              unstaged = "",
+              staged = "",
+              conflict = "",
+            },
+          },
+        },
         event_handlers = {
           {
             event = "file_open_requested",
@@ -65,27 +94,30 @@ return {
               -- disable fuzzy finder
               ["/"] = "noop",
               ["o"] = "system_open",
+              ["O"] = "system_reveal",
             },
           },
         },
         commands = {
           system_open = function(state)
-            local node = state.tree:get_node()
-            local path = node:get_id()
-            -- macOs: open file in default application in the background.
-            vim.fn.jobstart({ "open", path }, { detach = true })
-            -- Linux: open file in default application
-            vim.fn.jobstart({ "xdg-open", path }, { detach = true })
-
-            -- Windows: Without removing the file from the path, it opens in code.exe instead of explorer.exe
-            local p
-            local lastSlashIndex = path:match("^.+()\\[^\\]*$") -- Match the last slash and everything before it
-            if lastSlashIndex then
-              p = path:sub(1, lastSlashIndex - 1) -- Extract substring before the last slash
+            local path = state.tree:get_node():get_id()
+            if vim.fn.has("mac") == 1 then
+              vim.fn.jobstart({ "open", path }, { detach = true })
+            elseif vim.fn.has("win32") == 1 then
+              vim.fn.jobstart({ "cmd.exe", "/c", "start", "", path }, { detach = true })
             else
-              p = path -- If no slash found, return original path
+              vim.fn.jobstart({ "xdg-open", path }, { detach = true })
             end
-            vim.cmd("silent !start explorer " .. p)
+          end,
+          system_reveal = function(state)
+            local path = state.tree:get_node():get_id()
+            if vim.fn.has("mac") == 1 then
+              vim.fn.jobstart({ "open", "-R", path }, { detach = true })
+            elseif vim.fn.has("win32") == 1 then
+              vim.fn.jobstart({ "explorer.exe", "/select," .. path }, { detach = true })
+            else
+              vim.fn.jobstart({ "xdg-open", vim.fs.dirname(path) }, { detach = true })
+            end
           end,
         },
       })

@@ -110,6 +110,8 @@ return {
     "mg979/vim-visual-multi",
     init = function()
       vim.g.VM_mouse_mappings = 1
+      -- The reference-click dispatcher invokes Visual Multi only in code windows.
+      vim.g.VM_maps = vim.tbl_extend("force", vim.g.VM_maps or {}, { ["Mouse Cursor"] = "" })
     end,
   },
   {

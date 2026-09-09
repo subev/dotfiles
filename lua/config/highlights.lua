@@ -5,6 +5,24 @@ local function apply()
 
   vim.api.nvim_set_hl(0, "RefjumpReference", { link = "Substitute" })
 
+  for group, target in pairs({
+    NeoTreeDirectoryName = "Blue",
+    NeoTreeFileName = "Fg",
+    NeoTreeRootName = "Fg",
+    NeoTreeDirectoryIcon = "Blue",
+    NeoTreeGitAdded = "Green",
+    NeoTreeGitUntracked = "Green",
+    NeoTreeGitModified = "Yellow",
+    NeoTreeGitRenamed = "Yellow",
+    NeoTreeGitDeleted = "Red",
+    NeoTreeGitConflict = "Red",
+    NeoTreeGitIgnored = "Grey",
+    NeoTreeGitStaged = "Green",
+    NeoTreeModified = "Yellow",
+  }) do
+    vim.api.nvim_set_hl(0, group, { link = target })
+  end
+
   vim.api.nvim_set_hl(0, "IlluminatedWordText", { fg = "#a0d995", bg = "#444045", underline = true })
   vim.api.nvim_set_hl(0, "IlluminatedWordRead", { fg = "#a0d995", bg = "#444045", underline = true })
   vim.api.nvim_set_hl(0, "IlluminatedWordWrite", { fg = "#a0d995", bg = "#444045", underline = true })
