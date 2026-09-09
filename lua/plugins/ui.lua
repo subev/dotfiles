@@ -3,6 +3,8 @@ return {
     "nvim-lualine/lualine.nvim",
     dependencies = { "nvim-tree/nvim-web-devicons" },
     config = function()
+      local workspace = require("config.workspace_info")
+      workspace.setup()
       require("lualine").setup({
         options = {
           icons_enabled = true,
@@ -33,42 +35,68 @@ return {
               "CursorMoved",
               "CursorMovedI",
               "ModeChanged",
+              "DirChanged",
+              "LspAttach",
+              "LspDetach",
             },
           },
         },
         sections = {
-          lualine_a = { "mode" },
-          lualine_b = { "diff", "diagnostics" },
-          lualine_c = {
+          lualine_a = {
             {
-              "filename",
-              path = 1,
-            },
-          },
-          lualine_x = {
-            {
-              function()
-                local ok, refjump = pcall(require, "refjump")
-                if not ok then
-                  return ""
-                end
-                local info = refjump.get_reference_info()
-                if info.index then
-                  return string.format("[%d/%d]", info.index, info.total)
-                end
-                return ""
+              "mode",
+              fmt = function(mode)
+                return mode:sub(1, 1)
+              end,
+              cond = function()
+                return workspace.width() >= workspace.MODE_WIDTH
               end,
             },
-            "filetype",
           },
-          lualine_y = { "progress" },
-          lualine_z = { "location" },
+          lualine_b = {
+            {
+              "diagnostics",
+              sections = { "error", "warn" },
+              cond = function()
+                return workspace.width() >= workspace.DIAGNOSTICS_WIDTH
+              end,
+            },
+          },
+          lualine_c = {
+            { workspace.cwd, on_click = workspace.click },
+            {
+              "filetype",
+              icon_only = true,
+              padding = { left = 0, right = 0 },
+              cond = function()
+                return workspace.width() >= workspace.ICON_WIDTH
+              end,
+            },
+            { workspace.filename, padding = { left = 0, right = 1 } },
+          },
+          lualine_x = {
+            { workspace.servers, on_click = workspace.click },
+            workspace.references,
+          },
+          lualine_y = {},
+          lualine_z = { workspace.location },
         },
         inactive_sections = {
           lualine_a = {},
           lualine_b = {},
-          lualine_c = { "filename" },
-          lualine_x = { "location" },
+          lualine_c = {
+            { workspace.cwd, on_click = workspace.click },
+            {
+              "filetype",
+              icon_only = true,
+              padding = { left = 0, right = 0 },
+              cond = function()
+                return workspace.width() >= workspace.ICON_WIDTH
+              end,
+            },
+            { workspace.filename, padding = { left = 0, right = 1 } },
+          },
+          lualine_x = { { workspace.servers, on_click = workspace.click }, workspace.location },
           lualine_y = {},
           lualine_z = {},
         },

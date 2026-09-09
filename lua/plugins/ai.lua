@@ -75,6 +75,16 @@ return {
           },
         },
         win = {
+          keys = {
+            goto_reference = {
+              "gf",
+              function(terminal)
+                require("config.sidekick_links").gf(terminal)
+              end,
+              mode = "n",
+              desc = "Open referenced file in the code pane",
+            },
+          },
           config = function(terminal)
             if terminal.tool.name ~= "codex" or terminal.mux_backend ~= "zellij" then
               return
@@ -108,6 +118,7 @@ return {
         opts.cli.tools["claude_" .. i] = vim.tbl_extend("force", claude, { is_proc = false })
       end
       require("sidekick").setup(opts)
+      require("config.sidekick_links").setup()
     end,
     keys = {
       {

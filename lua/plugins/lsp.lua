@@ -22,13 +22,16 @@ return {
           "pyright",
           "oxlint",
         },
-        automatic_enable = true,
+        -- TypeScript servers are enabled below with mutually exclusive roots.
+        automatic_enable = { exclude = { "ts_ls", "tsc" } },
       })
     end,
   },
   {
     "neovim/nvim-lspconfig",
     config = function()
+      require("config.typescript_lsp").setup()
+
       local function find_workspace_root(startpath)
         if not startpath or startpath == "" then
           return nil
@@ -113,6 +116,7 @@ return {
         filetypes = { "swift", "objc", "objcpp" },
       })
 
+      vim.lsp.enable({ "tsc", "ts_ls" })
       vim.lsp.enable("pyright")
       vim.lsp.enable("ruff")
       vim.lsp.enable("eslint")

@@ -1,6 +1,7 @@
 # Tests for statement_jump.lua
 
-This directory contains tests for the statement_jump navigation module.
+This directory contains tests for statement navigation, Sidekick file references,
+workspace status, and TypeScript LSP selection.
 
 ## Test Fixtures
 
@@ -20,11 +21,21 @@ cd /Users/petur/dotfiles
 bash tests/test_runner.sh
 ```
 
+The runner executes all three suites and stops on failure. `run_tests.lua` uses
+`minimal_init.lua` to access installed Treesitter parsers without loading UI
+plugins or starting language servers. The other
+two suites use `-u NONE` to isolate editor state and avoid starting real servers:
+`navigation_spec.lua` covers parsing, asynchronous file resolution, mouse state,
+window selection, highlighting, and workspace details; `typescript_spec.lua`
+checks native/legacy selection, package-local installs, compiler upgrades, and
+launcher commands. The TypeScript suite reads the installed nvim-lspconfig root
+callbacks from the normal Neovim data directory.
+
 Or directly:
 
 ```bash
 cd /Users/petur/dotfiles
-nvim --headless -c "luafile tests/run_tests.lua"
+nvim --headless -u tests/minimal_init.lua -i NONE -n -c "luafile tests/run_tests.lua"
 ```
 
 ### Why Not Plenary?

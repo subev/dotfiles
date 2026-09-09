@@ -3,9 +3,11 @@
 My unix environment, versioned since 2013.
 
 - **Neovim** — Lua config (`init.lua`, `lua/`), with its own test suite in `tests/`
+  and [workspace/navigation notes](docs/neovim-navigation.md)
 - **Shell** — zsh + bash profiles, fzf, ripgrep/ag ignore rules
 - **tmux**, **karabiner** keyboard remaps, **ideavim**, **git** config
-- **OpenCode** — agent config and global AGENTS.md, symlinked into `~/.config/opencode`
+- **AI agents** — shared personal preferences in `agents/AGENTS.md` for Codex,
+  Claude Code, and OpenCode; OpenCode config in `opencode/`
 
 ## Setup
 
@@ -70,6 +72,34 @@ git clone --depth 1 https://github.com/wbthomason/packer.nvim\
 :PackerInstall
 ```
 
+## Shared AI preferences
+
+Edit [agents/AGENTS.md](agents/AGENTS.md) for personal preferences shared by Codex,
+Claude Code (including separate Sidekick sessions), and OpenCode. Keep project
+commands and domain-specific workflows in each project's instructions.
+
+All three global instruction files are symlinks to this single source. The old
+`opencode/AGENTS.md` path is also a compatibility symlink. Start new agent sessions
+after editing preferences so they load the updated instructions.
+
+```bash
+mkdir -p "$HOME/.codex" "$HOME/.claude" "$HOME/.config/opencode"
+agent_backup_stamp="$(date +%Y%m%d-%H%M%S)"
+for agent_target in "$HOME/.codex/AGENTS.md" "$HOME/.claude/CLAUDE.md" "$HOME/.config/opencode/AGENTS.md"; do
+  if [ -e "$agent_target" ] || [ -L "$agent_target" ]; then
+    if [ "$(readlink "$agent_target")" = "$HOME/dotfiles/agents/AGENTS.md" ]; then
+      continue
+    fi
+    mv "$agent_target" "$agent_target.backup-$agent_backup_stamp"
+  fi
+  ln -s "$HOME/dotfiles/agents/AGENTS.md" "$agent_target"
+done
+```
+
+Non-default `CODEX_HOME`, `CLAUDE_CONFIG_DIR`, or `XDG_CONFIG_HOME` installations
+need the corresponding global paths adjusted. Model settings, credentials, MCP
+configuration, and per-project automatic memories remain tool-specific.
+
 ## OpenCode setup
 
 Keep OpenCode config in this repo and symlink it into `~/.config/opencode`.
@@ -84,7 +114,7 @@ cp -v "$HOME/.config/opencode/opencode.json" "$HOME/.config/opencode/backup-$ts/
 cp -v "$HOME/.config/opencode/AGENTS.md" "$HOME/.config/opencode/backup-$ts/" 2>/dev/null || true
 
 ln -sfn "$HOME/dotfiles/opencode/opencode.json" "$HOME/.config/opencode/opencode.json"
-ln -sfn "$HOME/dotfiles/opencode/AGENTS.md" "$HOME/.config/opencode/AGENTS.md"
+ln -sfn "$HOME/dotfiles/agents/AGENTS.md" "$HOME/.config/opencode/AGENTS.md"
 ln -sfn "$HOME/dotfiles/opencode/agents" "$HOME/.config/opencode/agents"
 ```
 
