@@ -1,3 +1,30 @@
+-- A sidekick session id is the tool name plus a hash of the cwd, so a tool name
+-- only ever has one session per directory. Registering the same CLI under
+-- several names is what allows parallel sessions; these are those names, in
+-- preference order.
+local SLOTS = 5
+
+local function slots(name)
+  local ret = { name }
+  for i = 2, SLOTS do
+    ret[i] = ("%s_%d"):format(name, i)
+  end
+  return ret
+end
+
+local claude_slots = slots("claude")
+-- Same CLI, DeepSeek backend; see bin/claude-deepseek.
+local ds_slots = slots("claude_ds")
+
+local function free_slot(names)
+  local State = require("sidekick.cli.state")
+  for _, name in ipairs(names) do
+    if #State.get({ name = name, started = true, cwd = true }) == 0 then
+      return name
+    end
+  end
+end
+
 return {
   {
     "copilotlsp-nvim/copilot-lsp",
@@ -127,17 +154,18 @@ return {
       },
     },
     config = function(_, opts)
-      -- session id is derived from tool name + cwd, so extra names = extra parallel claudes
       local claude = dofile(vim.api.nvim_get_runtime_file("sk/cli/claude.lua", false)[1])
       opts.cli.tools = opts.cli.tools or {}
-      for i = 2, 5 do
-        opts.cli.tools["claude_" .. i] = vim.tbl_extend("force", claude, { is_proc = false })
+      -- slot 1 is sidekick's built-in claude tool
+      for i = 2, #claude_slots do
+        opts.cli.tools[claude_slots[i]] = vim.tbl_extend("force", claude, { is_proc = false })
       end
-      -- Same CLI, DeepSeek backend; see bin/claude-deepseek.
-      opts.cli.tools["claude_ds"] = vim.tbl_extend("force", claude, {
-        cmd = { "claude-deepseek" },
-        is_proc = false,
-      })
+      for _, name in ipairs(ds_slots) do
+        opts.cli.tools[name] = vim.tbl_extend("force", claude, {
+          cmd = { "claude-deepseek" },
+          is_proc = false,
+        })
+      end
       require("sidekick").setup(opts)
       require("config.sidekick_links").setup()
     end,
@@ -172,21 +200,24 @@ return {
       {
         "<leader>an",
         function()
-          local State = require("sidekick.cli.state")
-          for i = 1, 5 do
-            local name = i == 1 and "claude" or ("claude_" .. i)
-            if #State.get({ name = name, started = true, cwd = true }) == 0 then
-              return require("sidekick.cli").show({ name = name, focus = true })
-            end
+          local name = free_slot(claude_slots)
+          if name then
+            require("sidekick.cli").show({ name = name, focus = true })
+          else
+            vim.notify("No free Claude slot", vim.log.levels.WARN)
           end
-          vim.notify("No free Claude slot", vim.log.levels.WARN)
         end,
         desc = "New Claude Session",
       },
       {
         "<leader>aN",
         function()
-          require("sidekick.cli").show({ name = "claude_ds", focus = true })
+          local name = free_slot(ds_slots)
+          if name then
+            require("sidekick.cli").show({ name = name, focus = true })
+          else
+            vim.notify("No free DeepSeek slot", vim.log.levels.WARN)
+          end
         end,
         desc = "New DeepSeek Session",
       },

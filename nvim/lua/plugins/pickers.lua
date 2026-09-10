@@ -48,6 +48,19 @@ return {
       local action_state = require("telescope.actions.state")
       local telescope = require("telescope")
       telescope.setup({
+        defaults = {
+          -- Telescope's default `descending` sorts results bottom-up, and
+          -- entry_adder deletes row 1 of the results buffer for every result
+          -- inserted mid-list to keep that layout. The buffer can therefore
+          -- end up a line short of `max_results`, and the async completion
+          -- callback then sets the cursor past the end:
+          --   pickers.lua:1466: Invalid cursor line: out of range
+          -- Ascending never runs that deletion and parks the cursor on line 1,
+          -- which always exists. prompt_position moves to the top so the best
+          -- match still sits next to the prompt.
+          sorting_strategy = "ascending",
+          layout_config = { horizontal = { prompt_position = "top" } },
+        },
         extensions = {
           fzf = {
             fuzzy = true, -- false will only do exact matching
