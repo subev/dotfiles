@@ -38,6 +38,10 @@ prepare() {
   mkdir -p "$home/.config" "$home/.local"
   ln -sfn "$wt" "$home/dotfiles"
   ln -sfn "$REAL_DATA" "$home/.local/share"
+  # Pre-migration specs point at ~/repos/<name> directly; without this the
+  # isolated HOME cannot see them and those plugins silently do not load,
+  # which would read as "the branch added commands" rather than an artefact.
+  [[ -d "$HOME/repos" ]] && ln -sfn "$HOME/repos" "$home/repos"
 
   if [[ -d "$wt/nvim" ]]; then
     ln -sfn "$wt/nvim" "$home/.config/nvim"
