@@ -124,7 +124,14 @@ return {
     branch = "feat/cursor-highlight-groups",
     lazy = false,
     config = function()
-      require("illuminate").configure({})
+      require("illuminate").configure({
+        should_enable = function(bufnr)
+          -- getregionpos() rescans the line for every reference, which is
+          -- quadratic on long lines: a 4.5 MB single-line file froze nvim.
+          local name = vim.api.nvim_buf_get_name(bufnr)
+          return name == "" or vim.fn.getfsize(name) <= 1024 * 1024
+        end,
+      })
     end,
   },
 }
