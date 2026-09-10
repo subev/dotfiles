@@ -133,6 +133,11 @@ return {
       for i = 2, 5 do
         opts.cli.tools["claude_" .. i] = vim.tbl_extend("force", claude, { is_proc = false })
       end
+      -- Same CLI, DeepSeek backend; see bin/claude-deepseek.
+      opts.cli.tools["claude_ds"] = vim.tbl_extend("force", claude, {
+        cmd = { "claude-deepseek" },
+        is_proc = false,
+      })
       require("sidekick").setup(opts)
       require("config.sidekick_links").setup()
     end,
@@ -177,6 +182,13 @@ return {
           vim.notify("No free Claude slot", vim.log.levels.WARN)
         end,
         desc = "New Claude Session",
+      },
+      {
+        "<leader>aN",
+        function()
+          require("sidekick.cli").show({ name = "claude_ds", focus = true })
+        end,
+        desc = "New DeepSeek Session",
       },
       {
         "<leader>as",

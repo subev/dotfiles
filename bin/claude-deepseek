@@ -1,0 +1,43 @@
+#!/usr/bin/env bash
+# Claude Code against DeepSeek's Anthropic-compatible endpoint.
+# Plain `claude` is untouched: remove ~/.local/bin/claude-deepseek to revert.
+set -euo pipefail
+
+if ! command -v claude >/dev/null 2>&1; then
+  echo "claude-deepseek: no claude CLI on PATH." >&2
+  exit 1
+fi
+
+key="${DEEPSEEK_API_KEY:-}"
+key_file="${DEEPSEEK_API_KEY_FILE:-$HOME/.config/deepseek/api_key}"
+if [ -z "$key" ] && [ -r "$key_file" ]; then
+  key="$(head -n1 "$key_file" | tr -d '[:space:]')"
+fi
+if [ -z "$key" ]; then
+  echo "claude-deepseek: no API key found." >&2
+  echo "  export DEEPSEEK_API_KEY, or write the key to $key_file (chmod 600)." >&2
+  echo "  Create one at https://platform.deepseek.com/api_keys" >&2
+  exit 1
+fi
+
+model="${DEEPSEEK_MODEL:-deepseek-flash}"
+small_model="${DEEPSEEK_SMALL_MODEL:-deepseek-flash}"
+
+export ANTHROPIC_BASE_URL="https://api.deepseek.com/anthropic"
+export ANTHROPIC_AUTH_TOKEN="$key"
+# ANTHROPIC_API_KEY would take precedence and prompt for confirmation.
+unset ANTHROPIC_API_KEY
+export ANTHROPIC_MODEL="$model"
+export ANTHROPIC_SMALL_FAST_MODEL="$small_model"
+export ANTHROPIC_DEFAULT_OPUS_MODEL="$model"
+export ANTHROPIC_DEFAULT_SONNET_MODEL="$model"
+export ANTHROPIC_DEFAULT_HAIKU_MODEL="$small_model"
+export CLAUDE_CODE_SUBAGENT_MODEL="$model"
+export API_TIMEOUT_MS="${API_TIMEOUT_MS:-600000}"
+export CLAUDE_CODE_MAX_OUTPUT_TOKENS="${CLAUDE_CODE_MAX_OUTPUT_TOKENS:-32768}"
+# DeepSeek models are absent from the CLI's catalog, so it would assume 200k.
+export CLAUDE_CODE_MAX_CONTEXT_TOKENS="${CLAUDE_CODE_MAX_CONTEXT_TOKENS:-1000000}"
+# Suppress non-essential model calls and update checks for this backend.
+export CLAUDE_CODE_DISABLE_NONESSENTIAL_TRAFFIC=1
+
+exec claude "$@"
