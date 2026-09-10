@@ -1,6 +1,6 @@
 return {
   {
-    dir = "~/repos/sibling-jump", -- Use local development version
+    "subev/sibling-jump.nvim", -- local checkout under ~/repos is preferred when present
     opts = {
       next_key = "<C-j>",
       prev_key = "<C-k>",

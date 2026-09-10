@@ -1,8 +1,1 @@
-{
-  "workspace": {
-    "checkThirdParty": false
-  },
-  "diagnostics": {
-    "globals": ["vim"]
-  }
-}
+nvim/.luarc.json

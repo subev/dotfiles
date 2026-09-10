@@ -114,24 +114,16 @@ return {
         ":G merge --continue<cr>",
         { noremap = true, silent = true, desc = "Git merge continue" }
       )
-      vim.keymap.set(
-        "n",
-        "gM",
-        ":Gvsplit origin/<C-r>=GetMasterBranchName()<CR>:%<cr>",
-        { noremap = true, silent = true, desc = "Git vertical diff split with master" }
-      )
-      vim.keymap.set(
-        "n",
-        "gm",
-        ":Gvdiffsplit origin/<C-r>=GetMasterBranchName()<CR>:%<cr>",
-        { noremap = true, silent = true, desc = "Git see same file but in master" }
-      )
-      vim.keymap.set(
-        "n",
-        ",gM",
-        ":G diff origin/<C-r>=GetMasterBranchName()<CR>... --no-ext-diff <cr><c-w>H",
-        { noremap = true, silent = true, desc = "Git diff with master in left pane" }
-      )
+      vim.keymap.set("n", "gM", function()
+        vim.cmd("Gvsplit origin/" .. _G.GetMasterBranchName() .. ":%")
+      end, { silent = true, desc = "Git vertical diff split with master" })
+      vim.keymap.set("n", "gm", function()
+        vim.cmd("Gvdiffsplit origin/" .. _G.GetMasterBranchName() .. ":%")
+      end, { silent = true, desc = "Git see same file but in master" })
+      vim.keymap.set("n", ",gM", function()
+        vim.cmd("G diff origin/" .. _G.GetMasterBranchName() .. "... --no-ext-diff")
+        vim.cmd("wincmd H")
+      end, { silent = true, desc = "Git diff with master in left pane" })
     end,
   },
   {
@@ -203,7 +195,9 @@ return {
       { ",gh", ":DiffviewFileHistory %<cr>", desc = "Git Diffview File History" },
       {
         ",gm",
-        ":DiffviewOpen origin/<C-r>=GetMasterBranchName()<CR>...HEAD<cr>",
+        function()
+          vim.cmd("DiffviewOpen origin/" .. _G.GetMasterBranchName() .. "...HEAD")
+        end,
         desc = "Git Diffview Open with master",
       },
     },
@@ -254,7 +248,7 @@ return {
     end,
   },
   {
-    dir = "~/repos/difftastic.nvim",
+    "subev/difftastic.nvim", -- fork; local checkout preferred when present
     dependencies = { "MunifTanjim/nui.nvim" },
     config = function()
       require("difftastic-nvim").setup({

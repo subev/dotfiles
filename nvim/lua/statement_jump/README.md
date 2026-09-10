@@ -155,7 +155,7 @@ if (condition) {}   // destination
 
 ```lua
 {
-  dir = "~/path/to/your/dotfiles/lua/statement_jump.lua",
+  dir = "~/path/to/your/dotfiles/nvim/lua/statement_jump.lua",
   config = function()
     require("statement_jump").setup()
   end,

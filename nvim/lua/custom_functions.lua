@@ -61,7 +61,6 @@ function Git_Show_Log_Patches()
   ]])
 end
 
--- noremap ,gm :CocDisable<cr>:DiffviewOpen origin/<C-r>=GetMasterBranchName()<CR>...HEAD<cr>
 function Git_Show_Diff_Against_Main_Or_Master()
   local main_branch = GetMasterBranchName()
   local git_command = "GIT_EXTERNAL_DIFF=difft git diff --ext-diff origin/" .. main_branch .. "...HEAD"

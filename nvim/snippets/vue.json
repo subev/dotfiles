@@ -1,0 +1,14 @@
+{
+  "setupp": {
+    "prefix": "setupp",
+    "body": [
+      "<script setup lang=\"ts\">",
+      "  ${1}",
+      "</script>",
+      "",
+      "<template>",
+      "",
+      "</template>"
+    ]
+  }
+}

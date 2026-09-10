@@ -128,9 +128,9 @@ bash tests/test_runner.sh
 ## Existing navigation outside Sidekick
 
 Neovim already provides `gF` and `Ctrl-W F` to open a filename and jump to a
-following line number. Your `vimrc/keybindings.vim` maps lowercase `gf` to
+following line number. Your `nvim/lua/config/keymaps.lua` maps lowercase `gf` to
 `Ctrl-W F` followed by moving the new split to the far left.
-Your config also removes `:` from `isfname`, which supports this workflow.
+Neovim's default `isfname` already excludes `:`, which supports this workflow.
 See [Neovim's file navigation documentation](https://neovim.io/doc/user/editing/#gF).
 
 That global mapping is unchanged outside Sidekick.

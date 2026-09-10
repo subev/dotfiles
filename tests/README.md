@@ -121,6 +121,28 @@ The test suite can be run in CI:
     bash tests/test_runner.sh
 ```
 
+## Keymap Snapshots
+
+`keymap_snapshot.sh` dumps every active mapping in a normalized,
+order-independent form. Use it before and after a config refactor to prove that
+no keybinding changed:
+
+```bash
+bash tests/keymap_snapshot.sh > /tmp/maps-before.txt
+# ...make changes...
+diff /tmp/maps-before.txt <(bash tests/keymap_snapshot.sh)
+```
+
+Script-local (`<SNR>N_`) and Lua (`<Lua N:`) ids are assigned at load time and
+differ between runs, so the script normalizes them away and sorts the output.
+It also strips the `:line` suffix of each Lua mapping's source location, so an
+edit that only shifts lines within a file is not reported as a changed mapping.
+
+The snapshot runs with no file open, so it covers only global mappings.
+Buffer-local and filetype-triggered mappings never load this way — including
+the `ctrlsf` ones in `nvim/lua/config/autocmds.lua` — and are not covered by a
+before/after diff. Check those by opening a file of the relevant type.
+
 ## Manual Testing
 
 For interactive testing:

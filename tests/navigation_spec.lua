@@ -1,6 +1,6 @@
 -- Run from the dotfiles root:
 -- nvim --headless -u NONE -i NONE -n -c "luafile tests/navigation_spec.lua"
-vim.opt.rtp:prepend(vim.fn.getcwd())
+vim.opt.rtp:prepend(vim.fn.getcwd() .. "/nvim")
 vim.o.lines = 80
 vim.o.hidden = true
 vim.o.swapfile = false
@@ -188,7 +188,7 @@ end)
 
 test("Visual Multi loading and resetting do not replace reference clicks", function()
   vim.opt.rtp:prepend(vim.fn.stdpath("data") .. "/lazy/vim-visual-multi")
-  for _, spec in ipairs(dofile("lua/plugins/editing.lua")) do
+  for _, spec in ipairs(dofile("nvim/lua/plugins/editing.lua")) do
     if spec[1] == "mg979/vim-visual-multi" then
       spec.init()
     end

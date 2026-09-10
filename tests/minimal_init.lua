@@ -1,4 +1,4 @@
-vim.opt.rtp:prepend(vim.fn.getcwd())
+vim.opt.rtp:prepend(vim.fn.getcwd() .. "/nvim")
 vim.opt.rtp:append(vim.fn.stdpath("data") .. "/lazy/nvim-treesitter")
 vim.o.loadplugins = false
 vim.treesitter.language.register("tsx", "typescriptreact")

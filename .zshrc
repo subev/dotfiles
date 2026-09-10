@@ -148,15 +148,15 @@ setopt hist_fcntl_lock
 # Example aliases
 # alias zshconfig="mate ~/.zshrc"
 # alias ohmyzsh="mate ~/.oh-my-zsh"
-eval $(thefuck --alias)
 eval "$(jump shell --bind=j)"
 
 # plugin that automaticlaly loads an .env file if it exists and unloads it when you leave the dir
 eval "$(direnv hook zsh)"
 
-# this needs the core utils to be installed "brew install coreutils"
-alias ll='gls -alFHh --group-directories-first --color=auto'
-alias mru='gls -alFHh --group-directories-first --color=auto --sort=time --time=mtime  -r'
+# GNU ls: `gls` from Homebrew coreutils on macOS, plain `ls` on Linux.
+LS_BIN=$(command -v gls 2>/dev/null || command -v ls)
+alias ll="$LS_BIN -alFHh --group-directories-first --color=auto"
+alias mru="$LS_BIN -alFHh --group-directories-first --color=auto --sort=time --time=mtime -r"
 #alias m=mvim
 alias n=nvim
 # alias vide=/Applications/neovide.app/Contents/MacOS/neovide
@@ -220,12 +220,10 @@ unset __conda_setup
 # <<< conda initialize <<<
 
 
-# bun completions
-[ -s "/Users/petur/.bun/_bun" ] && source "/Users/petur/.bun/_bun"
-
 # bun
 export BUN_INSTALL="$HOME/.bun"
 export PATH="$BUN_INSTALL/bin:$PATH"
+[ -s "$BUN_INSTALL/_bun" ] && source "$BUN_INSTALL/_bun"
 
 # Added by LM Studio CLI (lms)
 export PATH="$PATH:/Users/petur/.cache/lm-studio/bin"
@@ -241,7 +239,3 @@ esac
 # pnpm end
 
 export PATH="/opt/homebrew/opt/make/libexec/gnubin:$PATH"
-
-# bun
-export BUN_INSTALL="$HOME/repos/libratory/.bun"
-export PATH="$BUN_INSTALL/bin:$PATH"

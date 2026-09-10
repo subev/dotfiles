@@ -1,8 +1,8 @@
-vim.opt.rtp:prepend(vim.fn.getcwd())
+vim.opt.rtp:prepend(vim.fn.getcwd() .. "/nvim")
 vim.opt.rtp:append(vim.fn.stdpath("data") .. "/lazy/sidekick.nvim")
 
 local configure
-for _, plugin in ipairs(dofile("lua/plugins/ai.lua")) do
+for _, plugin in ipairs(dofile("nvim/lua/plugins/ai.lua")) do
   if plugin[1] == "folke/sidekick.nvim" then
     configure = plugin.opts.cli.win.config
   end

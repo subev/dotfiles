@@ -1,5 +1,5 @@
 -- Run through tests/test_runner.sh, or nvim --headless -u NONE -i NONE -n -l tests/typescript_spec.lua.
-vim.opt.rtp:prepend(vim.fn.getcwd())
+vim.opt.rtp:prepend(vim.fn.getcwd() .. "/nvim")
 vim.opt.rtp:append(vim.fn.stdpath("data") .. "/lazy/nvim-lspconfig")
 local typescript = require("config.typescript_lsp")
 local root = vim.fn.tempname()
