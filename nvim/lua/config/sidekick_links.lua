@@ -234,11 +234,7 @@ function M.open(path, ref, source_win)
   })
 end
 
-local function terminal(win)
-  local id = vim.w[win].sidekick_session_id
-  local mod = package.loaded["sidekick.cli.terminal"]
-  return id and mod and mod.get(id)
-end
+local terminal = require("config.sidekick_term").from_win
 
 local request_id = 0
 local function follow(ref, win, term)

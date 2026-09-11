@@ -236,6 +236,7 @@ return {
       end
       require("sidekick").setup(opts)
       require("config.sidekick_links").setup()
+      require("config.sidekick_expand").setup()
     end,
     keys = {
       {
