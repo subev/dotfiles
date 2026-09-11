@@ -13,6 +13,7 @@ nvim --headless -u tests/minimal_init.lua -i NONE -n -c "luafile tests/run_tests
 # Initialize the screen before navigation tests call :redraw; -l runs too early.
 nvim --headless -u NONE -i NONE -n -c "luafile tests/navigation_spec.lua" || exit $?
 nvim --headless -u NONE -i NONE -n -l tests/sidekick_scrollback_spec.lua || exit $?
+nvim --headless -u NONE -i NONE -n -l tests/sidekick_agents_spec.lua || exit $?
 nvim --headless -u NONE -i NONE -n -l tests/typescript_spec.lua
 
 exit $?

@@ -25,6 +25,58 @@ local function free_slot(names)
   end
 end
 
+-- Cycling visits the running agents in this directory in slot order. The ring
+-- is rebuilt on every press, so an agent that exits drops out on its own.
+local function next_agent(terminal)
+  local State = require("sidekick.cli.state")
+  local agents = State.get({ cwd = true, started = true })
+  if #agents < 2 then
+    vim.notify("No other agent in this directory", vim.log.levels.WARN)
+    return
+  end
+  -- State.get orders by attached terminal before name, which would reshuffle
+  -- the ring as we visit panes; sort by slot name so the order stays put.
+  table.sort(agents, function(a, b)
+    return a.tool.name < b.tool.name
+  end)
+  local current = 0
+  for i, agent in ipairs(agents) do
+    if agent.tool.name == terminal.tool.name then
+      current = i
+      break
+    end
+  end
+  -- One agent on screen at a time, the way Ctrl-Tab works in a browser: cycling
+  -- swaps panes rather than stacking them. Hiding closes the window and leaves
+  -- the job running, so nothing is interrupted.
+  local Terminal = require("sidekick.cli.terminal")
+  for _, win in ipairs(vim.api.nvim_list_wins()) do
+    local id = vim.w[win].sidekick_session_id
+    local pane = id and Terminal.get(id)
+    if pane then
+      pane:hide()
+    end
+  end
+  -- Attach the state itself rather than going through `cli.show({ name = ... })`:
+  -- that filter matches the tool name alone, which also matches sessions in other
+  -- directories and opens the picker as soon as more than one matches.
+  local state = State.attach(agents[current % #agents + 1], { show = true, focus = true })
+  -- Arriving ready to type: clear the mode Sidekick would restore, then insert
+  -- after the main loop, because hiding the pane we came from leaves a
+  -- `:stopinsert` that Neovim applies once this mapping returns and would
+  -- otherwise undo the `startinsert`.
+  local target = state and state.terminal
+  if target then
+    target.normal_mode = false
+    vim.schedule(function()
+      if target:is_running() and target.win and vim.api.nvim_win_is_valid(target.win) then
+        vim.api.nvim_set_current_win(target.win)
+        vim.cmd.startinsert()
+      end
+    end)
+  end
+end
+
 return {
   {
     "copilotlsp-nvim/copilot-lsp",
@@ -111,36 +163,52 @@ return {
               mode = "n",
               desc = "Open referenced file in the code pane",
             },
+            next_agent = {
+              "<c-n>",
+              function(terminal)
+                next_agent(terminal)
+              end,
+              mode = "tn",
+              desc = "Next agent in this directory",
+            },
           },
           config = function(terminal)
-            if terminal.tool.name ~= "codex" or terminal.mux_backend ~= "zellij" then
+            if terminal.mux_backend ~= "zellij" then
               return
             end
-            terminal.opts.wo.wrap = true
-            terminal.opts.wo.scrolloff = 0
-            require("config.sidekick_scrollback").setup(terminal)
-            -- Zellij 0.44.1 can export ANSI history; Sidekick still disables its dump reader.
-            terminal.parent.dump = function(session)
-              local _, output = require("sidekick.util").exec({
-                "zellij",
-                "-s",
-                session.mux_session or session.sid,
-                "action",
-                "dump-screen",
-                "--full",
-                "--ansi",
-              }, { timeout = 3000 })
-              return output
-            end
-            -- Sidekick generates this layout before starting the terminal, with close_on_exit=true.
-            -- Let Zellij hold Codex's final output until Ctrl+C closes it or Enter runs it again.
+            -- Sidekick generates this layout before starting the terminal.
             local layout = require("sidekick.config").state("zellij-layout-" .. terminal.parent.sid .. ".kdl")
             local lines = vim.fn.readfile(layout)
-            for i, line in ipairs(lines) do
-              lines[i] = line:gsub("close_on_exit true", "close_on_exit false")
+            if terminal.tool.name == "codex" then
+              terminal.opts.wo.wrap = true
+              terminal.opts.wo.scrolloff = 0
+              require("config.sidekick_scrollback").setup(terminal)
+              -- Zellij 0.44.1 can export ANSI history; Sidekick still disables its dump reader.
+              terminal.parent.dump = function(session)
+                local _, output = require("sidekick.util").exec({
+                  "zellij",
+                  "-s",
+                  session.mux_session or session.sid,
+                  "action",
+                  "dump-screen",
+                  "--full",
+                  "--ansi",
+                }, { timeout = 3000 })
+                return output
+              end
+              -- With close_on_exit=true, let Zellij hold Codex's final output until
+              -- Ctrl+C closes it or Enter runs it again.
+              for i, line in ipairs(lines) do
+                lines[i] = line:gsub("close_on_exit true", "close_on_exit false")
+              end
             end
-            -- This session has one Codex pane; let Codex receive Ctrl+T, Ctrl+G, etc.
-            lines[#lines + 1] = "keybinds clear-defaults=true {}"
+            -- The pane is embedded in Neovim, which owns navigation and the
+            -- Ctrl keys it maps; the rest belong to the agent. Zellij's
+            -- defaults would swallow them instead -- Ctrl+G locks the session
+            -- with every key dead until Ctrl+G again.
+            if not vim.tbl_contains(lines, "keybinds clear-defaults=true {}") then
+              lines[#lines + 1] = "keybinds clear-defaults=true {}"
+            end
             vim.fn.writefile(lines, layout)
           end,
           split = {

@@ -118,7 +118,61 @@ range highlighting, and preservation of unsaved text. Statuslines were also
 rendered at 20–180 columns with three attached-server entries and in four
 simultaneous vertical splits.
 
-Run the statement navigation, Sidekick/workspace, and TypeScript selection
+## Implemented: cycling agent panes
+
+- **`Ctrl+N`** in an agent pane advances to the next agent running in the same
+  directory, wrapping at the end. It only goes forward.
+- The next agent is attached directly rather than looked up by tool name, so the
+  key never prompts. A tool name is not unique across directories, and Sidekick
+  falls back to its picker whenever a lookup matches more than one session, which
+  turns a one-key cycle into an interrupted choice.
+- Cycling swaps rather than stacks: every open agent pane is hidden first, then
+  the next agent is shown, so one agent is on screen at a time as with `Ctrl-Tab`.
+  Hiding closes the window and leaves the job running, so no agent is interrupted,
+  and the incoming pane is placed as if it had been opened fresh.
+- The ring is every started Sidekick session whose recorded directory is the
+  current one, across every tool: the `claude` and `claude_ds` slots and `codex`.
+  A session id is the tool name plus a hash of the directory, so a tool name
+  means at most one session per directory and names the ring unambiguously. The
+  ring is rebuilt on every press, so an agent that exits leaves it on its own,
+  and with fewer than two agents running the key reports that there is nowhere
+  to go.
+- `State.get` orders by attached terminal ahead of name, which would reshuffle
+  the ring as panes are visited, so the candidates are re-sorted by slot name to
+  keep the order put.
+- The cycled pane is focused and left in terminal mode whatever mode it was
+  previously abandoned in. Sidekick otherwise restores that mode, and hiding the
+  pane being left queues a `:stopinsert` it applies only after the mapping
+  returns, so the incoming `startinsert` has to be deferred to outlive it.
+
+`Ctrl+H`/`Ctrl+L` would have made a tidier previous/next pair, and were
+rejected: Sidekick already binds both inside the pane as window navigation, so
+rebinding them means losing `Ctrl+H` — the one-key return from the agent pane to
+the code pane — and leaving `nav_right` live to misfire if the layout ever
+changes off `right`. `Ctrl+N` survives all three layers that can claim a key
+here: it is unbound in Sidekick's terminal keymaps, and Claude Code's own
+`Ctrl+N` (cursor/history movement) is exactly duplicated by the down arrow, so
+nothing becomes unreachable. `Ctrl+P` keeps its Sidekick prompt picker and
+Codex's history navigation.
+
+`Ctrl+N` used to freeze the pane outright on its first press. Sidekick runs each
+agent inside its own Zellij session, and the generated layout is passed to
+`zellij --layout`, which does not override the keybinds in
+`~/.config/zellij/config.kdl`. That config binds `Ctrl n` to
+`SwitchToMode "resize"`, and in resize mode every other key is swallowed until
+`Esc` or `Enter`. Zellij mode is per-client, so hiding the pane or leaving
+terminal mode changes nothing, and only restarting Neovim recovers — that
+detaches the Zellij client, and re-attaching starts a fresh client in normal
+mode, which is also why the session itself survives. `Ctrl+G` (locked mode) and
+`Ctrl+S` are the same trap.
+
+So every agent session, not just Codex, now appends `keybinds
+clear-defaults=true {}` to its generated layout, which is what lets the agent
+receive the Ctrl keys Neovim does not claim. Sidekick already did this for
+Codex alone. Sessions created before this change keep the old keybinds until
+they are restarted.
+
+Run the statement navigation, Sidekick, and TypeScript selection
 suites together from the dotfiles root:
 
 ```sh

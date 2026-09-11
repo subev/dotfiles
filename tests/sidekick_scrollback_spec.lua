@@ -120,8 +120,8 @@ local ok, err = pcall(function()
   vim.notify = notify
   assert(result == nil, "failed exports must not replace the live buffer")
   for _, other in ipairs({
-    { tool = { name = "claude" }, mux_backend = "zellij", parent = {} },
-    { tool = { name = "codex" }, mux_backend = "tmux", parent = {} },
+    { tool = { name = "claude" }, mux_backend = "zellij", parent = { sid = "claude test session" } },
+    { tool = { name = "codex" }, mux_backend = "tmux", parent = { sid = "codex test session" } },
   }) do
     configure(other)
     assert(other.parent.dump == nil)
