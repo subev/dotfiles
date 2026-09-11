@@ -17,6 +17,10 @@ local configure = spec.opts.cli.win.config
 assert(keys.next_agent, "<C-n> must cycle to the next agent")
 assert(keys.next_agent[1] == "<c-n>", "<C-n> is the key that reaches Sidekick unclaimed")
 assert(keys.next_agent.mode == "tn", "cycling must work from terminal and normal mode")
+assert(
+  spec.opts.cli.tools.codex.keys.next_agent == false,
+  "Codex binds <C-n> to a new task in its agents view, so it must opt out of cycling"
+)
 assert(keys.prompt == nil, "the prompt picker must keep <C-p>")
 assert(keys.nav_left == nil and keys.nav_right == nil, "window navigation must keep <C-h> and <C-l>")
 
@@ -161,8 +165,22 @@ local ok, err = pcall(function()
   assert(cycled == "claude_2", "hiding panes must not disturb which agent is cycled to")
   Terminal.get = get_terminal
 
-  State.get = function()
-    return { { tool = { name = "claude" } } }
+  -- A lone agent, as the real backend reports it. Session.sessions() emits both a
+  -- `terminal:` and a `zellij:` state for one session, carrying the same tool
+  -- name, and only the terminal-backed one survives an attached/terminal filter.
+  -- The three-distinct-tools stub above is what hid this: without the filter, one
+  -- agent looks like two and the ring re-attaches the twin of the pane it is in.
+  State.get = function(filter)
+    local states = {
+      { tool = { name = "claude_ds" }, terminal = {} },
+      { tool = { name = "claude_ds" } },
+    }
+    if filter.attached or filter.terminal then
+      return vim.tbl_filter(function(state)
+        return state.terminal ~= nil
+      end, states)
+    end
+    return states
   end
   cycled = nil
   local notify, notified = vim.notify, false
@@ -171,7 +189,7 @@ local ok, err = pcall(function()
   end
   cycle({ tool = { name = "claude" } })
   vim.notify = notify
-  assert(notified, "a lone agent must say there is nowhere to go")
+  assert(notified, "the mux twin of a lone agent must not read as a second agent")
   assert(cycled == nil, "a lone agent must not be re-attached")
 
   State.get, State.attach, select.select = get, attach, picker

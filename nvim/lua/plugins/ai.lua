@@ -16,10 +16,16 @@ local claude_slots = slots("claude")
 -- Same CLI, DeepSeek backend; see bin/claude-deepseek.
 local ds_slots = slots("claude_ds")
 
+-- One enumeration for the whole slot list: State.get applies `name` only after
+-- discovery, so probing slot by slot re-discovers every session each time.
 local function free_slot(names)
   local State = require("sidekick.cli.state")
+  local taken = {}
+  for _, state in ipairs(State.get({ started = true, cwd = true })) do
+    taken[state.tool.name] = true
+  end
   for _, name in ipairs(names) do
-    if #State.get({ name = name, started = true, cwd = true }) == 0 then
+    if not taken[name] then
       return name
     end
   end
@@ -29,13 +35,19 @@ end
 -- is rebuilt on every press, so an agent that exits drops out on its own.
 local function next_agent(terminal)
   local State = require("sidekick.cli.state")
-  local agents = State.get({ cwd = true, started = true })
+  -- Attached only, deliberately. Session.sessions() reports a `terminal:` and a
+  -- `zellij:` state for every running agent -- same tool name, two entries -- so
+  -- an unfiltered enumeration makes a lone agent look like a pair and the ring
+  -- targets the twin of the pane we are already in, hiding it and spawning a
+  -- duplicate client. Attached is also served from memory, where the unfiltered
+  -- path re-discovers sessions with ~40 subprocesses per call.
+  local agents = State.get({ attached = true, cwd = true, started = true })
   if #agents < 2 then
     vim.notify("No other agent in this directory", vim.log.levels.WARN)
     return
   end
-  -- State.get orders by attached terminal before name, which would reshuffle
-  -- the ring as we visit panes; sort by slot name so the order stays put.
+  -- Slot order. State.get sorts external sessions last and then by name, which
+  -- would reshuffle the ring as we visit panes.
   table.sort(agents, function(a, b)
     return a.tool.name < b.tool.name
   end)
@@ -150,6 +162,7 @@ return {
               buffers = false, -- Ctrl+B belongs to Codex's editor.
               files = false, -- Ctrl+F belongs to Codex's editor.
               prompt = false, -- Ctrl+P belongs to Codex's history navigation.
+              next_agent = false, -- Ctrl+N is Codex's new task in the /agents view.
             },
           },
         },
