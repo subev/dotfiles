@@ -54,7 +54,7 @@ describe() {
     opencode) echo "OpenCode config and agents" ;;
     bat)      echo "gruvbox theme for bat" ;;
     ideavim)  echo "JetBrains IdeaVim config" ;;
-    bin)      echo "claude-deepseek wrapper on PATH" ;;
+    bin)      echo "claude-deepseek + opencode-deepseek wrappers on PATH" ;;
   esac
 }
 
@@ -93,7 +93,11 @@ EOF
       ;;
     bat)     echo "$DOTFILES/gruvbox.tmTheme|$HOME/.config/bat/themes/gruvbox.tmTheme" ;;
     ideavim) echo "$DOTFILES/.ideavimrc|$HOME/.ideavimrc" ;;
-    bin)     echo "$DOTFILES/bin/claude-deepseek|$HOME/.local/bin/claude-deepseek" ;;
+    bin) cat <<EOF
+$DOTFILES/bin/claude-deepseek|$HOME/.local/bin/claude-deepseek
+$DOTFILES/bin/opencode-deepseek|$HOME/.local/bin/opencode-deepseek
+EOF
+      ;;
   esac
 }
 

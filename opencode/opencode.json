@@ -273,6 +273,21 @@
           }
         }
       }
+    },
+    "lmstudio": {
+      "npm": "@ai-sdk/openai-compatible",
+      "name": "LM Studio (local)",
+      "options": {
+        "baseURL": "http://127.0.0.1:1234/v1"
+      },
+      "models": {
+        "huihui-qwen3.8-27b-abliterated": {
+          "name": "Qwen3.8 27B Abliterated (local)"
+        },
+        "huihui-glm-4.7-flash-abliterated-i1": {
+          "name": "GLM-4.7 Flash Abliterated (local)"
+        }
+      }
     }
   }
 }

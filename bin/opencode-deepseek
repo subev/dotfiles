@@ -1,0 +1,16 @@
+#!/usr/bin/env bash
+# OpenCode against DeepSeek, flash model.
+# Unlike claude-deepseek there is no env-var wiring and no key handling here:
+# opencode resolves the deepseek provider from its own credential store
+# (~/.local/share/opencode/auth.json) and the model from its registry.
+# Plain `opencode` is untouched: remove ~/.local/bin/opencode-deepseek to revert.
+set -euo pipefail
+
+if ! command -v opencode >/dev/null 2>&1; then
+  echo "opencode-deepseek: no opencode CLI on PATH." >&2
+  exit 1
+fi
+
+model="${OPENCODE_DEEPSEEK_MODEL:-deepseek/deepseek-flash}"
+
+exec opencode --model "$model" "$@"
