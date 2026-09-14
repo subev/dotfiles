@@ -94,8 +94,9 @@ end
 --- Somewhere that proves the server is both up *and* the right build, or nil
 --- when the active backend does not talk to it at all.
 ---
---- Not /health: Spotter's bundled server is an older build that answers /health
---- with 200 while having neither /v1/audio/speech nor /voices, so a health probe
+--- Not /health: it answers 200 without touching the model, so it proves the port
+--- is held and nothing more. An older Spotter build's bundled copy answers
+--- /health while having neither /v1/audio/speech nor /voices, so a liveness probe
 --- passes and the synthesis then fails somewhere much less obvious.
 ---
 --- The gate matters for `:TTSBackend macos`, which misc.lua's comment offers as
@@ -136,7 +137,7 @@ local function play(record)
         elseif code ~= "200" then
           vim.notify(
             ("Speak out: the server on that port has no %s (HTTP %s).\n"
-              .. "That is normally Spotter's older bundled copy holding 8741; quitting "
+              .. "That is normally an older Spotter build holding 8741; quitting "
               .. "Spotter lets the LaunchAgent bind."):format(url, code),
             vim.log.levels.ERROR
           )
