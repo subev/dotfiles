@@ -1,0 +1,30 @@
+#!/usr/bin/env bash
+# Starts an agent pane that names the slot its Claude Code "Stop" hook should
+# file records under (see docs/claude-code-tts.md).
+#
+#   claude-slot <slot> <program> [args...]
+#
+# Sidekick spawns an agent pane from a generated zellij layout, which carries
+# only the command and its args; a tool `env` table is applied to the zellij
+# attach client instead, so it never reaches the pane. Exporting the slot here,
+# rather than through an `env VAR=...` prefix in `cmd`, is what keeps cmd[1] a
+# real program -- sidekick reads cmd[1] for its installed and `%s is not
+# installed?` diagnostics (cli/state.lua, health.lua, terminal.lua), and `env`
+# is always on PATH, so every slot would claim to be installed.
+set -euo pipefail
+
+if [ $# -lt 2 ]; then
+  echo "claude-slot: usage: claude-slot <slot> <program> [args...]" >&2
+  exit 2
+fi
+
+slot="$1"; shift
+program="$1"; shift
+
+if ! command -v "$program" >/dev/null 2>&1; then
+  echo "claude-slot: no $program on PATH." >&2
+  exit 1
+fi
+
+export CLAUDE_SLOT="$slot"
+exec "$program" "$@"

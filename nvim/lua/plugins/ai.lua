@@ -184,6 +184,31 @@ return {
               mode = "tn",
               desc = "Next agent in this directory",
             },
+            -- A single control key, not a <leader> chord: in Terminal-Job mode a
+            -- chord holds every space you type in the agent's prompt until it is
+            -- disambiguated, and typing " tS" into prose would fire it. Every
+            -- t-mode key in sidekick and in this config is a <C-...> for that
+            -- reason.
+            --
+            -- A `tn` map covers Terminal-Job as well as Terminal-Normal, so the
+            -- key chosen here is taken from the CLI, never delivered to it. That
+            -- is why this is <C-]> and not <C-v>, which is Claude Code's image
+            -- paste, and why `next_agent` is scoped off Codex. Claude Code binds
+            -- C, D, Z, B, S, G, E, A, Y, W, T, R, U, O, L, K, N, P and <C-v>;
+            -- sidekick claims B, F, Z, P, Q, H, J, K, L and <C-n>; <C-]> is in
+            -- neither list. Re-check that before moving it.
+            --
+            -- It cannot go in a tool's own `keys`: a keymap entry is a mixed-key
+            -- table and sidekick stores the tool table as a buffer variable,
+            -- which refuses those. The loop after setup scopes it per tool.
+            speak_out = {
+              "<c-]>",
+              function(terminal)
+                require("config.claude_speak").speak(terminal)
+              end,
+              mode = "tn",
+              desc = "Speak this pane's last Claude message",
+            },
           },
           config = function(terminal)
             if terminal.mux_backend ~= "zellij" then
@@ -237,19 +262,64 @@ return {
     config = function(_, opts)
       local claude = dofile(vim.api.nvim_get_runtime_file("sk/cli/claude.lua", false)[1])
       opts.cli.tools = opts.cli.tools or {}
-      -- slot 1 is sidekick's built-in claude tool
-      for i = 2, #claude_slots do
-        opts.cli.tools[claude_slots[i]] = vim.tbl_extend("force", claude, { is_proc = false })
+
+      -- Each slot's pane carries its own name in the environment, so the Stop
+      -- hook can file its record against the pane the message came from.
+      --
+      -- A tool `env` table cannot do this: with the zellij backend sidekick
+      -- applies `env` to the `zellij attach` client it spawns, while the pane
+      -- command is spawned by the long-lived zellij server from the generated
+      -- layout, so it is ignored whenever an existing session is re-attached --
+      -- the normal case here. Nor can `cmd` be prefixed with `env VAR=...`:
+      -- that makes cmd[1] "env", which is what sidekick reads for its installed
+      -- and "not installed?" diagnostics, so every slot would claim to be
+      -- installed. Hence the wrapper, which exports the variable and execs on.
+      local function slot_cmd(name, program)
+        return { "claude-slot", name, program }
       end
+
+      -- Slot 1 is sidekick's built-in claude tool, so it keeps its own is_proc.
+      opts.cli.tools[claude_slots[1]] = vim.tbl_extend("force", claude, {
+        cmd = slot_cmd(claude_slots[1], "claude"),
+      })
+      for i = 2, #claude_slots do
+        opts.cli.tools[claude_slots[i]] = vim.tbl_extend("force", claude, {
+          cmd = slot_cmd(claude_slots[i], "claude"),
+          is_proc = false,
+        })
+      end
+      -- The DeepSeek wrapper only exports and ends in `exec claude "$@"`, so it
+      -- is the same binary reading the same Stop hook and carries the slot
+      -- through untouched. Nothing extra is needed for it to work.
       for _, name in ipairs(ds_slots) do
         opts.cli.tools[name] = vim.tbl_extend("force", claude, {
-          cmd = { "claude-deepseek" },
+          cmd = slot_cmd(name, "claude-deepseek"),
           is_proc = false,
         })
       end
       require("sidekick").setup(opts)
+
+      -- `cli.win.keys` applies to every tool, so switch the speak key off where
+      -- no record can exist: the hook only writes for the slots above, and a
+      -- Codex or OpenCode pane would otherwise swallow <C-]> just to answer
+      -- "nothing recorded". After setup, because that is when sidekick's
+      -- built-in tools (opencode, gemini, ...) join the same table.
+      local has_record = {}
+      for _, name in ipairs(claude_slots) do
+        has_record[name] = true
+      end
+      for _, name in ipairs(ds_slots) do
+        has_record[name] = true
+      end
+      for name, tool in pairs(require("sidekick.config").cli.tools) do
+        if not has_record[name] then
+          tool.keys = vim.tbl_extend("force", tool.keys or {}, { speak_out = false })
+        end
+      end
+
       require("config.sidekick_links").setup()
       require("config.sidekick_expand").setup()
+      require("config.claude_speak").setup()
     end,
     keys = {
       {

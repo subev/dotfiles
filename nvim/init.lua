@@ -32,7 +32,7 @@ require("lazy").setup({
     end,
     -- Matched with plain substring search against the plugin url, not a Lua
     -- pattern, so these are literal fragments.
-    patterns = { "sibling-jump", "difftastic" },
+    patterns = { "sibling-jump", "difftastic", "tts.nvim" },
     fallback = true,
   },
 })

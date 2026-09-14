@@ -41,7 +41,21 @@ else
   C_DIM=""; C_OK=""; C_WARN=""; C_ERR=""; C_OFF=""
 fi
 
-COMPONENTS=(shell nvim tmux git ignore agents opencode bat ideavim bin)
+COMPONENTS=(shell nvim tmux git ignore agents opencode bat ideavim bin launchd)
+
+# What --all and the wizard's "all" install. launchd is reachable only through
+# `--only launchd`: bootstrapping a LaunchAgent is a real side effect, and a
+# machine with no Kokoro checkout gets nothing from it but an idle job.
+OPT_IN=(launchd)
+
+default_components() {
+  local c
+  for c in "${COMPONENTS[@]}"; do
+    if [[ " ${OPT_IN[*]} " != *" $c "* ]]; then
+      printf '%s ' "$c"
+    fi
+  done
+}
 
 describe() {
   case "$1" in
@@ -54,7 +68,11 @@ describe() {
     opencode) echo "OpenCode config and agents" ;;
     bat)      echo "gruvbox theme for bat" ;;
     ideavim)  echo "JetBrains IdeaVim config" ;;
-    bin)      echo "claude-deepseek + opencode-deepseek wrappers on PATH" ;;
+    bin)      echo "claude-deepseek, claude-slot, opencode-deepseek, and the Claude-speak hook" ;;
+    # Linking this only makes the job available; it still needs bootstrapping
+    # (the plist's own header has the command). It exits quietly if the Kokoro
+    # checkout is absent, so a machine without one gets no retry loop.
+    launchd)  echo "shared Kokoro TTS server agent (opt-in; wants ~/repos/kokoro-tts)" ;;
   esac
 }
 
@@ -95,9 +113,12 @@ EOF
     ideavim) echo "$DOTFILES/.ideavimrc|$HOME/.ideavimrc" ;;
     bin) cat <<EOF
 $DOTFILES/bin/claude-deepseek|$HOME/.local/bin/claude-deepseek
+$DOTFILES/bin/claude-slot|$HOME/.local/bin/claude-slot
 $DOTFILES/bin/opencode-deepseek|$HOME/.local/bin/opencode-deepseek
+$DOTFILES/bin/claude-speak-hook|$HOME/.local/bin/claude-speak-hook
 EOF
       ;;
+    launchd) echo "$DOTFILES/launchd/com.petur.kokoro-tts.plist|$HOME/Library/LaunchAgents/com.petur.kokoro-tts.plist" ;;
   esac
 }
 
@@ -171,7 +192,7 @@ check_orphans() {
   local dirs=(
     "$HOME" "$HOME/.config/nvim" "$HOME/.config/nvim/lua" "$HOME/.config/opencode"
     "$HOME/.config/coc" "$HOME/.config/bat/themes" "$HOME/.codex" "$HOME/.claude"
-    "$HOME/.local/bin"
+    "$HOME/.local/bin" "$HOME/Library/LaunchAgents"
   )
   for dir in "${dirs[@]}"; do
     [[ -d "$dir" ]] || continue
@@ -197,6 +218,51 @@ install_component() {
     [[ -z "$src" ]] && continue
     link_one "$src" "$dst"
   done < <(component_links "$comp")
+  # The plist link is inert by itself -- launchd does not know about the job
+  # until it is bootstrapped -- so that bootstrap is what --check and --dry-run
+  # skip, keeping those runs read-only. link_one still reports the link itself.
+  #
+  # The comp test belongs in this condition, not as a trailing
+  # `[[ ... ]] && load_tts_agent`: that form leaves the function returning 1 for
+  # every other component, and `set -e` then aborts the run at the first one.
+  if [[ "$comp" == launchd && "$CHECK_ONLY" == 0 && "$DRY_RUN" == 0 ]]; then
+    load_tts_agent
+  fi
+}
+
+# A symlinked agent does nothing until launchd is told about it, and that is the
+# one step of this install that `--check` cannot see as missing -- the link is
+# right there, doing nothing. `--only launchd` is deliberately not in --all: on a
+# machine without the Kokoro checkout the job would only ever sit idle.
+load_tts_agent() {
+  local label=com.petur.kokoro-tts
+  local plist="$HOME/Library/LaunchAgents/$label.plist"
+
+  if [[ ! -e "$plist" ]]; then
+    echo "  ${C_WARN}note${C_OFF}   no $label.plist to load"
+    return 0
+  fi
+
+  # The same three paths the plist guards on: naming fewer would let a machine
+  # with a venv but no model look ready while the job sits idle.
+  if [[ ! -f "$HOME/repos/spotter/server/kokoro_server.py" ||
+    ! -x "$HOME/repos/kokoro-tts/.venv/bin/python" ||
+    ! -f "$HOME/repos/kokoro-tts/kokoro-v1.0.onnx" ]]; then
+    echo "  ${C_WARN}note${C_OFF}   spotter or kokoro-tts is incomplete; the agent will idle"
+  fi
+
+  if launchctl print "gui/$UID/$label" >/dev/null 2>&1; then
+    echo "  ${C_DIM}skip${C_OFF}   $label is already loaded"
+    return 0
+  fi
+
+  # The plist has to be bootstrapped from the LaunchAgents location, not from
+  # this repo: launchd does not accept the repo path for an agent.
+  if launchctl bootstrap "gui/$UID" "$plist" 2>/dev/null; then
+    echo "  ${C_OK}loaded${C_OFF}  $label"
+  else
+    echo "  ${C_WARN}could not load${C_OFF} $label (run: launchctl bootstrap gui/\$UID $plist)"
+  fi
 }
 
 # An app-managed file cannot be a symlink; Karabiner rewrites it in place.
@@ -214,7 +280,7 @@ usage() {
   cat <<EOF
 Usage: ./install.sh [options]
 
-  --all                install every component, no prompts
+  --all                install every component except the opt-in agent
   --only a,b,c         install only these components
   --deps               also install system packages (Brewfile / apt)
   --check              report drift and missing tools; exit 1 if any
@@ -222,6 +288,7 @@ Usage: ./install.sh [options]
   -h, --help           this message
 
 Components: ${COMPONENTS[*]}
+Opt-in:     ${OPT_IN[*]} (only with --only ${OPT_IN[*]})
 EOF
 }
 
@@ -286,7 +353,7 @@ wizard() {
     i=$((i + 1))
   done
   echo
-  echo "  a) all"
+  echo "  a) all except launchd ${C_DIM}(opt-in; install it with --only launchd)${C_OFF}"
   echo
 
   # On EOF (no tty, `curl | bash`, make) the safe answer is to do nothing.
@@ -304,7 +371,7 @@ wizard() {
   fi
 
   if [[ "$reply" == "a" || "$reply" == "all" ]]; then
-    ONLY="${COMPONENTS[*]}"
+    ONLY="$(default_components)"
     return
   fi
 
@@ -325,7 +392,7 @@ wizard() {
 
 while [[ $# -gt 0 ]]; do
   case "$1" in
-    --all) ONLY="${COMPONENTS[*]}"; shift ;;
+    --all) ONLY="$(default_components)"; shift ;;
     --only)
       if [[ $# -lt 2 ]]; then
         echo "--only needs a value, e.g. --only nvim,shell" >&2

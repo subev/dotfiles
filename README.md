@@ -40,5 +40,6 @@ Two plugins (`sibling-jump.nvim`, `difftastic.nvim`) load from a local checkout 
 - OpenCode needs `CONTEXT7_API_KEY` exported in your shell; its MCP server is
   silently broken without it.
 - Claude Code on DeepSeek: [docs/claude-deepseek.md](docs/claude-deepseek.md)
+- Hearing Claude Code's summaries read aloud: [docs/claude-code-tts.md](docs/claude-code-tts.md)
 - Neovim navigation notes: [docs/neovim-navigation.md](docs/neovim-navigation.md)
 - Tests: `bash tests/test_runner.sh`

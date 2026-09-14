@@ -21,10 +21,10 @@ cd /Users/petur/dotfiles
 bash tests/test_runner.sh
 ```
 
-The runner executes all six suites and stops on failure. `run_tests.lua` uses
+The runner executes all seven suites and stops on failure. `run_tests.lua` uses
 `minimal_init.lua` to access installed Treesitter parsers without loading UI
 plugins or starting language servers. The other
-five suites use `-u NONE` to isolate editor state and avoid starting real servers:
+six suites use `-u NONE` to isolate editor state and avoid starting real servers:
 `navigation_spec.lua` covers parsing, asynchronous file resolution, mouse state,
 window selection, highlighting, and workspace details; `sidekick_scrollback_spec.lua`
 checks Codex's Zellij history export and failure fallback; `sidekick_agents_spec.lua`
@@ -32,6 +32,9 @@ checks the `<C-n>` agent ring and the Zellij keybind clearing in the generated
 layout; `sidekick_expand_spec.lua` checks that clicking a `ctrl+o` hint relays
 the chord into the Zellij session, that rows which only look like a wrapped hint
 do not, and that other clicks fall through;
+`claude_speak_spec.lua` checks which of the Claude-speak hook's per-project records
+a keypress resolves to, that the fallback cannot reach across projects, and that a
+corrupt or non-object record is refused rather than spoken;
 `typescript_spec.lua`
 checks native/legacy selection, package-local installs, compiler upgrades, and
 launcher commands. The navigation suite loads installed Visual Multi to check

@@ -15,6 +15,9 @@ nvim --headless -u NONE -i NONE -n -c "luafile tests/navigation_spec.lua" || exi
 nvim --headless -u NONE -i NONE -n -l tests/sidekick_scrollback_spec.lua || exit $?
 nvim --headless -u NONE -i NONE -n -l tests/sidekick_agents_spec.lua || exit $?
 nvim --headless -u NONE -i NONE -n -l tests/sidekick_expand_spec.lua || exit $?
+nvim --headless -u NONE -i NONE -n -l tests/claude_speak_spec.lua || exit $?
+# The last suite deliberately has no `|| exit $?`: it is the one whose failure
+# would otherwise be masked by whatever runs after it.
 nvim --headless -u NONE -i NONE -n -l tests/typescript_spec.lua
 
 exit $?

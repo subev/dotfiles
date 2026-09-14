@@ -1,0 +1,85 @@
+#!/usr/bin/env bash
+#
+# Records Claude Code's end-of-turn summary so Neovim can speak it on demand.
+#
+# Wired as a Stop hook (see docs/claude-code-tts.md). It only writes a file --
+# no synthesis, no network -- so it stays cheap on every turn of every project.
+#
+# No `set -e` on purpose. For Stop, exit code 2 blocks the stop and feeds stderr
+# back to Claude as a reason to keep working, and a stray jq failure must never
+# do that. Every path below ends in an explicit exit 0.
+#
+# Neovim reads these back through the pane's cwd plus its slot name, so the
+# layout has to match nvim/lua/config/claude_speak.lua exactly.
+
+dir="${CLAUDE_SPEAK_DIR:-$HOME/.cache/claude-speak}"
+payload="$(cat)"
+
+# One pass for the record: the text, plus the provenance Neovim filters on and
+# shows in its notification. A turn that ended in a tool call has no message at
+# all, and that is recorded as "" rather than skipped, so the previous turn is
+# not replayed in its place.
+record="$(printf '%s' "$payload" | jq -c --arg slot "${CLAUDE_SLOT:-}" '{
+  text: (.last_assistant_message // ""),
+  cwd: (.cwd // ""),
+  session_id: (.session_id // ""),
+  slot: $slot,
+  ts: (now | floor)
+}' 2>/dev/null)" || exit 0
+[ -n "$record" ] || exit 0
+
+cwd="$(printf '%s' "$record" | jq -r '.cwd // ""' 2>/dev/null)" || exit 0
+[ -n "$cwd" ] || exit 0
+
+# A zellij pane outlives the shell that made it, and Neovim resolves the record
+# through the pane's cwd -- so the slug has to survive /tmp vs /private/tmp.
+# `cd` + `pwd -P` canonicalises whichever spelling arrived, and fails cleanly if
+# the directory is already gone.
+real="$(cd "$cwd" 2>/dev/null && pwd -P)" || exit 0
+[ -n "$real" ] || exit 0
+
+# The project's directory name, kept in step with nvim/lua/config/claude_speak.lua:
+# a sanitised prefix for legibility in `ls`, plus a hash of the full path. Slash
+# substitution alone is not injective -- /a/b and /a-b sanitise alike -- and two
+# projects sharing a directory would read each other's summary aloud, which is
+# the one thing the per-project keying exists to prevent. The 80-char prefix
+# also bounds the name, where a deep enough path would otherwise exceed NAME_MAX
+# and make mkdir fail.
+#
+# shasum is on every macOS; openssl is the fallback. Empty means neither worked,
+# and the caller stops rather than falling back to a name that could collide.
+hash_path() {
+  local out
+  out="$(printf '%s' "$1" | shasum -a 256 2>/dev/null | cut -d' ' -f1)"
+  [ -n "$out" ] || out="$(printf '%s' "$1" | openssl dgst -sha256 2>/dev/null | awk '{print $NF}')"
+  [ -n "$out" ] || return 1
+  printf '%s' "${out:0:16}"
+}
+
+slug() {
+  local hash prefix
+  hash="$(hash_path "$1")" || return 1
+  prefix="${1//\//-}"
+  printf '%s-%s' "${prefix:0:80}" "$hash"
+}
+
+# Created separately because BSD mkdir applies -m only to the last component,
+# which would leave the container browsable and leak project paths by name.
+mkdir -p -m 700 "$dir" 2>/dev/null || exit 0
+name="$(slug "$real")" || exit 0
+[ -n "$name" ] || exit 0
+proj="$dir/$name"
+mkdir -p -m 700 "$proj" 2>/dev/null || exit 0
+
+# Rename into place so a reader never sees a half-written record, and so a
+# concurrent turn cannot interleave.
+write() {
+  printf '%s' "$record" >"$1.$$" 2>/dev/null && mv -f "$1.$$" "$1" 2>/dev/null
+}
+
+write "$proj/latest.json"
+
+slot="$(printf '%s' "$record" | jq -r '.slot // ""' 2>/dev/null)" || exit 0
+[ -n "$slot" ] && write "$proj/$slot.json"
+
+exit 0

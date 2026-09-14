@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<!--
+  One always-on Kokoro TTS server, shared by every Neovim and by Spotter.
+
+  Install:
+    ./install.sh --only launchd
+    launchctl bootstrap gui/$UID ~/Library/LaunchAgents/com.petur.kokoro-tts.plist
+  Restart after editing the server script:
+    launchctl kickstart -k gui/$UID/com.petur.kokoro-tts
+  Stop it until next login:
+    launchctl bootout gui/$UID/com.petur.kokoro-tts
+
+  The port matters: 8741 is the one Speak.swift hardcodes, and Spotter's
+  AppController probes /health before spawning and refuses to kill a server it
+  did not start. So Spotter finds this one and reuses it, which is the whole
+  point -- one resident model instead of one per app. The cost is that Spotter's
+  "shortcuts off releases the memory" no longer holds for TTS.
+
+  Never point ProgramArguments at build/Spotter.app/Contents/Resources/
+  kokoro_server.py: the Makefile overwrites that copy on every build.
+
+  Logs go to ~/Library/Logs rather than the /tmp/*.log the nightly backup agent
+  uses, because a long-lived service is exactly the case where you want the
+  previous boot's failure to still be there.
+-->
+<plist version="1.0">
+<dict>
+	<key>Label</key>
+	<string>com.petur.kokoro-tts</string>
+
+	<!--
+	  Wrapped in bash for the existence guards. Without them a missing venv,
+	  model, or server script exits non-zero, and KeepAlive treats that as a
+	  crash: a restart every ThrottleInterval, forever, for a condition no
+	  restart can fix. Every guard exits 0, which is the one exit launchd does
+	  not retry. This is the fresh-machine path -- clone dotfiles onto a Mac with
+	  no Kokoro checkout and the job should sit quiet, not spin.
+	-->
+	<key>ProgramArguments</key>
+	<array>
+		<string>/bin/bash</string>
+		<string>-c</string>
+		<string>py="$HOME/repos/kokoro-tts/.venv/bin/python"; srv="$HOME/repos/spotter/server/kokoro_server.py"; test -x "$py" || exit 0; test -f "$srv" || exit 0; test -f "$HOME/repos/kokoro-tts/kokoro-v1.0.onnx" || exit 0; exec "$py" "$srv"</string>
+	</array>
+
+	<key>EnvironmentVariables</key>
+	<dict>
+		<key>SPOTTER_PORT</key>
+		<string>8741</string>
+		<key>SPOTTER_VOICE</key>
+		<string>af_heart</string>
+	</dict>
+
+	<key>RunAtLoad</key>
+	<true/>
+
+	<!-- Restart on a crash, but not on the guarded exit-0 above. -->
+	<key>KeepAlive</key>
+	<dict>
+		<key>SuccessfulExit</key>
+		<false/>
+	</dict>
+
+	<key>ThrottleInterval</key>
+	<integer>30</integer>
+
+	<!-- Without this launchd background-schedules the agent and synthesis gets
+	     deprioritised, which is felt directly as time-to-first-word. -->
+	<key>ProcessType</key>
+	<string>Interactive</string>
+
+	<key>StandardOutPath</key>
+	<string>/Users/petur/Library/Logs/kokoro-tts.log</string>
+	<key>StandardErrorPath</key>
+	<string>/Users/petur/Library/Logs/kokoro-tts.log</string>
+</dict>
+</plist>
