@@ -82,7 +82,7 @@ repo:
 | Needs | Where it comes from |
 | --- | --- |
 | `~/repos/kokoro-tts` — the venv **and** `kokoro-v1.0.onnx` + `voices-v1.0.bin` (~350 MB) | spotter's README lists the Python requirements; the model files are a separate download |
-| `~/repos/spotter` — the server script the agent runs | clone it. The agent runs whatever is checked out, so the OpenAI route has to be on the branch you leave checked out |
+| `~/repos/spotter` — the server script the agent runs | clone it. The agent runs whatever is checked out, so keep that checkout current |
 | The `Stop` hook above | hand edit; nothing detects it going missing |
 
 Until those exist the agent *loads and exits quietly* rather than failing loudly — the
